@@ -19,7 +19,7 @@ dependencies = [
  
 [project.urls]
 Repository = "https://forge.mql5.io/nique_372/FullMt5McpByLeo"
-Documentation = "https://forge.mql5.io/nique_372/FullMt5McpByLeo"
+Documentation = "https://forge.mql5.io/nique_372/FullMt5McpByLeo/wiki"
 Issues = "https://forge.mql5.io/nique_372/FullMt5McpByLeo/issues"
 
 [project.scripts]
