@@ -38,7 +38,7 @@ void CMcpFuncHistoryDealList::Run(CJsonNode& param, string& res)
        StringToTime(param["end_date_select"].ToString(TimeToString(TimeCurrent(), TIME_DATE | TIME_MINUTES | TIME_SECONDS)))
      ))
    {
-    res = StringFormat("{\"ok\":true,\"result\":\"Erorr selected positions, last err = %d\"}", ::GetLastError());
+    res = StringFormat("{\"ok\":true,\"error\":\"Erorr selected positions, last err = %d\"}", ::GetLastError());
     return;
    }
 

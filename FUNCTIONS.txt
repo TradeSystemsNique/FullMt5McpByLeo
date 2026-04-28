@@ -10,7 +10,6 @@ open_trade (sell\buy)
 open_limit (sell\buy)
 open_stop  (sell\buy)
 
-// TODO:
 position_list
 position_get_double
 position_get_integer
@@ -74,8 +73,7 @@ chart_redraw
 // TODO:
 compile_mql5
 execute_backtest
-add_ea
-get_terminal_logs
+run_ea
 get_expert_logs
 
  
