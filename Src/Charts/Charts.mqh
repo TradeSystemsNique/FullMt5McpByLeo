@@ -73,7 +73,7 @@ void CMcpFuncChartOpen::Run(CJsonNode& param, string& res)
   ::ResetLastError();
 
 //---
-  const long chart_id = ::ChartOpen(param["symbol"].ToString(_Symbol), CEnumReg::GetValueNoRef<ENUM_TIMEFRAMES>(param["timeframe"].ToInt(), _Period));
+  const long chart_id = ::ChartOpen(param["symbol"].ToString(_Symbol), CEnumReg::GetValueNoRef<ENUM_TIMEFRAMES>(param["timeframe"].ToString(), _Period));
 
 //---
   if(chart_id == 0)
@@ -111,8 +111,7 @@ void CMcpFuncChartClose::Run(CJsonNode& param, string& res)
     res = StringFormat("{\"ok\":false,\"error\":\"chart_close failed, last mt5 error = %d\"}", ::GetLastError());
     return;
    }
-
-  res = StringFormat("{\"ok\":true,\"result\":true}");
+  res = "{\"ok\":true,\"result\":true}";
  }
 
 //+------------------------------------------------------------------+
@@ -192,7 +191,7 @@ void CMcpFuncChartRedraw::Run(CJsonNode& param, string& res)
   ChartRedraw(param["chart_id"].ToInt(0));
 
 //---
-  res = StringFormat("{\"ok\":true,\"result\":\"okey\"}");
+  res = "{\"ok\":true,\"result\":\"okey\"}";
  }
 
 //+------------------------------------------------------------------+
