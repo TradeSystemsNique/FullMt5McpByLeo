@@ -63,7 +63,7 @@ Compile and execute Expert Advisors:
 ### 1. Install Pacakage
 
 ```bash
-pip install mt5_mcp_by_leo
+pip install mt5-mcp-by-leo
 ```
 
 ### 2. Configure Claude Desktop
