@@ -92,7 +92,7 @@ In MT5: **Tools** → **Options** → **Allowed URLs for WebRequest**
 
 ```
 MetaEditor: Open Src/Mt5Mcp.mq5 → Compile (F5) or (EX5 of releases)
-MT5: Drag Mt5Mcp.ex5 onto your chart
+MT5: Drag Mt5Mcp.ex5 onto your chart and cofigure it, The parameters of the EA, such as port/host, must match the JSON of Claude Desktop
 ```
 
 ### 5. Use in Claude
