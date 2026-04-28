@@ -163,7 +163,7 @@ By downloading or using this repository, you accept the license terms.
 ---
 
 ## Documentation
-
+- Wiki: [https://forge.mql5.io/nique_372/FullMt5McpByLeo/wiki](https://forge.mql5.io/nique_372/FullMt5McpByLeo/wiki)
 
 ---
 
