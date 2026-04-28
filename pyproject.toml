@@ -1,0 +1,29 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "mt5_mcp_by_leo"
+version = "1.0.0"
+description = "Complete MCP server for MT5: Through the MCP protocol, it allows [Trades, Orders, History, Graphic Objects, Terminal Logs, Compilation, etc.]"
+readme = {file = "README.md", content-type = "text/markdown"}
+license = {file = "LICENSE"}
+authors = [
+    {name = "Nique Mendoza", email = "tradesystemsnique@gmail.com"}, 
+    {name = "Leo", email = "leo@example.com"}, 
+]
+requires-python = ">=3.10"
+dependencies = [
+    "mcp>=1.27.0"
+]
+ 
+[project.urls]
+Repository = "https://forge.mql5.io/nique_372/FullMt5McpByLeo"
+Documentation = "https://forge.mql5.io/nique_372/FullMt5McpByLeo"
+Issues = "https://forge.mql5.io/nique_372/FullMt5McpByLeo/issues"
+
+[project.scripts]
+mt5_mcp_by_leo = "mt5_mcp_by_leo.Main:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["mt5_mcp_by_leo"] 
