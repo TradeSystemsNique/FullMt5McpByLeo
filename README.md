@@ -73,7 +73,7 @@ Add to your `claude_desktop_config.json`:
 ```json
 {
   "mcpServers": {
-    "fullmt5mcp": {
+    "mt5_mcp_by_leo": {
       "command": "python",
       "args": ["-m", "mt5_mcp_by_leo", "--host", "127.0.0.1", "--port", "9999"]
     }
