@@ -249,7 +249,7 @@ void CMcpFuncPositionModify::Run(CJsonNode& param, string& res)
   if(!PositionSelectByTicket(ticket))
    {
     res = StringFormat("{\"ok\":false,\"result\":\"Error select ticket, last mt5 err = %d\"}", ::GetLastError());
-    return
+    return;
    }
 
 //---

@@ -106,7 +106,7 @@ void CMcpFuncOrderModify::Run(CJsonNode& param, string& res)
                           param["new_price"].ToDouble(OrderGetDouble(ORDER_PRICE_OPEN)),
                           param["new_sl"].ToDouble(OrderGetDouble(ORDER_SL)),
                           param["new_tp"].ToDouble(OrderGetDouble(ORDER_TP)),
-                          CEnumReg::GetValueNoRef<ENUM_ORDER_TYPE_TIME>(param["new_type_time"].ToString(), OrderGetInteger(ORDER_TYPE_TIME)),
+                          CEnumReg::GetValueNoRef<ENUM_ORDER_TYPE_TIME>(param["new_type_time"].ToString(), (ENUM_ORDER_TYPE_TIME)OrderGetInteger(ORDER_TYPE_TIME)),
                           StringToTime(param["new_expiration_time"].ToString(TimeToString(OrderGetInteger(ORDER_TIME_EXPIRATION))))
                          ))
    {

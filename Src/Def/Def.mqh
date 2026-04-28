@@ -45,6 +45,7 @@
 
 //--- Type order time
 #define MQLARTICLES_ENUMREG_ENUM_ORDER_TYPE_TIME
+#define MQLARTICLES_ENUMREG_ENUM_OBJECT
 
 //+------------------------------------------------------------------+
 //| Include                                                          |
