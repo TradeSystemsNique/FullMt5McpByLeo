@@ -128,6 +128,7 @@ cd "C:\Users\YOUR USER\AppData\Roaming\MetaQuotes\Terminal\YOUR ID\MQL5\Shared P
 tsndep install "https://forge.mql5.io/nique_372/FullMt5McpByLeo.git"
 ```
 - For use tsndep command requerid tsndep pacakage (avaible in [pypi](https://pypi.org/project/tsndep)).. This command automatically downloads all dependencies and installs all requirements from the repositories.
+- If any part of the system is private, then it will fail... contact me so I can give you access (if it's a product, you can buy it; if you have any questions, don't hesitate to contact me).
  
 ---
 
