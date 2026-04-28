@@ -167,9 +167,9 @@ By downloading or using this repository, you accept the license terms.
 
 ---
 
-## Support
-
-**Contact:** nique_372 (MQL5 chat) or nikemendex@gmail.com
+## Contact
+- **Platform:** [MQL5 Community](https://www.mql5.com/es/users/nique_372)
+- **Profile:** https://www.mql5.com/es/users/nique_372/news
 
 ---
 
