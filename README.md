@@ -84,7 +84,7 @@ Add to your `claude_desktop_config.json`:
 ### 3. Configure MetaTrader 5
 
 In MT5: **Tools** → **Options** → **Allowed URLs for WebRequest**
-- Add `127.0.0.1`
+- Add `127.0.0.1` or host you configured.
 - Click **Accept**
 - Enable AutoTrading and DLL imports
 
