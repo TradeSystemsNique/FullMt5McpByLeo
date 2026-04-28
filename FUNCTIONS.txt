@@ -1,0 +1,83 @@
+# FullMt5McpByLeo - MCP Tools/Functions List
+# Format: one function per line, snake_case
+# Status: Under review - Add/Remove/Modify as needed
+
+# ============================================================================
+# GROUP 1: POSITIONS | ORDERS | HISTORY (18 tools) | Trade 
+# ============================================================================
+
+open_trade (sell\buy)
+open_limit (sell\buy)
+open_stop  (sell\buy)
+
+position_get_total
+position_get_ticket
+position_get_double
+position_get_integer
+position_get_string
+
+history_order_get_total
+history_order_get_ticket
+history_order_get_double
+history_order_get_integer
+history_order_get_string
+ 
+history_deal_get_total
+history_deal_get_ticket
+history_deal_get_double
+history_deal_get_integer
+history_deal_get_string
+
+# ============================================================================
+# GROUP 2: DATA OHLC + SYMBOL INFO (11 tools)
+# ============================================================================
+
+copy_high
+copy_low
+copy_close
+copy_open
+copy_tick_volume
+copy_real_volume
+
+symbol_info_double
+symbol_info_integer
+symbol_info_string
+symbol_select
+symbols_total
+
+# ============================================================================
+# GROUP 3: GRAPHIC OBJECTS (6 tools)
+# ============================================================================
+
+object_create
+object_delete
+object_get_integer
+object_get_double
+object_set_integer
+object_set_double
+
+# ============================================================================
+# GROUP 4: CHARTS (6 tools)
+# ============================================================================
+
+chart_list
+chart_open
+chart_close
+chart_get_integer
+chart_get_double
+chart_redraw
+ 
+# ============================================================================
+# GROUP 5: CODE + TERMINAL (5-7 tools)
+# ============================================================================
+
+compile_mql5
+execute_backtest
+add_ea
+get_terminal_logs
+get_expert_logs
+
+ 
+# ============================================================================
+# TOTAL COUNT: 46 tools (5 core groups)
+# ============================================================================
