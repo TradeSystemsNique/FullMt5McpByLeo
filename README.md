@@ -1,263 +1,177 @@
-# FullMt5McpByLeo
+<!-- mcp-name: io.github.TradeSystemsNique/fullmt5mcp-by-leo -->
+<p align="center">
+  <img src="https://img.shields.io/badge/Language-Python-3776ab?style=flat-square"/>
+  <img src="https://img.shields.io/badge/MQL5-Backend-13C7DE?style=flat-square"/>
+  <img src="https://img.shields.io/badge/Protocol-MCP-1B6CA8?style=flat-square"/>
+  <img src="https://img.shields.io/badge/Platform-MetaTrader%205-0D1B2A?style=flat-square"/>
+  <img src="https://img.shields.io/badge/Author-Niquel%20Mendoza-C9D6DF?style=flat-square"/>
+  <a href="./LICENSE">
+    <img src="https://img.shields.io/badge/License-Nique%26Leo%20NL--ND-red.svg"/>
+  </a>
+</p>
 
-Complete MCP (Model Context Protocol) server implementation for MT5 trading operations. This project bridges Claude AI with MetaTrader 5, enabling AI-powered trading automation through 44 comprehensive MCP functions.
+<p align="center">
+  <strong>Universal MCP Server for MetaTrader 5 Trading & Data Operations</strong>
+</p>
 
-## Architecture Overview
+---
 
-The project consists of two main components:
+## Overview
 
-### 1. MQL5 Backend (Src/)
-- **Mt5Mcp.mq5**: Main entry point - EA that registers all 44 MCP functions
-- **All.mqh**: Master include file consolidating all MQL5 modules
-- **Organized into 5 functional groups**:
-  - Graphics Objects (5 functions)
-  - Charts (6 functions)
-  - Data/Symbol Info (10 functions)
-  - Trade Operations (19 functions)
-  - Code/Terminal (4 functions)
+FullMt5McpByLeo is a complete, production-ready MCP server that enables Claude and other AI assistants to control MetaTrader 5 directly. Execute trades, retrieve market data, manage charts, analyze trading history, and automate MT5 operations through natural language.
 
-### 2. Python MCP Client (mt5_mcp_by_leo/)
-- **Main.py**: Entry point that starts the FastMCP server
-- **Def.py**: FastMCP instance and socket communication handler
-- **functions.py**: All 44 MCP tool definitions (1300+ lines, fully documented)
+---
+
+## Main Features
+
+### Trade Operations
+Execute and manage trading positions and orders:
+- **Open Positions:** Execute market trades (buy/sell) with immediate or pending orders
+- **Position Management:** Modify stops/profits, close positions (full or partial)
+- **Order Management:** Create, modify, and cancel pending limit/stop orders
+- **Trading History:** Query completed deals with profit/loss analysis
+
+### Market Data & Symbols
+Access real-time and historical data:
+- **OHLC Data:** Retrieve candlestick data (open, high, low, close, volume)
+- **Symbol Information:** Get symbol properties (digits, spreads, swaps, volumes)
+- **Market Watch:** Manage symbol selection and availability
+
+### Graphic Objects
+Create and modify chart visualizations:
+- **Draw Objects:** Create trend lines, rectangles, text labels, arrows
+- **Object Properties:** Modify colors, styles, prices, text
+- **Chart Annotations:** Add visual markers and indicators to charts
+
+### Chart Management
+Control chart windows and redraw operations:
+- **Chart Operations:** Open, close, list active charts
+- **Chart Properties:** Read chart dimensions, colors, price ranges
+- **Visual Updates:** Force chart redraw for real-time updates
+
+### Code & Terminal
+Compile and execute Expert Advisors:
+- **Compilation:** Compile MQL5 source to EX5 bytecode
+- **Backtesting:** Run historical tests with multiple tick modeling
+- **EA Execution:** Run Expert Advisors in real-time
+- **Logging:** Retrieve EA logs for debugging and monitoring
+
+---
 
 ## Quick Start
 
-### Prerequisites
-- Python 3.10+
-- MetaTrader 5 terminal
-- MetaEditor (for compiling MQL5)
-
-### Installation
-
-1. **Install Python dependencies**:
-```bash
-pip install -r requirements.txt
-```
-
-2. **Compile MQL5 Expert Advisor**:
-   - Open MetaEditor
-   - Open `Src/Mt5Mcp.mq5`
-   - Compile (F5)
-   - Move compiled `.ex5` file to MT5's `Experts` folder
-
-3. **Attach EA to a chart**:
-   - In MT5, open any chart
-   - Drag Mt5Mcp.ex5 onto the chart
-   - Enable AutoTrading and DLL imports when prompted
-
-### Running the MCP Server
+### 1. Install Pacakage
 
 ```bash
-cd mt5_mcp_by_leo
-python -m mt5_mcp_by_leo
+pip install mt5_mcp_by_leo
 ```
 
-Or:
-```bash
-python Main.py
-```
+### 2. Configure Claude Desktop
 
-The server will:
-1. Start FastMCP server (default: `127.0.0.1:5000`)
-2. Listen for MT5 EA connections (default: `127.0.0.1:9999`)
-3. Register all 44 trading functions
+Add to your `claude_desktop_config.json`:
 
-## Function Groups
-
-### GROUP 1: TRADE OPERATIONS (19 functions)
-- **Open Positions**: open_trade, open_limit, open_stop
-- **Position Management**: position_list, position_get_*, position_close, position_modify
-- **Order Management**: order_list, order_close, order_modify, order_get_*
-- **Trade History**: history_deal_get_*
-
-### GROUP 2: DATA OHLC + SYMBOL (10 functions)
-- **Market Data**: copy_open, copy_high, copy_low, copy_close, copy_tick_volume
-- **Symbol Info**: symbol_info_double/integer/string, symbol_select, symbols_total
-
-### GROUP 3: GRAPHIC OBJECTS (5 functions)
-- object_create, object_delete, object_integer, object_double, object_string
-
-### GROUP 4: CHARTS (6 functions)
-- chart_list, chart_open, chart_close, chart_get_*, chart_redraw
-
-### GROUP 5: CODE + TERMINAL (4 functions)
-- compile_mql5, execute_backtest, run_ea, get_expert_logs
-
-## Configuration
-
-### Mt5Mcp.mq5 Inputs
-```
-InpSocketAddr: 127.0.0.1 (MT5 connects to this address)
-InpSocketPort: 9999 (MT5 listens on this port)
-InpMsPool: 10000 (Timer event interval in ms)
-InpMsTimeoutReadNoTls: 10000 (Socket read timeout)
-```
-
-### Python Server (Def.py)
-```python
-HOST = "127.0.0.1"
-PORT = 9999  # Must match MT5 input
-```
-
-## Communication Flow
-
-```
-Claude AI
-    ↓
-FastMCP Server (Python)
-    ↓ (JSON over TCP)
-Mt5Mcp.ex5 (MT5 EA)
-    ↓ (MQL5 functions)
-MetaTrader 5 Terminal
-    ↓ (Trading operations)
-Broker
-```
-
-## Function Documentation Format
-
-Each function includes comprehensive documentation:
-
-```python
-@mcp.tool()
-def function_name(payload: str) -> str:
-    """
-    Brief description
-    
-    ## Descripción
-    Detailed explanation in Spanish
-    
-    ## Inputs (JSON)
-    {
-        "param1": "type" (required) - Description,
-        "param2": "type" (optional) - Description
+```json
+{
+  "mcpServers": {
+    "fullmt5mcp": {
+      "command": "python",
+      "args": ["-m", "mt5_mcp_by_leo", "--host", "127.0.0.1", "--port", "9999"]
     }
-    
-    ## Outputs (JSON)
-    {
-        "ok": true | false,
-        "result": "value" (si ok=true),
-        "error": "message" (si ok=false)
-    }
-    
-    ## Examples
-    Entrada: {...}
-    Salida: {...}
-    
-    ## Notas
-    - Important notes
-    """
-    return send("function_name", payload)
+  }
+}
 ```
 
-## Development Notes
+### 3. Configure MetaTrader 5
 
-### TSN Conventions Applied
-- Class names prefixed with `C`: `CMcpFuncPositionClose`, `CMcpServer`
-- Member variables: `m_variable` format
-- Functions: `snake_case` format
-- JSON parameter handling with `CJsonNode::HasKey()` for GET/SET operations
+In MT5: **Tools** → **Options** → **Allowed URLs for WebRequest**
+- Add `127.0.0.1`
+- Click **Accept**
+- Enable AutoTrading and DLL imports
 
-### Key Patterns
-- **GET/SET Consolidation**: object_integer, object_double, object_string use `param.HasKey("value")` to determine if GET or SET
-- **Partial Closure**: position_close uses `param.HasKey("volume")` for partial vs total closure
-- **CTrade Parameter Passing**: Trade operations receive `&g_trade` reference for order execution
+### 4. Compile & Attach EA
 
-## Testing
-
-### 1. Verify MQL5 Compilation
-```bash
-# In MetaEditor
-File → Compile → Mt5Mcp.mq5
-# Check for 0 errors
+```
+MetaEditor: Open Src/Mt5Mcp.mq5 → Compile (F5) or (EX5 of releases)
+MT5: Drag Mt5Mcp.ex5 onto your chart
 ```
 
-### 2. Test MT5 EA Connection
-- Attach Mt5Mcp.ex5 to a chart
-- Check EA logs for "Connected to Python MCP server"
+### 5. Use in Claude
 
-### 3. Test Python Server
-```python
-from mt5_mcp_by_leo.Def import mcp, send
-result = send("symbols_total", "{}")
-print(result)  # Should return {"ok": true, "result": <count>}
+```
+Open a 0.01 lot BUY on EURUSD with SL at 1.0800 and TP at 1.0900
 ```
 
-## File Structure
+---
+
+## Repository Structure
 
 ```
 FullMt5McpByLeo/
-├── Src/
-│   ├── All.mqh                  # Master include
-│   ├── Mt5Mcp.mq5               # Main EA
-│   ├── Graphics/
-│   │   └── Objects.mqh
-│   ├── Charts/
-│   │   └── Charts.mqh
-│   ├── Data/
-│   │   ├── Symbol.mqh
-│   │   └── MarketData.mqh
-│   ├── Trade/
-│   │   ├── Trade.mqh
-│   │   ├── Positions.mqh
-│   │   ├── Orders.mqh
-│   │   └── Deals.mqh
-│   ├── Complex/
-│   │   ├── Complex.mqh
-│   │   └── Logs.mqh
-│   └── Def/
-│       └── Def.mqh
-├── mt5_mcp_by_leo/
-│   ├── __init__.py
-│   ├── Main.py
-│   ├── Def.py
-│   ├── functions.py             # All 44 functions (1300+ lines)
-│   └── __main__.py
-├── FUNCTIONS.txt                # Function inventory
-├── requirements.txt             # Python dependencies
-└── README.md                    # This file
+├── Src/                              # MQL5 Backend Functions
+│    ....
+├── mt5_mcp_by_leo/                   # Python MCP Server
+│    ....
 ```
 
-## Troubleshooting
+---
 
-### EA Won't Connect
-1. Check firewall settings - allow Python on port 9999
-2. Verify Mt5Mcp.mq5 inputs (InpSocketAddr, InpSocketPort)
-3. Check MT5 Expert Logs for connection errors
+## Requirements
+- Python >= 3.10
+- Dependencies listed in dependencies.json (or sub-dependencies of this repo)
 
-### Functions Not Registering
-1. Verify functions.py is imported in Main.py
-2. Check for syntax errors: `python -m py_compile functions.py`
-3. Ensure all @mcp.tool() decorators are present
+---
 
-### Socket Communication Issues
-1. Verify JSON encoding in payloads
-2. Check Mt5Mcp.mq5 is running (check status in EA list)
-3. Review MT5 logs for parse errors
+## Installation
 
-## Performance Notes
+```bash
+cd "C:\Users\YOUR USER\AppData\Roaming\MetaQuotes\Terminal\YOUR ID\MQL5\Shared Projects"
+tsndep install "https://forge.mql5.io/nique_372/FullMt5McpByLeo.git"
+```
+- For use tsndep command requerid tsndep pacakage (avaible in pypi).. This command automatically downloads all dependencies and installs all requirements from the repositories.
+ 
+---
 
-- **Socket Communication**: ~10-50ms per call depending on network
-- **MQL5 Execution**: Synchronous, waits for completion
-- **Async Operations**: compile_mql5, execute_backtest support timeouts
-- **Recommended**: Max 10 parallel requests to avoid queue buildup
+## Available Tools
 
-## Security Considerations
+### Trade Operations (19 Functions)
+- **Opening:** `open_trade`, `open_limit`, `open_stop`
+- **Management:** `position_list`, `position_get_*` (double/integer/string), `position_close`, `position_modify`
+- **Orders:** `order_list`, `order_close`, `order_modify`, `order_get_*` (double/integer/string)
+- **History:** `history_deal_list`, `history_deal_get_*` (double/integer/string)
 
-- Socket communication uses local loopback (127.0.0.1) by default
-- No authentication - ensure secure network environment
-- All monetary operations require explicit LCM approval
-- Logs contain sensitive trading data - secure log files
+### Market Data & Symbols (10 Functions)
+- **OHLC:** `copy_open`, `copy_high`, `copy_low`, `copy_close`, `copy_tick_volume`
+- **Symbols:** `symbol_info_*` (double/integer/string), `symbol_select`, `symbols_total`
+
+### Graphic Objects (5 Functions)
+- `object_create`, `object_delete`, `object_integer`, `object_double`, `object_string`
+
+### Chart Management (6 Functions)
+- `chart_list`, `chart_open`, `chart_close`, `chart_get_integer`, `chart_get_double`, `chart_redraw`
+
+### Code & Terminal (4 Functions)
+- `compile_mql5`, `execute_backtest`, `run_ea`, `get_expert_logs`
+
+---
 
 ## License
 
-Copyright 2026, Niquel Mendoza.
-https://www.mql5.com/es/users/nique_372
+**[Read Full License](./LICENSE)**
+
+By downloading or using this repository, you accept the license terms.
+
+---
+
+## Documentation
+
+
+---
 
 ## Support
 
-For issues or questions:
-1. Check FUNCTIONS.txt for complete function reference
-2. Review function docstrings in functions.py
-3. Check MT5 Expert Logs for detailed error messages
-4. Verify JSON payload structure matches function documentation
+**Contact:** nique_372 (MQL5 chat) or nikemendex@gmail.com
+
+---
+
+<p align="center">Copyright © 2026 Niquel Mendoza (nique_372).<br/>
+TSN Trading Systems ecosystem.</p>
