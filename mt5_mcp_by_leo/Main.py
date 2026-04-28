@@ -1,7 +1,7 @@
 #+------------------------------------------------------------------+
 #| Imports                                                          |
 #+------------------------------------------------------------------+
-from functions import *  # Import functions to register all @mcp.tool() decorators
+from .functions import *  # Import functions to register all @mcp.tool() decorators
 
 #+------------------------------------------------------------------+
 #| Entry point                                                      |
