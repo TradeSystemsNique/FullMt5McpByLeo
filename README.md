@@ -91,9 +91,11 @@ In MT5: **Tools** → **Options** → **Allowed URLs for WebRequest**
 ### 4. Compile & Attach EA
 
 ```
-MetaEditor: Open Src/Mt5Mcp.mq5 → Compile (F5) or (EX5 of releases)
+MetaEditor: Open Src/Mt5Mcp.mq5 → Compile (F5) 
 MT5: Drag Mt5Mcp.ex5 onto your chart and cofigure it, The parameters of the EA, such as port/host, must match the JSON of Claude Desktop
 ```
+Notes:
+- To run backtests, you need to add the ea Runner.ex5 (from releases) to any chart.
 
 ### 5. Use in Claude
 
