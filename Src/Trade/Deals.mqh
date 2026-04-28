@@ -18,11 +18,11 @@
 //+------------------------------------------------------------------+
 //| history_deal_get_total                                           |
 //+------------------------------------------------------------------+
-class CMcpFuncHistoryDealGetTotal : public CMcpFunction
+class CMcpFuncHistoryDealList : public CMcpFunction
  {
 public:
-                     CMcpFuncHistoryDealGetTotal() : CMcpFunction(0, false, "history_deal_get_total") {}
-                    ~CMcpFuncHistoryDealGetTotal(void) {}
+                     CMcpFuncHistoryDealList() : CMcpFunction(0, false, "history_deal_list") {}
+                    ~CMcpFuncHistoryDealList(void) {}
 
   void               Run(CJsonNode& param, string& res) override final;
  };
@@ -30,41 +30,31 @@ public:
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
-void CMcpFuncHistoryDealGetTotal::Run(CJsonNode& param, string& res)
+void CMcpFuncHistoryDealList::Run(CJsonNode& param, string& res)
  {
-  const uint total = HistoryDealsTotal();
-  res = StringFormat("{\"ok\":true,\"result\":%d}", total);
- }
-
-//+------------------------------------------------------------------+
-//| history_deal_get_ticket                                          |
-//+------------------------------------------------------------------+
-class CMcpFuncHistoryDealGetTicket : public CMcpFunction
- {
-public:
-                     CMcpFuncHistoryDealGetTicket() : CMcpFunction(0, false, "history_deal_get_ticket") {}
-                    ~CMcpFuncHistoryDealGetTicket(void) {}
-
-  void               Run(CJsonNode& param, string& res) override final;
- };
-
-//+------------------------------------------------------------------+
-//|                                                                  |
-//+------------------------------------------------------------------+
-void CMcpFuncHistoryDealGetTicket::Run(CJsonNode& param, string& res)
- {
-  ::ResetLastError();
-  const int index = (int)param["index"].ToInt(0);
-  const ulong ticket = HistoryDealGetTicket(index);
-
-  if(ticket == 0)
+//---
+  if(!HistorySelect(
+       StringToTime(param["start_date_select"].ToString("0")),
+       StringToTime(param["end_date_select"].ToString(TimeToString(TimeCurrent(), TIME_DATE | TIME_MINUTES | TIME_SECONDS)))
+     ))
    {
-    res = StringFormat("{\"ok\":false,\"error\":\"invalid_index, last mt5 error = %d\"}", ::GetLastError());
+    res = StringFormat("{\"ok\":true,\"result\":\"Erorr selected positions, last err = %d\"}", ::GetLastError());
     return;
    }
 
-  res = StringFormat("{\"ok\":true,\"result\":%lu}", ticket);
+//---
+  res = "{\"ok\":true,\"result\":[";
+  const int t = HistoryDealsTotal();
+  for(int i = 0; i < t; i++)
+   {
+    if(i == t - 1)
+      res += string(HistoryDealGetTicket(i));
+    else
+      res += string(HistoryDealGetTicket(i)) + ",";
+   }
+  res += "]}";
  }
+
 
 //+------------------------------------------------------------------+
 //| history_deal_get_double                                          |
@@ -85,7 +75,6 @@ void CMcpFuncHistoryDealGetDouble::Run(CJsonNode& param, string& res)
  {
   ::ResetLastError();
   const ulong ticket = (ulong)param["ticket"].ToInt(0);
-  const string property_str = param["property"].ToString("");
 
 //---
   if(!::HistoryDealSelect(ticket))
@@ -95,7 +84,7 @@ void CMcpFuncHistoryDealGetDouble::Run(CJsonNode& param, string& res)
    }
 
 //---
-  const ENUM_DEAL_PROPERTY_DOUBLE property = CEnumReg::GetValueNoRef<ENUM_DEAL_PROPERTY_DOUBLE>(property_str, DEAL_VOLUME);
+  const ENUM_DEAL_PROPERTY_DOUBLE property = CEnumReg::GetValueNoRef<ENUM_DEAL_PROPERTY_DOUBLE>(param["property"].ToString(""), DEAL_VOLUME);
   const double value = HistoryDealGetDouble(ticket, property);
   res = StringFormat("{\"ok\":true,\"result\":%.8f}", value);
  }
@@ -119,7 +108,6 @@ void CMcpFuncHistoryDealGetInteger::Run(CJsonNode& param, string& res)
  {
   ::ResetLastError();
   const ulong ticket = (ulong)param["ticket"].ToInt(0);
-  const string property_str = param["property"].ToString("");
 
 //---
   if(!::HistoryDealSelect(ticket))
@@ -129,7 +117,7 @@ void CMcpFuncHistoryDealGetInteger::Run(CJsonNode& param, string& res)
    }
 
 //---
-  const ENUM_DEAL_PROPERTY_INTEGER property = CEnumReg::GetValueNoRef<ENUM_DEAL_PROPERTY_INTEGER>(property_str, DEAL_TICKET);
+  const ENUM_DEAL_PROPERTY_INTEGER property = CEnumReg::GetValueNoRef<ENUM_DEAL_PROPERTY_INTEGER>(param["property"].ToString(""), DEAL_TICKET);
   const long value = HistoryDealGetInteger(ticket, property);
   res = StringFormat("{\"ok\":true,\"result\":%ld}", value);
  }
@@ -153,7 +141,6 @@ void CMcpFuncHistoryDealGetString::Run(CJsonNode& param, string& res)
  {
   ::ResetLastError();
   const ulong ticket = (ulong)param["ticket"].ToInt(0);
-  const string property_str = param["property"].ToString("");
 
 //---
   if(!::HistoryDealSelect(ticket))
@@ -163,7 +150,7 @@ void CMcpFuncHistoryDealGetString::Run(CJsonNode& param, string& res)
    }
 
 //---
-  const ENUM_DEAL_PROPERTY_STRING property = CEnumReg::GetValueNoRef<ENUM_DEAL_PROPERTY_STRING>(property_str, DEAL_SYMBOL);
+  const ENUM_DEAL_PROPERTY_STRING property = CEnumReg::GetValueNoRef<ENUM_DEAL_PROPERTY_STRING>(param["property"].ToString(""), DEAL_SYMBOL);
   const string value = HistoryDealGetString(ticket, property);
   res = StringFormat("{\"ok\":true,\"result\":\"%s\"}", value);
  }

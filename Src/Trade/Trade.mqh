@@ -15,8 +15,6 @@
 //|                                                                  |
 //+------------------------------------------------------------------+
 #include "..\\Def\\Def.mqh"
-#include <Trade\Trade.mqh>
-
 
 //+------------------------------------------------------------------+
 //|                                                                  |
@@ -41,8 +39,7 @@ void               CMcpFuncTradeTrade::Run(CJsonNode& param, string& res)
   ::ResetLastError();
   res = "";
   m_trade.SetExpertMagicNumber(ulong(param["magic"].ToInt(0)));
-  const string type = param["type"].ToString("");
-  const bool result = (type == "buy")
+  const bool result = (param["type"].ToString("") == "buy")
                       ? m_trade.Buy(param["lot_size"].ToDouble(0.00), param["symbol"].ToString(NULL), param["price"].ToDouble(0.000), param["sl"].ToDouble(0.000), param["tp"].ToDouble(0.0000), param["comment"].ToString(""))
                       : m_trade.Sell(param["lot_size"].ToDouble(0.00), param["symbol"].ToString(NULL), param["price"].ToDouble(0.000), param["sl"].ToDouble(0.000), param["tp"].ToDouble(0.0000), param["comment"].ToString(""));
   if(!result)
@@ -74,10 +71,9 @@ void               CMcpFuncTradeOpenLimit::Run(CJsonNode& param, string& res)
   ::ResetLastError();
   res = "";
   m_trade.SetExpertMagicNumber(ulong(param["magic"].ToInt(0)));
-  const string type = param["type"].ToString("");
   const ENUM_ORDER_TYPE_TIME type_time = CEnumReg::GetValueNoRef<ENUM_ORDER_TYPE_TIME>(param["type_time"].ToString(), ORDER_TIME_GTC);
   const datetime expiration = StringToTime(param["time_expiration"].ToString("0"));
-  const bool result = (type == "buy")
+  const bool result = (param["type"].ToString("") == "buy")
                       ? m_trade.BuyLimit(param["lot_size"].ToDouble(0.00), param["price"].ToDouble(0.000), param["symbol"].ToString(NULL), param["sl"].ToDouble(0.000), param["tp"].ToDouble(0.0000), type_time, expiration, param["comment"].ToString(""))
                       : m_trade.SellLimit(param["lot_size"].ToDouble(0.00), param["price"].ToDouble(0.000), param["symbol"].ToString(NULL), param["sl"].ToDouble(0.000), param["tp"].ToDouble(0.0000), type_time, expiration, param["comment"].ToString(""));
   if(!result)
@@ -85,6 +81,7 @@ void               CMcpFuncTradeOpenLimit::Run(CJsonNode& param, string& res)
   else
     res = StringFormat("{\"ok\":true,\"result\":%lu}", m_trade.ResultOrder());
  }
+ 
 //+------------------------------------------------------------------+
 //| open_stop                                                        |
 //+------------------------------------------------------------------+
@@ -110,10 +107,9 @@ void CMcpFuncTradeOpenStop::Run(CJsonNode& param, string& res)
   ::ResetLastError();
   res = "";
   m_trade.SetExpertMagicNumber(ulong(param["magic"].ToInt(0)));
-  const string type = param["type"].ToString("");
   const ENUM_ORDER_TYPE_TIME type_time = CEnumReg::GetValueNoRef<ENUM_ORDER_TYPE_TIME>(param["type_time"].ToString(), ORDER_TIME_GTC);
   const datetime expiration = StringToTime(param["time_expiration"].ToString("0"));
-  const bool result = (type == "buy")
+  const bool result = (param["type"].ToString("") == "buy")
                       ? m_trade.BuyStop(param["lot_size"].ToDouble(0.00), param["price"].ToDouble(0.000), param["symbol"].ToString(NULL), param["sl"].ToDouble(0.000), param["tp"].ToDouble(0.0000), type_time, expiration, param["comment"].ToString(""))
                       : m_trade.SellStop(param["lot_size"].ToDouble(0.00), param["price"].ToDouble(0.000), param["symbol"].ToString(NULL), param["sl"].ToDouble(0.000), param["tp"].ToDouble(0.0000), type_time, expiration, param["comment"].ToString(""));
   if(!result)

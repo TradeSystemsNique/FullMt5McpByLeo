@@ -32,7 +32,7 @@ public:
 //+------------------------------------------------------------------+
 void CMcpFuncSymbolsTotal::Run(CJsonNode& param, string& res)
  {
-  const int total = SymbolsTotal(false);
+  const int total = SymbolsTotal(param["only_selected_in_market_watch"].ToBool(false));
   res = StringFormat("{\"ok\":true,\"result\":%d}", total);
  }
 
@@ -54,11 +54,7 @@ public:
 void CMcpFuncSymbolSelect::Run(CJsonNode& param, string& res)
  {
   ::ResetLastError();
-  const string symbol = param["symbol"].ToString(_Symbol);
-  const bool select = param["select"].ToBool(true) != 0;
-
-//---
-  const bool result = SymbolSelect(symbol, select);
+  const bool result = SymbolSelect(param["symbol"].ToString(_Symbol), param["select"].ToBool(true) != 0);
 
 //---
   if(!result)
@@ -66,8 +62,7 @@ void CMcpFuncSymbolSelect::Run(CJsonNode& param, string& res)
     res = StringFormat("{\"ok\":false,\"error\":\"symbol_select failed, last mt5 error = %d\"}", ::GetLastError());
     return;
    }
-
-  res = StringFormat("{\"ok\":true,\"result\":%s}", result ? "true" : "false");
+  res = "{\"ok\":true,\"result\":true}";
  }
 
 //+------------------------------------------------------------------+
@@ -87,13 +82,10 @@ public:
 //+------------------------------------------------------------------+
 void CMcpFuncSymbolInfoDouble::Run(CJsonNode& param, string& res)
  {
-  ::ResetLastError();
+//---
   const string symbol = param["symbol"].ToString(_Symbol);
-  const string property_str = param["property"].ToString("");
-  const ENUM_SYMBOL_INFO_DOUBLE property = CEnumReg::GetValueNoRef<ENUM_SYMBOL_INFO_DOUBLE>(property_str, SYMBOL_BID);
-  const double value = SymbolInfoDouble(symbol, property);
+  const double value = SymbolInfoDouble(symbol, CEnumReg::GetValueNoRef<ENUM_SYMBOL_INFO_DOUBLE>(param["property"].ToString(""), SYMBOL_BID));
   const int dig = (int)SymbolInfoInteger(symbol, SYMBOL_DIGITS);
-
 //---
   res = StringFormat("{\"ok\":true,\"result\":%.*f}", dig, value);
  }
@@ -115,12 +107,8 @@ public:
 //+------------------------------------------------------------------+
 void CMcpFuncSymbolInfoInteger::Run(CJsonNode& param, string& res)
  {
-  ::ResetLastError();
-  const string symbol = param["symbol"].ToString(_Symbol);
-  const string property_str = param["property"].ToString("");
-  const ENUM_SYMBOL_INFO_INTEGER property = CEnumReg::GetValueNoRef<ENUM_SYMBOL_INFO_INTEGER>(property_str, SYMBOL_DIGITS);
-  const long value = SymbolInfoInteger(symbol, property);
-
+//---
+  const long value = SymbolInfoInteger(param["symbol"].ToString(_Symbol), CEnumReg::GetValueNoRef<ENUM_SYMBOL_INFO_INTEGER>(param["property"].ToString(""), SYMBOL_DIGITS));
 //---
   res = StringFormat("{\"ok\":true,\"result\":%ld}", value);
  }
@@ -142,12 +130,8 @@ public:
 //+------------------------------------------------------------------+
 void CMcpFuncSymbolInfoString::Run(CJsonNode& param, string& res)
  {
-  ::ResetLastError();
-  const string symbol = param["symbol"].ToString(_Symbol);
-  const string property_str = param["property"].ToString("");
-  const ENUM_SYMBOL_INFO_STRING property = CEnumReg::GetValueNoRef<ENUM_SYMBOL_INFO_STRING>(property_str, SYMBOL_DESCRIPTION);
-  const string value = SymbolInfoString(symbol, property);
-
+//---
+  const string value = SymbolInfoString(param["symbol"].ToString(_Symbol), CEnumReg::GetValueNoRef<ENUM_SYMBOL_INFO_STRING>(param["property"].ToString(""), SYMBOL_DESCRIPTION));
 //---
   res = StringFormat("{\"ok\":true,\"result\":\"%s\"}", value);
  }

@@ -16,13 +16,13 @@
 #include "..\\Def\\Def.mqh"
 
 //+------------------------------------------------------------------+
-//| history_order_get_total                                          |
+//| order_get_total                                                  |
 //+------------------------------------------------------------------+
-class CMcpFuncHistoryOrderGetTotal : public CMcpFunction
+class CMcpFuncOrderList : public CMcpFunction
  {
 public:
-                     CMcpFuncHistoryOrderGetTotal() : CMcpFunction(0, false, "history_order_get_total") {}
-                    ~CMcpFuncHistoryOrderGetTotal(void) {}
+                     CMcpFuncOrderList() : CMcpFunction(0, false, "order_list") {}
+                    ~CMcpFuncOrderList(void) {}
 
   void               Run(CJsonNode& param, string& res) override final;
  };
@@ -30,86 +30,90 @@ public:
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
-void CMcpFuncHistoryOrderGetTotal::Run(CJsonNode& param, string& res)
+void CMcpFuncOrderList::Run(CJsonNode& param, string& res)
  {
-  const uint total = HistoryOrdersTotal();
-  res = StringFormat("{\"ok\":true,\"result\":%d}", total);
- }
-
-//+------------------------------------------------------------------+
-//| history_order_get_ticket                                         |
-//+------------------------------------------------------------------+
-class CMcpFuncHistoryOrderGetTicket : public CMcpFunction
- {
-public:
-                     CMcpFuncHistoryOrderGetTicket() : CMcpFunction(0, false, "history_order_get_ticket") {}
-                    ~CMcpFuncHistoryOrderGetTicket(void) {}
-
-  void               Run(CJsonNode& param, string& res) override final;
- };
-
-//+------------------------------------------------------------------+
-//|                                                                  |
-//+------------------------------------------------------------------+
-void CMcpFuncHistoryOrderGetTicket::Run(CJsonNode& param, string& res)
- {
-  ::ResetLastError();
-  const int index = (int)param["index"].ToInt(0);
-  const ulong ticket = HistoryOrderGetTicket(index);
-
-//---
-  if(ticket == 0)
+  res = "{\"ok\":true,\"result\":[";
+  const int t = OrdersTotal();
+  for(int i = 0; i < t; i++)
    {
-    res = StringFormat("{\"ok\":false,\"error\":\"invalid_index, last mt5 error = %d\"}", ::GetLastError());
-    return;
+    if(i == t - 1)
+      res += string(OrderGetTicket(i));
+    else
+      res += string(OrderGetTicket(i)) + ",";
    }
-
-//---
-  res = StringFormat("{\"ok\":true,\"result\":%lu}", ticket);
+  res += "]}";
  }
-
-//+------------------------------------------------------------------+
-//| history_order_get_double                                         |
-//+------------------------------------------------------------------+
-class CMcpFuncHistoryOrderGetDouble : public CMcpFunction
- {
-public:
-                     CMcpFuncHistoryOrderGetDouble() : CMcpFunction(0, false, "history_order_get_double") {}
-                    ~CMcpFuncHistoryOrderGetDouble(void) {}
-
-  void               Run(CJsonNode& param, string& res) override final;
- };
 
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
-void CMcpFuncHistoryOrderGetDouble::Run(CJsonNode& param, string& res)
+class CMcpFuncOrderClose : public CMcpFunction
+ {
+private:
+  CTrade*            m_trade;
+public:
+                     CMcpFuncOrderClose(CTrade* tr) : CMcpFunction(0, false, "order_close"), m_trade(tr) {}
+                    ~CMcpFuncOrderClose(void) {}
+  void               Run(CJsonNode& param, string& res) override final;
+ };
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
+void CMcpFuncOrderClose::Run(CJsonNode& param, string& res)
  {
   ::ResetLastError();
   const ulong ticket = (ulong)param["ticket"].ToInt(0);
-  const string property_str = param["property"].ToString("");
-
-//---
-  if(!::HistoryOrderSelect(ticket))
+  if(!m_trade.OrderDelete(ticket))
    {
-    res = StringFormat("{\"ok\":false,\"error\":\"order not found in history, last mt5 error = %d\"}", ::GetLastError());
-    return;
+    res = StringFormat("{\"ok\":false,\"result\":\"Failed close order with ticket = %I64u, last mt5 err = %d\"}", ticket, ::GetLastError());
    }
-
-//---
-  const ENUM_ORDER_PROPERTY_DOUBLE property = CEnumReg::GetValueNoRef<ENUM_ORDER_PROPERTY_DOUBLE>(property_str, ORDER_VOLUME_INITIAL);
-  const double value = HistoryOrderGetDouble(ticket, property);
-  res = StringFormat("{\"ok\":true,\"result\":%.8f}", value);
+  else
+   {
+    res = "{\"ok\":true,\"result\":\"success\"}";
+   }
  }
 
+
 //+------------------------------------------------------------------+
-//| history_order_get_integer                                        |
+//|                                                                  |
 //+------------------------------------------------------------------+
-class CMcpFuncHistoryOrderGetInteger : public CMcpFunction
+class CMcpFuncOrderModify : public CMcpFunction
+ {
+private:
+  CTrade*            m_trade;
+public:
+                     CMcpFuncOrderModify(CTrade* tr) : CMcpFunction(0, false, "order_modify"), m_trade(tr) {}
+                    ~CMcpFuncOrderModify(void) {}
+  void               Run(CJsonNode& param, string& res) override final;
+ };
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
+void CMcpFuncOrderModify::Run(CJsonNode& param, string& res)
+ {
+  ::ResetLastError();
+  const ulong ticket = (ulong)param["ticket"].ToInt(0);
+  const ENUM_ORDER_TYPE_TIME type_time = CEnumReg::GetValueNoRef<ENUM_ORDER_TYPE_TIME>(param["new_type_time"].ToString(), ORDER_TIME_GTC);
+  if(!m_trade.OrderModify(ticket, param["new_price"].ToDouble(0.000), param["new_sl"].ToDouble(0.000), param["new_tp"].ToDouble(0.0000), type_time,
+                          StringToTime(param["new_expiration_time"].ToString())))
+   {
+    res = StringFormat("{\"ok\":false,\"result\":\"Failed modify order with ticket = %I64u, last mt5 err = %d\"}", ticket, ::GetLastError());
+   }
+  else
+   {
+    res = "{\"ok\":true,\"result\":\"success\"}";
+   }
+ }
+
+
+//+------------------------------------------------------------------+
+//| order_get_double                                                 |
+//+------------------------------------------------------------------+
+class CMcpFuncOrderGetDouble : public CMcpFunction
  {
 public:
-                     CMcpFuncHistoryOrderGetInteger() : CMcpFunction(0, false, "history_order_get_integer") {}
-                    ~CMcpFuncHistoryOrderGetInteger(void) {}
+                     CMcpFuncOrderGetDouble() : CMcpFunction(0, false, "order_get_double") {}
+                    ~CMcpFuncOrderGetDouble(void) {}
 
   void               Run(CJsonNode& param, string& res) override final;
  };
@@ -117,33 +121,63 @@ public:
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
-void CMcpFuncHistoryOrderGetInteger::Run(CJsonNode& param, string& res)
+void CMcpFuncOrderGetDouble::Run(CJsonNode& param, string& res)
+ {
+  ::ResetLastError();
+  const ulong ticket = (ulong)param["ticket"].ToInt(0);
+
+//---
+  if(!::OrderSelect(ticket))
+   {
+    res = StringFormat("{\"ok\":false,\"error\":\"order not found, last mt5 error = %d\"}", ::GetLastError());
+    return;
+   }
+
+//---
+  const ENUM_ORDER_PROPERTY_DOUBLE property = CEnumReg::GetValueNoRef<ENUM_ORDER_PROPERTY_DOUBLE>(param["property"].ToString(""), ORDER_VOLUME_INITIAL);
+  res = StringFormat("{\"ok\":true,\"result\":%.8f}", OrderGetDouble(property));
+ }
+
+//+------------------------------------------------------------------+
+//| order_get_integer                                                |
+//+------------------------------------------------------------------+
+class CMcpFuncOrderGetInteger : public CMcpFunction
+ {
+public:
+                     CMcpFuncOrderGetInteger() : CMcpFunction(0, false, "order_get_integer") {}
+                    ~CMcpFuncOrderGetInteger(void) {}
+
+  void               Run(CJsonNode& param, string& res) override final;
+ };
+
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
+void CMcpFuncOrderGetInteger::Run(CJsonNode& param, string& res)
  {
   ::ResetLastError();
   const ulong ticket = param["ticket"].ToInt(0);
-  const string property_str = param["property"].ToString("");
 
 //---
-  if(!::HistoryOrderSelect(ticket))
+  if(!::OrderSelect(ticket))
    {
-    res = StringFormat("{\"ok\":false,\"error\":\"order not found in history, last mt5 error = %d\"}", ::GetLastError());
+    res = StringFormat("{\"ok\":false,\"error\":\"order not found, last mt5 error = %d\"}", ::GetLastError());
     return;
    }
 
 //---
-  const ENUM_ORDER_PROPERTY_INTEGER property = CEnumReg::GetValueNoRef<ENUM_ORDER_PROPERTY_INTEGER>(property_str, ORDER_TICKET);
-  const long value = HistoryOrderGetInteger(ticket, property);
-  res = StringFormat("{\"ok\":true,\"result\":%ld}", value);
+  const ENUM_ORDER_PROPERTY_INTEGER property = CEnumReg::GetValueNoRef<ENUM_ORDER_PROPERTY_INTEGER>(param["property"].ToString(""), ORDER_TICKET);
+  res = StringFormat("{\"ok\":true,\"result\":%ld}", OrderGetInteger(property));
  }
 
 //+------------------------------------------------------------------+
-//| history_order_get_string                                         |
+//| order_get_string                                                 |
 //+------------------------------------------------------------------+
-class CMcpFuncHistoryOrderGetString : public CMcpFunction
+class CMcpFuncOrderGetString : public CMcpFunction
  {
 public:
-                     CMcpFuncHistoryOrderGetString() : CMcpFunction(0, false, "history_order_get_string") {}
-                    ~CMcpFuncHistoryOrderGetString(void) {}
+                     CMcpFuncOrderGetString() : CMcpFunction(0, false, "order_get_string") {}
+                    ~CMcpFuncOrderGetString(void) {}
 
   void               Run(CJsonNode& param, string& res) override final;
  };
@@ -151,23 +185,21 @@ public:
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
-void CMcpFuncHistoryOrderGetString::Run(CJsonNode& param, string& res)
+void CMcpFuncOrderGetString::Run(CJsonNode& param, string& res)
  {
   ::ResetLastError();
   const ulong ticket = (ulong)param["ticket"].ToInt(0);
-  const string property_str = param["property"].ToString("");
-  
+
 //---
-  if(!::HistoryOrderSelect(ticket))
+  if(!::OrderSelect(ticket))
    {
-    res = StringFormat("{\"ok\":false,\"error\":\"order not found in history, last mt5 error = %d\"}", ::GetLastError());
+    res = StringFormat("{\"ok\":false,\"error\":\"order not found, last mt5 error = %d\"}", ::GetLastError());
     return;
    }
 
 //---
-  const ENUM_ORDER_PROPERTY_STRING property = CEnumReg::GetValueNoRef<ENUM_ORDER_PROPERTY_STRING>(property_str, ORDER_SYMBOL);
-  const string value = HistoryOrderGetString(ticket, property);
-  res = StringFormat("{\"ok\":true,\"result\":\"%s\"}", value);
+  const ENUM_ORDER_PROPERTY_STRING property = CEnumReg::GetValueNoRef<ENUM_ORDER_PROPERTY_STRING>(param["property"].ToString(""), ORDER_SYMBOL);
+  res = StringFormat("{\"ok\":true,\"result\":\"%s\"}", OrderGetString(property));
  }
 
 //+------------------------------------------------------------------+

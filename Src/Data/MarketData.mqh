@@ -39,11 +39,9 @@ void CMcpFuncCopyOpen::Run(CJsonNode& param, string& res)
  {
   ::ResetLastError();
   const string symbol = param["symbol"].ToString(_Symbol);
-  const ENUM_TIMEFRAMES timeframe = CEnumReg::GetValueNoRef<ENUM_TIMEFRAMES>(param["timeframe"].ToString(), _Period);
-  const int start = (int)param["start"].ToInt(0);
   const int count = (int)param["count"].ToInt(100);
-  const int copied = CopyOpen(symbol, timeframe, start, count, m_buffer);
   const int8_t dig = (int8_t)SymbolInfoInteger(symbol, SYMBOL_DIGITS);
+  const int copied = CopyOpen(symbol, CEnumReg::GetValueNoRef<ENUM_TIMEFRAMES>(param["timeframe"].ToString(), _Period), (int)param["start"].ToInt(0), count, m_buffer);
 
 //---
   if(copied != count)
@@ -87,11 +85,9 @@ void CMcpFuncCopyHigh::Run(CJsonNode& param, string& res)
  {
   ::ResetLastError();
   const string symbol = param["symbol"].ToString(_Symbol);
-  const ENUM_TIMEFRAMES timeframe = CEnumReg::GetValueNoRef<ENUM_TIMEFRAMES>(param["timeframe"].ToString(), _Period);
-  const int start = (int)param["start"].ToInt(0);
   const int count = (int)param["count"].ToInt(100);
-  const int copied = CopyHigh(symbol, timeframe, start, count, m_buffer);
   const int dig = (int)SymbolInfoInteger(symbol, SYMBOL_DIGITS);
+  const int copied = CopyHigh(symbol, CEnumReg::GetValueNoRef<ENUM_TIMEFRAMES>(param["timeframe"].ToString(), _Period), (int)param["start"].ToInt(0), count, m_buffer);
 
 //---
   if(copied != count)
@@ -135,11 +131,9 @@ void CMcpFuncCopyLow::Run(CJsonNode& param, string& res)
  {
   ::ResetLastError();
   const string symbol = param["symbol"].ToString(_Symbol);
-  const ENUM_TIMEFRAMES timeframe = CEnumReg::GetValueNoRef<ENUM_TIMEFRAMES>(param["timeframe"].ToString(), _Period);
-  const int start = (int)param["start"].ToInt(0);
   const int count = (int)param["count"].ToInt(100);
-  const int copied = CopyLow(symbol, timeframe, start, count, m_buffer);
   const int8_t dig = (int8_t)SymbolInfoInteger(symbol, SYMBOL_DIGITS);
+  const int copied = CopyLow(symbol, CEnumReg::GetValueNoRef<ENUM_TIMEFRAMES>(param["timeframe"].ToString(), _Period), (int)param["start"].ToInt(0), count, m_buffer);
 
 //---
   if(copied != count)
@@ -183,11 +177,9 @@ void CMcpFuncCopyClose::Run(CJsonNode& param, string& res)
  {
   ::ResetLastError();
   const string symbol = param["symbol"].ToString(_Symbol);
-  const ENUM_TIMEFRAMES timeframe = CEnumReg::GetValueNoRef<ENUM_TIMEFRAMES>(param["timeframe"].ToString(), _Period);
-  const int start = (int)param["start"].ToInt(0);
   const int count = (int)param["count"].ToInt(100);
-  const int copied = CopyClose(symbol, timeframe, start, count, m_buffer);
   const int8_t dig = (int8_t)SymbolInfoInteger(symbol, SYMBOL_DIGITS);
+  const int copied = CopyClose(symbol, CEnumReg::GetValueNoRef<ENUM_TIMEFRAMES>(param["timeframe"].ToString(), _Period), (int)param["start"].ToInt(0), count, m_buffer);
 
 //---
   if(copied != count)
@@ -230,63 +222,13 @@ public:
 void CMcpFuncCopyTickVolume::Run(CJsonNode& param, string& res)
  {
   ::ResetLastError();
-  const string symbol = param["symbol"].ToString(_Symbol);
-  const ENUM_TIMEFRAMES timeframe = CEnumReg::GetValueNoRef<ENUM_TIMEFRAMES>(param["timeframe"].ToString(), _Period);
-  const int start = (int)param["start"].ToInt(0);
   const int count = (int)param["count"].ToInt(100);
-  const int copied = CopyTickVolume(symbol, timeframe, start, count, m_buffer);
+  const int copied = CopyTickVolume(param["symbol"].ToString(_Symbol), CEnumReg::GetValueNoRef<ENUM_TIMEFRAMES>(param["timeframe"].ToString(), _Period), (int)param["start"].ToInt(0), count, m_buffer);
 
 //---
   if(copied != count)
    {
     res = StringFormat("{\"ok\":false,\"error\":\"copy_tick_volume failed, last mt5 error = %d\"}", ::GetLastError());
-    return;
-   }
-
-//---
-  res = "{\"ok\":true,\"result\":[";
-  for(int i = 0; i < copied; i++)
-   {
-    if(i > 0)
-      res += ",";
-    res += StringFormat("%ld", m_buffer[i]);
-   }
-  res += "]}";
- }
-
-//+------------------------------------------------------------------+
-//| copy_real_volume                                                 |
-//+------------------------------------------------------------------+
-class CMcpFuncCopyRealVolume : public CMcpFunction
- {
-protected:
-  long               m_buffer[];
-public:
-                     CMcpFuncCopyRealVolume() : CMcpFunction(0, false, "copy_real_volume")
-   {
-    ArraySetAsSeries(m_buffer, true);
-   }
-                    ~CMcpFuncCopyRealVolume(void) {}
-
-  void               Run(CJsonNode& param, string& res) override final;
- };
-
-//+------------------------------------------------------------------+
-//|                                                                  |
-//+------------------------------------------------------------------+
-void CMcpFuncCopyRealVolume::Run(CJsonNode& param, string& res)
- {
-  ::ResetLastError();
-  const string symbol = param["symbol"].ToString(_Symbol);
-  const ENUM_TIMEFRAMES timeframe = CEnumReg::GetValueNoRef<ENUM_TIMEFRAMES>(param["timeframe"].ToString(), _Period);
-  const int start = (int)param["start"].ToInt(0);
-  const int count = (int)param["count"].ToInt(100);
-  const int copied = CopyRealVolume(symbol, timeframe, start, count, m_buffer);
-
-//---
-  if(copied != count)
-   {
-    res = StringFormat("{\"ok\":false,\"error\":\"copy_real_volume failed, last mt5 error = %d\"}", ::GetLastError());
     return;
    }
 

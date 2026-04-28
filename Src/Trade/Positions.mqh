@@ -1,5 +1,5 @@
 //+------------------------------------------------------------------+
-//|                                                      Positions.mqh |
+//|                                                    Positions.mqh |
 //|                                  Copyright 2026, Niquel Mendoza. |
 //|                          https://www.mql5.com/es/users/nique_372 |
 //+------------------------------------------------------------------+
@@ -16,13 +16,13 @@
 #include "..\\Def\\Def.mqh"
 
 //+------------------------------------------------------------------+
-//| position_get_total                                               |
+//| position_list                                                    |
 //+------------------------------------------------------------------+
-class CMcpFuncPositionGetTotal : public CMcpFunction
+class CMcpFuncPositionList : public CMcpFunction
  {
 public:
-                     CMcpFuncPositionGetTotal() : CMcpFunction(0, false, "position_get_total") {}
-                    ~CMcpFuncPositionGetTotal(void) {}
+                     CMcpFuncPositionList() : CMcpFunction(0, false, "position_list") {}
+                    ~CMcpFuncPositionList(void) {}
 
   void               Run(CJsonNode& param, string& res) override final;
  };
@@ -30,40 +30,18 @@ public:
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
-void CMcpFuncPositionGetTotal::Run(CJsonNode& param, string& res)
+void CMcpFuncPositionList::Run(CJsonNode& param, string& res)
  {
-  const uint total = PositionsTotal();
-  res = StringFormat("{\"ok\":true,\"result\":%d}", total);
- }
-
-//+------------------------------------------------------------------+
-//| position_get_ticket                                              |
-//+------------------------------------------------------------------+
-class CMcpFuncPositionGetTicket : public CMcpFunction
- {
-public:
-                     CMcpFuncPositionGetTicket() : CMcpFunction(0, false, "position_get_ticket") {}
-                    ~CMcpFuncPositionGetTicket(void) {}
-
-  void               Run(CJsonNode& param, string& res) override final;
- };
-
-//+------------------------------------------------------------------+
-//|                                                                  |
-//+------------------------------------------------------------------+
-void CMcpFuncPositionGetTicket::Run(CJsonNode& param, string& res)
- {
-  ::ResetLastError();
-  const int index = (int)param["index"].ToInt(0);
-  const ulong ticket = PositionGetTicket(index);
-
-  if(ticket == 0)
+  res = "{\"ok\":true,\"result\":[";
+  const int t = PositionsTotal();
+  for(int i = 0; i < t; i++)
    {
-    res = StringFormat("{\"ok\":false,\"error\":\"invalid_index, last mt5 error = %d\"}", ::GetLastError());
-    return;
+    if(i == t - 1)
+      res += string(PositionGetTicket(i));
+    else
+      res += string(PositionGetTicket(i)) + ",";
    }
-
-  res = StringFormat("{\"ok\":true,\"result\":%lu}", ticket);
+  res += "]}";
  }
 
 //+------------------------------------------------------------------+
@@ -85,7 +63,6 @@ void CMcpFuncPositionGetDouble::Run(CJsonNode& param, string& res)
  {
   ::ResetLastError();
   const ulong ticket = param["ticket"].ToInt(0);
-  const string property_str = param["property"].ToString("");
 
 //---
   if(!PositionSelectByTicket(ticket))
@@ -95,9 +72,8 @@ void CMcpFuncPositionGetDouble::Run(CJsonNode& param, string& res)
    }
 
 //---
-  const ENUM_POSITION_PROPERTY_DOUBLE property = CEnumReg::GetValueNoRef<ENUM_POSITION_PROPERTY_DOUBLE>(property_str, POSITION_VOLUME);
-  const double value = PositionGetDouble(property);
-  res = StringFormat("{\"ok\":true,\"result\":%.8f}", value);
+  const ENUM_POSITION_PROPERTY_DOUBLE property = CEnumReg::GetValueNoRef<ENUM_POSITION_PROPERTY_DOUBLE>(param["property"].ToString(""), POSITION_VOLUME);
+  res = StringFormat("{\"ok\":true,\"result\":%.8f}", PositionGetDouble(property));
  }
 
 //+------------------------------------------------------------------+
@@ -118,8 +94,7 @@ public:
 void CMcpFuncPositionGetInteger::Run(CJsonNode& param, string& res)
  {
   ::ResetLastError();
-  const ulong ticket = param["ticket"].ToInt(0);
-  const string property_str = param["property"].ToString("");
+  const ulong ticket = (ulong)param["ticket"].ToInt(0);
 
 //---
   if(!PositionSelectByTicket(ticket))
@@ -129,9 +104,8 @@ void CMcpFuncPositionGetInteger::Run(CJsonNode& param, string& res)
    }
 
 //---
-  const ENUM_POSITION_PROPERTY_INTEGER property = CEnumReg::GetValueNoRef<ENUM_POSITION_PROPERTY_INTEGER>(property_str, POSITION_TICKET);
-  const long value = PositionGetInteger(property);
-  res = StringFormat("{\"ok\":true,\"result\":%ld}", value);
+  const ENUM_POSITION_PROPERTY_INTEGER property = CEnumReg::GetValueNoRef<ENUM_POSITION_PROPERTY_INTEGER>(param["property"].ToString(""), POSITION_TICKET);
+  res = StringFormat("{\"ok\":true,\"result\":%ld}", PositionGetInteger(property));
  }
 
 //+------------------------------------------------------------------+
@@ -152,8 +126,7 @@ public:
 void CMcpFuncPositionGetString::Run(CJsonNode& param, string& res)
  {
   ::ResetLastError();
-  const ulong ticket = param["ticket"].ToInt(0);
-  const string property_str = param["property"].ToString("");
+  const ulong ticket = (ulong)param["ticket"].ToInt(0);
 
 //---
   if(!PositionSelectByTicket(ticket))
@@ -163,9 +136,123 @@ void CMcpFuncPositionGetString::Run(CJsonNode& param, string& res)
    }
 
 //---
-  const ENUM_POSITION_PROPERTY_STRING property = CEnumReg::GetValueNoRef<ENUM_POSITION_PROPERTY_STRING>(property_str, POSITION_SYMBOL);
-  const string value = PositionGetString(property);
-  res = StringFormat("{\"ok\":true,\"result\":\"%s\"}", value);
+  const ENUM_POSITION_PROPERTY_STRING property = CEnumReg::GetValueNoRef<ENUM_POSITION_PROPERTY_STRING>(param["property"].ToString(""), POSITION_SYMBOL);
+  res = StringFormat("{\"ok\":true,\"result\":\"%s\"}", PositionGetString(property));
+ }
+
+//+------------------------------------------------------------------+
+//| position_close                                                   |
+//+------------------------------------------------------------------+
+class CMcpFuncPositionClose : public CMcpFunction
+ {
+private:
+  CTrade*            m_trade;
+public:
+                     CMcpFuncPositionClose(CTrade* tr) : CMcpFunction(0, false, "position_close"), m_trade(tr) {}
+                    ~CMcpFuncPositionClose(void) {}
+
+  void               Run(CJsonNode& param, string& res) override final;
+ };
+
+//---
+/*
+{
+  "type": "by_symbol",
+  "value": "XAUUSD",
+  "deviation": 100
+  "volume" : 0.01 // Campo opcional (si no se indica se cierra todo)
+}
+*/
+
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
+void CMcpFuncPositionClose::Run(CJsonNode& param, string& res)
+ {
+  ::ResetLastError();
+  const string type = param["type"].ToString("by_ticket");
+  const ulong deviation = (ulong)param["deviation"].ToInt(ULONG_MAX);
+
+//---
+  if(type == "by_symbol")
+   {
+    if(param.HasKey("volume"))
+     {
+      if(!m_trade.PositionClosePartial(param["value"].ToString(""), param["volume"].ToDouble(0.00), deviation))
+       {
+        res = StringFormat("{\"ok\":false,\"error\":\"position_close by_symbol failed (partial), last mt5 error = %d\"}", ::GetLastError());
+        return;
+       }
+     }
+    else
+     {
+      if(!m_trade.PositionClose(param["value"].ToString(""), deviation))
+       {
+        res = StringFormat("{\"ok\":false,\"error\":\"position_close by_symbol failed, last mt5 error = %d\"}", ::GetLastError());
+        return;
+       }
+     }
+   }
+  else
+    if(type == "by_ticket")
+     {
+      if(param.HasKey("volume"))
+       {
+        if(!m_trade.PositionClosePartial(ulong(param["value"].ToInt(0)), param["volume"].ToDouble(0.00), deviation))
+         {
+          res = StringFormat("{\"ok\":false,\"error\":\"position_close by_ticket (partial) failed, last mt5 error = %d\"}", ::GetLastError());
+          return;
+         }
+       }
+      else
+       {
+        if(!m_trade.PositionClose(ulong(param["value"].ToInt(0)), deviation))
+         {
+          res = StringFormat("{\"ok\":false,\"error\":\"position_close by_ticket failed, last mt5 error = %d\"}", ::GetLastError());
+          return;
+         }
+       }
+     }
+    else
+     {
+      res = "{\"ok\":false,\"error\":\"invalid type, use 'by_symbol' or 'by_ticket'\"}";
+      return;
+     }
+
+//---
+  res = "{\"ok\":true,\"result\":\"success\"}";
+ }
+
+//+------------------------------------------------------------------+
+//| position_modify                                                  |
+//+------------------------------------------------------------------+
+class CMcpFuncPositionModify : public CMcpFunction
+ {
+private:
+  CTrade*            m_trade;
+public:
+                     CMcpFuncPositionModify(CTrade* tr) : CMcpFunction(0, false, "position_modify"), m_trade(tr) {}
+                    ~CMcpFuncPositionModify(void) {}
+
+  void               Run(CJsonNode& param, string& res) override final;
+ };
+
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
+void CMcpFuncPositionModify::Run(CJsonNode& param, string& res)
+ {
+  ::ResetLastError();
+  const ulong ticket = (ulong)param["ticket"].ToInt(0);
+
+//---
+  if(!m_trade.PositionModify(ticket, param["sl"].ToDouble(0.0), param["tp"].ToDouble(0.0)))
+   {
+    res = StringFormat("{\"ok\":false,\"error\":\"position_modify failed, last mt5 error = %d\"}", ::GetLastError());
+    return;
+   }
+
+  res = "{\"ok\":true,\"result\":\"success\"}";
  }
 
 //+------------------------------------------------------------------+

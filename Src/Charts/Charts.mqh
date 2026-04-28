@@ -71,11 +71,9 @@ public:
 void CMcpFuncChartOpen::Run(CJsonNode& param, string& res)
  {
   ::ResetLastError();
-  const string symbol = param["symbol"].ToString(_Symbol);
-  const ENUM_TIMEFRAMES timeframe = CEnumReg::GetValueNoRef<ENUM_TIMEFRAMES>(param["timeframe"].ToInt(), _Period);
 
 //---
-  const long chart_id = ChartOpen(symbol, timeframe);
+  const long chart_id = ::ChartOpen(param["symbol"].ToString(_Symbol), CEnumReg::GetValueNoRef<ENUM_TIMEFRAMES>(param["timeframe"].ToInt(), _Period));
 
 //---
   if(chart_id == 0)
@@ -105,10 +103,7 @@ public:
 void CMcpFuncChartClose::Run(CJsonNode& param, string& res)
  {
   ::ResetLastError();
-  const long chart_id = (long)param["chart_id"].ToInt(0);
-
-//---
-  const bool result = ChartClose(chart_id);
+  const bool result = ChartClose((long)param["chart_id"].ToInt(0));
 
 //---
   if(!result)
@@ -117,7 +112,7 @@ void CMcpFuncChartClose::Run(CJsonNode& param, string& res)
     return;
    }
 
-  res = StringFormat("{\"ok\":true,\"result\":%s}", result ? "true" : "false");
+  res = StringFormat("{\"ok\":true,\"result\":true}");
  }
 
 //+------------------------------------------------------------------+
@@ -138,13 +133,10 @@ public:
 void CMcpFuncChartGetInteger::Run(CJsonNode& param, string& res)
  {
   ::ResetLastError();
-  const long chart_id = (long)param["chart_id"].ToInt(0);
-  const string property_str = param["property"].ToString("");
-  const int sub_window = (int)param["sub_window"].ToInt(0);
+  const ENUM_CHART_PROPERTY_INTEGER property = CEnumReg::GetValueNoRef<ENUM_CHART_PROPERTY_INTEGER>(param["property"].ToString(""), CHART_SCALE);
 
 //---
-  const ENUM_CHART_PROPERTY_INTEGER property = CEnumReg::GetValueNoRef<ENUM_CHART_PROPERTY_INTEGER>(property_str, CHART_SCALE);
-  const long value = ChartGetInteger(chart_id, property, sub_window);
+  const long value = ChartGetInteger(param["chart_id"].ToInt(0), property, (int)param["sub_window"].ToInt(0));
 
 //---
   res = StringFormat("{\"ok\":true,\"result\":%ld}", value);
@@ -168,13 +160,10 @@ public:
 void CMcpFuncChartGetDouble::Run(CJsonNode& param, string& res)
  {
   ::ResetLastError();
-  const long chart_id = param["chart_id"].ToInt(0);
-  const string property_str = param["property"].ToString("");
-  const int sub_window = (int)param["sub_window"].ToInt(0);
+  const ENUM_CHART_PROPERTY_DOUBLE property = CEnumReg::GetValueNoRef<ENUM_CHART_PROPERTY_DOUBLE>(param["property"].ToString(""), CHART_SHIFT_SIZE);
 
 //---
-  const ENUM_CHART_PROPERTY_DOUBLE property = CEnumReg::GetValueNoRef<ENUM_CHART_PROPERTY_DOUBLE>(property_str, CHART_SHIFT_SIZE);
-  const double value = ChartGetDouble(chart_id, property, sub_window);
+  const double value = ChartGetDouble(param["chart_id"].ToInt(0), property, (int)param["sub_window"].ToInt(0));
 
 //---
   res = StringFormat("{\"ok\":true,\"result\":%.8f}", value);
@@ -198,10 +187,9 @@ public:
 void CMcpFuncChartRedraw::Run(CJsonNode& param, string& res)
  {
   ::ResetLastError();
-  const long chart_id = param["chart_id"].ToInt(0);
 
 //---
-  ChartRedraw(chart_id);
+  ChartRedraw(param["chart_id"].ToInt(0));
 
 //---
   res = StringFormat("{\"ok\":true,\"result\":\"okey\"}");

@@ -20,7 +20,7 @@
 //+------------------------------------------------------------------+
 #include <TSN\\Mcp\\Main.mqh>
 #include <TSN\\MQLArticles\\Utils\\EnumReg.mqh>
-
+#include <Trade\\Trade.mqh>
  
  
 #endif // FULLMT5MCPBYLEO_SRC_DEF_DEF_MQH 
