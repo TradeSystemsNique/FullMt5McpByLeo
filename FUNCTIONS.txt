@@ -1,9 +1,5 @@
-# FullMt5McpByLeo - MCP Tools/Functions List
-# Format: one function per line, snake_case
-# Status: Under review - Add/Remove/Modify as needed
-
 # ============================================================================
-# GROUP 1: POSITIONS | ORDERS | HISTORY (18 tools) | Trade 
+# GROUP 1: POSITIONS | ORDERS | HISTORY | TRADE (19 funciones)
 # ============================================================================
 
 open_trade (sell\buy)
@@ -23,14 +19,14 @@ order_modify
 order_get_double
 order_get_integer
 order_get_string
- 
+
 history_deal_get_list
 history_deal_get_double
 history_deal_get_integer
 history_deal_get_string
 
 # ============================================================================
-# GROUP 2: DATA OHLC + SYMBOL INFO 
+# GROUP 2: DATA OHLC + SYMBOL INFO (10 funciones)
 # ============================================================================
 
 copy_high
@@ -46,7 +42,7 @@ symbol_select
 symbols_total
 
 # ============================================================================
-# GROUP 3: GRAPHIC OBJECTS 
+# GROUP 3: GRAPHIC OBJECTS (5 funciones)
 # ============================================================================
 
 object_create
@@ -56,7 +52,7 @@ object_double
 object_string
 
 # ============================================================================
-# GROUP 4: CHARTS
+# GROUP 4: CHARTS (6 funciones)
 # ============================================================================
 
 chart_list
@@ -65,15 +61,16 @@ chart_close
 chart_get_integer
 chart_get_double
 chart_redraw
- 
+
 # ============================================================================
-# GROUP 5: CODE + TERMINAL
+# GROUP 5: CODE + TERMINAL (4 funciones)
 # ============================================================================
 
-// TODO:
 compile_mql5
 execute_backtest
 run_ea
 get_expert_logs
 
- 
+# ============================================================================
+# TOTAL: 44 FUNCIONES
+# ============================================================================

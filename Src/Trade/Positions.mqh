@@ -246,7 +246,14 @@ void CMcpFuncPositionModify::Run(CJsonNode& param, string& res)
   const ulong ticket = (ulong)param["ticket"].ToInt(0);
 
 //---
-  if(!m_trade.PositionModify(ticket, param["sl"].ToDouble(0.0), param["tp"].ToDouble(0.0)))
+  if(!PositionSelectByTicket(ticket))
+   {
+    res = StringFormat("{\"ok\":false,\"result\":\"Error select ticket, last mt5 err = %d\"}", ::GetLastError());
+    return
+   }
+
+//---
+  if(!m_trade.PositionModify(ticket, param["sl"].ToDouble(PositionGetDouble(POSITION_SL)), param["tp"].ToDouble(PositionGetDouble(POSITION_TP))))
    {
     res = StringFormat("{\"ok\":false,\"error\":\"position_modify failed, last mt5 error = %d\"}", ::GetLastError());
     return;

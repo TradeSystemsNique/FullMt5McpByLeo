@@ -93,9 +93,22 @@ void CMcpFuncOrderModify::Run(CJsonNode& param, string& res)
  {
   ::ResetLastError();
   const ulong ticket = (ulong)param["ticket"].ToInt(0);
-  const ENUM_ORDER_TYPE_TIME type_time = CEnumReg::GetValueNoRef<ENUM_ORDER_TYPE_TIME>(param["new_type_time"].ToString(), ORDER_TIME_GTC);
-  if(!m_trade.OrderModify(ticket, param["new_price"].ToDouble(0.000), param["new_sl"].ToDouble(0.000), param["new_tp"].ToDouble(0.0000), type_time,
-                          StringToTime(param["new_expiration_time"].ToString())))
+
+//---
+  if(!::OrderSelect(ticket))
+   {
+    res = StringFormat("{\"ok\":false,\"error\":\"order not found, last mt5 error = %d\"}", ::GetLastError());
+    return;
+   }
+
+//---
+  if(!m_trade.OrderModify(ticket,
+                          param["new_price"].ToDouble(OrderGetDouble(ORDER_PRICE_OPEN)),
+                          param["new_sl"].ToDouble(OrderGetDouble(ORDER_SL)),
+                          param["new_tp"].ToDouble(OrderGetDouble(ORDER_TP)),
+                          CEnumReg::GetValueNoRef<ENUM_ORDER_TYPE_TIME>(param["new_type_time"].ToString(), OrderGetInteger(ORDER_TYPE_TIME)),
+                          StringToTime(param["new_expiration_time"].ToString(TimeToString(OrderGetInteger(ORDER_TIME_EXPIRATION))))
+                         ))
    {
     res = StringFormat("{\"ok\":false,\"result\":\"Failed modify order with ticket = %I64u, last mt5 err = %d\"}", ticket, ::GetLastError());
    }
