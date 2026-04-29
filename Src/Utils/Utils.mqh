@@ -67,7 +67,10 @@ void CMcpFuncGetTime::Run(CJsonNode& param, string& res)
    }
 
 //---
-  res = StringFormat("{\"ok\":true,\"result\":\"\"}", TimeToString(time, TIME_MINUTES | TIME_DATE | TIME_SECONDS));
+  res = StringFormat(
+          "{\"ok\":true,\"result\":\"%s\"}",
+          TimeToString(time, TIME_DATE | TIME_MINUTES | TIME_SECONDS)
+        );
  }
 
 

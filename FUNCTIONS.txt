@@ -42,8 +42,7 @@ symbols_total
 # GROUP 3: GRAPHIC OBJECTS (7 funciones)
 # ============================================================================
 
-object_total
-object_name
+object_list
 object_create
 object_delete
 object_integer
@@ -74,11 +73,11 @@ get_expert_logs
 
 
 # ============================================================================
-# GROUP 6: Utils (Time|Error description)
+# GROUP 6: Utils (Time|Error description) (2 funciones)
 # ============================================================================
 get_time 
 get_err_description
  
 # ============================================================================
-# TOTAL: 46 FUNCIONES
+# TOTAL: 45 FUNCIONES
 # ============================================================================

@@ -99,7 +99,7 @@ void CMcpFuncCopyTicks::Run(CJsonNode& param, string& res)
     // Construir objeto MqlTick en JSON
     res += StringFormat(
              "{\"time\":\"%s\",\"bid\":%.*f,\"ask\":%.*f,\"last\":%.*f,\"volume\":%I64u,\"time_msc\":%I64d,\"flags\":%u,\"volume_real\":%.*f}",
-             TimeToString(m_ticks[i].time),
+             TimeToString(m_ticks[i].time,TIME_DATE|TIME_SECONDS|TIME_MINUTES),
              digits, m_ticks[i].bid,
              digits, m_ticks[i].ask,
              digits, m_ticks[i].last,
@@ -175,7 +175,7 @@ void CMcpFuncCopyData::Run(CJsonNode& param, string& res)
 //---
   int copied = -1;
   switch(mode)
-   {
+   { 
     case  MCPFUNC_COPY_DATA_CLOSE:
      {
       copied = CopyClose(symbol, CEnumReg::GetValueNoRef<ENUM_TIMEFRAMES>(param["timeframe"].ToString(), _Period), (int)param["start"].ToInt(0), count, m_buffer_d);
@@ -246,7 +246,7 @@ void CMcpFuncCopyData::Run(CJsonNode& param, string& res)
        {
         if(i > 0)
           res += ",";
-        res += StringFormat("%*.f", digits, m_buffer_d[i]);
+        res += StringFormat("%.*f", digits, m_buffer_d[i]);
        }
       break;
      }
@@ -270,7 +270,7 @@ void CMcpFuncCopyData::Run(CJsonNode& param, string& res)
        {
         if(i > 0)
           res += ",";
-        res += TimeToString(m_buffer_dt[i]);
+        res += "\"" + TimeToString(m_buffer_dt[i]) + "\"";
        }
       break;
      }

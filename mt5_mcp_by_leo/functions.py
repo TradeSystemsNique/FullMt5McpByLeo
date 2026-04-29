@@ -407,6 +407,7 @@ def history_deal_list(payload: str) -> str:
         Error: {"ok": false, "error": "error message"}
     Notes:
         - Start date should be earlier than end date
+        - The array ranges from the oldest deal to the most recent [oldest deal, ......, lastest deal]
         - Returns deal tickets only, use history_deal_get_* for details
     """
     return send("history_deal_list", payload)
@@ -422,7 +423,7 @@ def history_deal_get_double(payload: str) -> str:
         ENUM_DEAL_PROPERTY_DOUBLE enum values.
     Inputs (JSON):
         {
-            "deal_ticket": 111111 (int, required - deal ticket),
+            "ticket": 111111 (int, required - deal ticket),
             "property": "DEAL_VOLUME" (string:ENUM_DEAL_PROPERTY_DOUBLE, required - native enum)
         }
     Outputs (JSON):
@@ -444,7 +445,7 @@ def history_deal_get_integer(payload: str) -> str:
         ENUM_DEAL_PROPERTY_INTEGER enum values.
     Inputs (JSON):
         {
-            "deal_ticket": 111111 (int, required - deal ticket),
+            "ticket": 111111 (int, required - deal ticket),
             "property": "DEAL_TYPE" (string:ENUM_DEAL_PROPERTY_INTEGER, required - native enum)
         }
     Outputs (JSON):
@@ -464,7 +465,7 @@ def history_deal_get_string(payload: str) -> str:
         ENUM_DEAL_PROPERTY_STRING enum values.
     Inputs (JSON):
         {
-            "deal_ticket": 111111 (int, required - deal ticket),
+            "ticket": 111111 (int, required - deal ticket),
             "property": "DEAL_SYMBOL" (string:ENUM_DEAL_PROPERTY_STRING, required - native enum)
         }
     Outputs (JSON):
@@ -475,130 +476,81 @@ def history_deal_get_string(payload: str) -> str:
 
 
 # ============================================================================
-# GROUP 2: DATA - OHLC + SYMBOL (10 Functions)
+# GROUP 2: DATA - OHLC + SYMBOL (7 Functions)
 # ============================================================================
 
-# === MARKET DATA (5) ===
+# === MARKET DATA (2) ===
 
 @mcp.tool()
-def copy_open(payload: str) -> str:
+def copy_data(payload: str) -> str:
     """
-    Get array of opening prices.
-
+    Get OHLC and related time series data.
     Description:
-        Retrieves opening price data for specified symbol and timeframe.
+        Retrieves historical market data (open, high, low, close, volume, etc.)
+        using MT5 Copy* functions depending on selected type.
     Inputs (JSON):
         {
             "symbol": "EURUSD" (string, required),
-            "timeframe": "PERIOD_H1" (string, required - native ENUM_TIMEFRAMES),
-            "start": 500 (int, required - bar start index, 0=newest),
-            "count": 100 (int, required - number of bars)
+            "timeframe": "PERIOD_H1" (string:ENUM_TIMEFRAMES, required),
+            "start": 0 (int, required - start index, 0 = most recent bar),
+            "count": 100 (int, required - number of bars),
+            "mode": "MCPFUNC_COPY_DATA_CLOSE" (string:ENUM_MCPFUNC_COPY_DATA, required)
         }
+    Available Types (ENUM_MCPFUNC_COPY_DATA):
+        - MCPFUNC_COPY_DATA_OPEN
+        - MCPFUNC_COPY_DATA_CLOSE
+        - MCPFUNC_COPY_DATA_HIGH
+        - MCPFUNC_COPY_DATA_LOW
+        - MCPFUNC_COPY_DATA_TICK_VOLUME
+        - MCPFUNC_COPY_DATA_REAL_VOLUME
+        - MCPFUNC_COPY_DATA_TIME
+        - MCPFUNC_COPY_DATA_SPREAD
     Outputs (JSON):
-        Success: {"ok": true, "result": [1.08500, 1.08501, 1.08502, ...]}
-        Error: {"ok": false, "error": "Failed copy_open for EURUSD PERIOD_H1"}
+        Success:
+            {"ok": true, "result": [1.0850, 1.0851, 1.0852, ...]}
+        Error:
+            {"ok": false, "error": "copy_data failed"}
     Notes:
-        - Precision: Depend of symbol
-        - The returned array is in series, so position 0 is the most recent value.
+        - Data returned in series format (index 0 = most recent)
+        - Precision depends on symbol digits
+        - TIME returns Unix timestamps
     """
-    return send("copy_open", payload)
-
+    return send("copy_data", payload)
 
 @mcp.tool()
-def copy_high(payload: str) -> str:
+def copy_ticks(payload: str) -> str:
     """
-    Get array of highest prices.
+    Get tick-level market data (Bid/Ask/Last/...).
 
     Description:
-        Retrieves high price data for specified symbol and timeframe.
+        Retrieves raw tick data from MT5 including bid, ask, last price and volume.
     Inputs (JSON):
         {
             "symbol": "EURUSD" (string, required),
-            "timeframe": "PERIOD_H1" (string, required - native ENUM_TIMEFRAMES),
-            "start": 0 (int, required - bar start index, 0=newest),
-            "count": 100 (int, required - number of bars)
+            "from": 17000000000 (string:datetime:unix_format::ms, optional),
+            "count": 100 (int, required),
+            "flags": 3 (uint:ENUM_COPY_TICKS flags combination, optional)
         }
+    Available Flags (ENUM_COPY_TICKS):
+        - COPY_TICKS_ALL: 3
+        - COPY_TICKS_INFO: 1
+        - COPY_TICKS_TRADE: 2
+          .. etc..
     Outputs (JSON):
-        Success: {"ok": true, "result": [1.08600, 1.08601, ...]}
-        Error: {"ok": false, "error": "Failed copy_high for EURUSD PERIOD_H1"}
+        Success:
+            {
+                "ok": true,
+                "result": [
+                    {"time": 1714300000, "bid": 1.0850, "ask": 1.0852, "last": 1.0851, "volume": 1, ...},
+                    ...
+                ]
+            }
+        Error: {"ok": false, "error": "copy_ticks failed"}
     Notes:
-        - Precision: Depend of symbol
-        - The returned array is in series, so position 0 is the most recent value.
+        - Returns array of tick objects (NOT just prices)
+        - Time is Unix timestamp (miliseconds)
     """
-    return send("copy_high", payload)
-
-
-@mcp.tool()
-def copy_low(payload: str) -> str:
-    """
-    Get array of lowest prices.
-
-    Description:
-        Retrieves low price data for specified symbol and timeframe.
-    Inputs (JSON):
-        {
-            "symbol": "EURUSD" (string, required),
-            "timeframe": "PERIOD_H1" (string, required - native ENUM_TIMEFRAMES),
-            "start": 0 (int, required - bar start index, 0=newest),
-            "count": 100 (int, required - number of bars)
-        }
-    Outputs (JSON):
-        Success: {"ok": true, "result": [1.08400, 1.08401, ...]}
-        Error: {"ok": false, "error": "Failed copy_low for EURUSD PERIOD_H1"}
-    Notes:
-        - Precision: Depend of symbol
-        - The returned array is in series, so position 0 is the most recent value.
-    """
-    return send("copy_low", payload)
-
-
-@mcp.tool()
-def copy_close(payload: str) -> str:
-    """
-    Get array of closing prices.
-
-    Description:
-        Retrieves closing price data for specified symbol and timeframe.
-    Inputs (JSON):
-        {
-            "symbol": "EURUSD" (string, required),
-            "timeframe": "PERIOD_H1" (string, required - native ENUM_TIMEFRAMES),
-            "start": 0 (int, required - bar start index, 0=newest),
-            "count": 100 (int, required - number of bars)
-        }
-    Outputs (JSON):
-        Success: {"ok": true, "result": [1.08500, 1.08501, ...]}
-        Error: {"ok": false, "error": "Failed copy_close for EURUSD PERIOD_H1"}
-    Notes:
-        - Precision: Depend of symbol
-        - The returned array is in series, so position 0 is the most recent value.
-    """
-    return send("copy_close", payload)
-
-
-@mcp.tool()
-def copy_tick_volume(payload: str) -> str:
-    """
-    Get array of tick volumes.
-
-    Description:
-        Retrieves tick volume (number of ticks) for each bar in specified
-        symbol and timeframe.
-    Inputs (JSON):
-        {
-            "symbol": "EURUSD" (string, required),
-            "timeframe": "PERIOD_H1" (string, required - native ENUM_TIMEFRAMES),
-            "start": 0 (int, required - bar start index, 0=newest),
-            "count": 100 (int, required - number of bars)
-        }
-    Outputs (JSON):
-        Success: {"ok": true, "result": [1500, 1450, 1520, ...]}
-        Error: {"ok": false, "error": "Failed copy_tick_volume for EURUSD PERIOD_H1"}
-    Notes:
-        - Returns integer values (no decimal places)
-        - Tick volume reflects number of price changes in the bar
-    """
-    return send("copy_tick_volume", payload)
+    return send("copy_ticks", payload)
 
 
 # === SYMBOL INFO (5) ===
@@ -895,9 +847,31 @@ def object_string(payload: str) -> str:
     """
     return send("object_string", payload)
 
+@mcp.tool()
+def object_list(payload: str) -> str:
+    """
+    Get list of object names on chart.
+    Description:
+        Returns all object names from a chart filtered by type and subwindow.
+    Inputs (JSON):
+        {
+            "chart_id": 0 (int, optional - default 0),
+            "sub_window": 0 (int, optional - default -1 for all),
+            "object_type": "OBJ_TREND" (string:ENUM_OBJECT, optional, -1 all types)
+        }
+    Outputs (JSON):
+        Success:  {"ok": true, "result": ["Trend1", "Line2", "RectA"]}
+        Error: {"ok": false, "error": "object_list failed"}
+    Notes:
+        - If object_type not provided → returns all objects
+    """
+    return send("object_list", payload)
+
+
+
 
 # ============================================================================
-# GROUP 4: CHARTS (6 Functions)
+# GROUP 4: CHARTS (7 Functions)
 # ============================================================================
 
 @mcp.tool()
@@ -1035,6 +1009,29 @@ def chart_redraw(payload: str) -> str:
     """
     return send("chart_redraw", payload)
 
+@mcp.tool()
+def chart_string(payload: str) -> str:
+    """
+    Get/Set string property of chart (ENUM_CHART_PROPERTY_STRING).
+    Description:
+        Retrieves or modifies string properties of a chart.
+    Inputs (JSON - GET):
+        {
+            "chart_id": 0 (int, required),
+            "property": "CHART_COMMENT" (string:ENUM_CHART_PROPERTY_STRING, required)
+        }
+    Inputs (JSON - SET):
+        {
+            "chart_id": 0 (int, required),
+            "property": "CHART_COMMENT" (string:ENUM_CHART_PROPERTY_STRING, required),
+            "value": "New Comment" (string, required)
+        }
+    Outputs (JSON):
+        GET: {"ok": true, "result": "Some text"}
+        SET: {"ok": true, "result": "success"}
+        Error: {"ok": false, "error": "chart_string failed"}
+    """
+    return send("chart_string", payload)
 
 # ============================================================================
 # GROUP 5: CODE + TERMINAL (4 Functions)
@@ -1172,3 +1169,55 @@ def get_expert_logs(payload: str) -> str:
         - Returns log entries as string
     """
     return send("get_expert_logs", payload)
+
+
+# ============================================================================
+# GROUP 2: Utils
+# ============================================================================
+
+@mcp.tool()
+def get_time(payload: str) -> str:
+    """
+    Get current time in different formats (GMT, local, server, etc.).
+
+    Description:
+        Returns time based on requested type using MT5 internal functions.
+    Inputs (JSON):
+        {
+            "type": "MCPFUNC_TIME_GMT" (string:MCPFUNC_TIME_GMT, required)
+        }
+    Available Types (ENUM_MCPFUNC_TYPE_TIME):
+        - MCPFUNC_TIME_GMT      -> TimeGMT()
+        - MCPFUNC_TIME_CURRENT  -> TimeCurrent()
+        - MCPFUNC_TIME_LOCAL    -> TimeLocal()
+        - MCPFUNC_TIME_SERVER   -> TimeTradeServer()
+    Outputs (JSON):
+        Success: {"ok": true, "result": "2026.04.28 14:35:22"}
+        Error: {"ok": false, "error": "Invalid time type"}
+    Notes:
+        - Output format: YYYY.MM.DD HH:MM:SS
+    """
+    return send("get_time", payload)
+
+
+@mcp.tool()
+def get_err_description(payload: str) -> str:
+    """
+    Get human-readable description of MT5 error code.
+    Description:
+        Converts MT5 error code into readable message using internal
+        CMt5ErrorDesc::GetError().
+    Inputs (JSON):
+        {
+            "error_code": 10001 (int, required),
+            "include_code": true (bool, optional, default true)
+        }
+    Outputs (JSON):
+        Success:  {"ok": true, "result": "10001 - Trade server busy"}
+        Error: {"ok": false, "error": "something failed"}   
+    Notes:
+        - Useful for debugging failed operations
+        - include_code=true adds numeric code in output
+        - Works with all MT5 standard error codes
+    """
+    return send("get_err_description", payload)

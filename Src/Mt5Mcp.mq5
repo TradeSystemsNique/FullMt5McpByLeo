@@ -42,13 +42,15 @@ int OnInit()
   g_mcp_server.AddItemFast(new CMcpFuncObjectInteger());
   g_mcp_server.AddItemFast(new CMcpFuncObjectDouble());
   g_mcp_server.AddItemFast(new CMcpFuncObjectString());
-
+  g_mcp_server.AddItemFast(new CMcpFuncObjectList());
+  
 //--- Charts
   g_mcp_server.AddItemFast(new CMcpFuncChartList());
   g_mcp_server.AddItemFast(new CMcpFuncChartOpen());
   g_mcp_server.AddItemFast(new CMcpFuncChartClose());
   g_mcp_server.AddItemFast(new CMcpFuncChartInteger());
   g_mcp_server.AddItemFast(new CMcpFuncChartDouble());
+  g_mcp_server.AddItemFast(new CMcpFuncChartString());
   g_mcp_server.AddItemFast(new CMcpFuncChartRedraw());
 
 //--- Data / Symbol
@@ -59,11 +61,8 @@ int OnInit()
   g_mcp_server.AddItemFast(new CMcpFuncSymbolInfoString());
 
 //--- Data / Market Data
-  g_mcp_server.AddItemFast(new CMcpFuncCopyOpen());
-  g_mcp_server.AddItemFast(new CMcpFuncCopyHigh());
-  g_mcp_server.AddItemFast(new CMcpFuncCopyLow());
-  g_mcp_server.AddItemFast(new CMcpFuncCopyClose());
-  g_mcp_server.AddItemFast(new CMcpFuncCopyTickVolume());
+  g_mcp_server.AddItemFast(new CMcpFuncCopyData());
+  g_mcp_server.AddItemFast(new CMcpFuncCopyTicks());
 
 //--- Trade / Positions
   g_mcp_server.AddItemFast(new CMcpFuncPositionList());
@@ -100,6 +99,11 @@ int OnInit()
 //--- Complex / Logs
   g_mcp_server.AddItemFast(new CMcpFunctionExpertLogs());
 
+//--- Uitls
+  g_mcp_server.AddItemFast(new CMcpFuncGetTime());
+  g_mcp_server.AddItemFast(new CMcpFuncGetErrDescription());
+
+
 //---
   g_mcp_server.Set(InpMsPool, InpMsTimeoutReadNoTls);
   if(!g_mcp_server.Conectar(InpSoketAdres, InpSoketPort, (10 * 1000))) // 10 segundos de espera para conectarse
@@ -129,3 +133,4 @@ void OnTimer(void)
  {
   g_mcp_server.TimerEvent();
  }
+//+------------------------------------------------------------------+
