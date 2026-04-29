@@ -462,10 +462,8 @@ def history_deal_get(payload: str) -> str:
 @mcp.tool()
 def copy_data(payload: str) -> str:
     """
-    Get OHLC and related time series data.
-    Description:
-        Retrieves historical market data (open, high, low, close, volume, etc.)
-        using MT5 Copy* functions depending on selected type.
+    Get Open,High,Low,Close,Spread,TickVolume,RealVolume,Time in array in series (0=most recent, size-1=oldest) (Internal use Copy* mt5 function)
+    
     Inputs (JSON):
         {
             "symbol": "EURUSD" (string, required),
@@ -489,16 +487,15 @@ def copy_data(payload: str) -> str:
         Error:
             {"ok": false, "error": "copy_data failed"}
     Notes:
-        - Data returned in series format (index 0 = most recent)
         - Precision depends on symbol digits
-        - TIME returns Unix timestamps
+        - TIME returns in string format "YYYY:MM:DD HH:MM:SS" 
     """
     return send("copy_data", payload)
 
 @mcp.tool()
 def copy_ticks(payload: str) -> str:
     """
-    Get tick-level market data (Bid/Ask/Last/...).
+    Get tick-level market data (Bid/Ask/Last/...) in obj array (0=most recent, size-1=oldest) 
 
     Description:
         Retrieves raw tick data from MT5 including bid, ask, last price and volume.
@@ -519,14 +516,14 @@ def copy_ticks(payload: str) -> str:
             {
                 "ok": true,
                 "result": [
-                    {"time": 1714300000, "bid": 1.0850, "ask": 1.0852, "last": 1.0851, "volume": 1, ...},
+                    {"time": "2021.01.01 10:05:01", "bid": 1.0850, "ask": 1.0852, "last": 1.0851, "volume": 1, ...},
                     ...
                 ]
             }
         Error: {"ok": false, "error": "copy_ticks failed"}
     Notes:
         - Returns array of tick objects (NOT just prices)
-        - Time is Unix timestamp (miliseconds)
+        - Time is Unix timestamp (miliseconds) and "time" in string:time format
     """
     return send("copy_ticks", payload)
 
@@ -643,49 +640,60 @@ def symbols_total(payload: str) -> str:
 @mcp.tool()
 def object_create(payload: str) -> str:
     """
-    Create graphic object on chart.
+    Create a graphical object on a chart (MT5 ObjectCreate wrapper).
 
     Description:
-        Creates a new graphic object (line, rectangle, text, etc.) on a chart.
-        The mode parameter determines how many anchor points are required.
-    Inputs (JSON - Trend line with 2 points):
-        {
-            "chart_id": 0 (int, required - 0=current chart),
-            "object_name": "TrendLine1" (string, required - unique name),
-            "object_type": "OBJ_TREND" (string, required - native ENUM_OBJECT),
-            "sub_window": 0 (int, required - 0=main, 1+=indicators),
-            "mode": 0 (int, required - coordinate mode, 0-4),
-            "time1": "2022.01.01 01:00" (string:datetime roptional (depend of mode)),
-            "price1": 1.0850 (double, optional (depend of mode)),
-            "time2": "2021.01.01 00:00" (string:datetime,optional (depend of mode))
-            "price2": 1.0900 (double, optional (depend of mode))
-            "time3": "2023.01.01 00:00" (string:datetime, optional (depend of mode))
-            "price3": 1.0900 (double, optional (depend of mode))
-        }
-    Outputs (JSON):
-        Success: {"ok": true, "result": "success"}
-        Error: {"ok": false, "error": "object_create failed"}
-    Native Enums (ENUM_OBJECT):
-        - OBJ_VLINE: Vertical line
-        - OBJ_HLINE: Horizontal line
-        - OBJ_TREND: Trend line
-        - OBJ_RECTANGLE: Rectangle
-        - OBJ_TRIANGLE: Triangle
-        - OBJ_ELLIPSE: Ellipse
-        - OBJ_TEXT: Text label
-        - OBJ_LABEL: Label with background
-        - OBJ_ARROW: Arrow symbol
-        - etc..
-    Mode Parameter (coordinate requirements):
-        - mode=0: 3-point mode (3 time/price pairs)
-        - mode=1: 2-point mode (2 time/price pairs)
-        - mode=2: 1-point mode with time (time1, price1)
-        - mode=3: 1-point mode with time and price (time1, price1)
-        - mode=4: 0-point mode (no coordinates)
-    Notes:
-        - object_name must be unique on chart
-        - time values can be string:datetime:mt5_format timestamps or bar indices
-        - price2 and price3 optional depending on mode
+        Creates chart objects such as trend lines, rectangles, labels, arrows, etc.
+        The "mode" defines how many coordinate points are required.
+
+    INPUT FORMAT (JSON)
+    {
+        "chart_id": 0,             # int, required (0 = current chart)
+        "object_name": "Trend1",   # string, required (must be unique)
+        "object_type": "OBJ_TREND",# string:ENUM_OBJECT, required
+        "sub_window": 0,           # int, required (0=main chart, 1+=indicator window)
+
+        "mode": 1,                # int, required:
+                                  #   0 = 3 points
+                                  #   1 = 2 points  
+                                  #   2 = 1 point (time + price)
+                                  #   3 = no coordinates
+
+        "time1": "2025.01.01 00:00", # string:datetime, depending on mode
+        "price1": 1.0850,            # double, depending on mode
+
+        "time2": "...",              # depending on mode
+        "price2": ...,               # depending on mode
+
+        "time3": "...",              # depending on mode
+        "price3": ...                # depending on mode
+    }
+
+    MODE BEHAVIOR
+    mode = 0
+        Uses: time1/price1 + time2/price2 + time3/price3
+        For: channels, ellipses, complex shapes
+    mode = 1
+        Uses: time1/price1 + time2/price2
+        For: trendlines, rectangles, fibo objects
+    mode = 2
+        Uses: time1 + price1
+        For: arrows, markers, (hline, time1="0"), (vline, price1=0.00)
+    mode = 3
+        Uses: no coordinates
+        For: labels, buttons, bitmap label, rectlabel, UI objects (position set later via ObjectSet*)
+
+    OUTPUT
+    Success:
+        {"ok": true, "result": true}
+    Error:
+        {"ok": false, "error": "object_create failed"}
+        
+    NOTES
+    - object_name MUST be unique per chart
+    - time fields use MT5 datetime format ("YYYY.MM.DD HH:MI:SS")
+    - Object type must be valid ENUM_OBJECT (OBJ_TREND, OBJ_RECTANGLE, etc.)
+    - Coordinates depend strictly on mode
     """
     return send("object_create", payload)
 

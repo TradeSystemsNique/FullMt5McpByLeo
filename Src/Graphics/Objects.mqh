@@ -66,20 +66,7 @@ void CMcpFuncObjectCreate::Run(CJsonNode &param, string &res)
      }
 
     //---
-    case  2: // time (vline|event)
-     {
-      if(!ObjectCreate(param["chart_id"].ToInt(0), param["object_name"].ToString(""),
-                       CEnumReg::GetValueNoRef<ENUM_OBJECT>(param["object_type"].ToString(), WRONG_VALUE), int(param["sub_window"].ToInt()),
-                       StringToTime(param["time1"].ToString("0")), 0.00))
-       {
-        res = StringFormat("{\"ok\":false,\"error\":\"object_create failed, last mt5 error = %d\"}", ::GetLastError());
-        return;
-       }
-      break;
-     }
-
-    //---
-    case 3: // time1,price1 (arrow\buttom)
+    case 2: // time1,price1 (arrow\buttom|vline|hline)
      {
       if(!ObjectCreate(param["chart_id"].ToInt(0), param["object_name"].ToString(""),
                        CEnumReg::GetValueNoRef<ENUM_OBJECT>(param["object_type"].ToString(), WRONG_VALUE), int(param["sub_window"].ToInt()),
@@ -92,7 +79,7 @@ void CMcpFuncObjectCreate::Run(CJsonNode &param, string &res)
      }
 
     //---
-    case 4: // RectLabel\Buttom\Edit (va sin nada se setea con ObjectSetInteger.)
+    case 3: // RectLabel\Buttom\Edit (va sin nada se setea con ObjectSetInteger.)
      {
       if(!ObjectCreate(param["chart_id"].ToInt(0), param["object_name"].ToString(""),
                        CEnumReg::GetValueNoRef<ENUM_OBJECT>(param["object_type"].ToString(), WRONG_VALUE), int(param["sub_window"].ToInt()),

@@ -44,6 +44,17 @@ threading.Thread(target=esperar_mt5, daemon=True).start()
 def send(name: str, payload: str) -> str:
     if mt5_conn is None:
         return json.dumps({"ok": False, "error": "mt5_no_conectado"})
-    msg = json.dumps({"name": name, "data": json.loads(payload)}) + "\n"
+    
+    # Inline con f-string, sin conversiones innecesarias
+    msg : str = f'{{"name": "{name}", "data": {payload}}}\n'
     mt5_conn.sendall(msg.encode("utf-8"))
-    return mt5_conn.recv(4096).decode("utf-8").strip()
+    
+    # Obtnemos la repuesta en chunks
+    response : str = b""
+    while not response.endswith(b"\n"):
+        chunk = mt5_conn.recv(4096)
+        if not chunk:
+            break
+        response += chunk
+    
+    return response.decode("utf-8").strip()
