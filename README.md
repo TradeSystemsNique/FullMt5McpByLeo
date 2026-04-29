@@ -22,7 +22,7 @@ FullMt5McpByLeo is a complete, production-ready MCP server that enables Claude a
 
 ---
 
-## Main Features
+## Main Features (MCP Functions)
 
 ### Trade Operations
 Execute and manage trading positions and orders:
@@ -33,7 +33,8 @@ Execute and manage trading positions and orders:
 
 ### Market Data & Symbols
 Access real-time and historical data:
-- **OHLC Data:** Retrieve candlestick data (open, high, low, close, volume)
+- **OHLC Data:** Retrieve candlestick data (open, high, low, close, volume, spread, etc..)
+- **Tick data:** Retrieve Tick data (last, ask, bid, flags, etc..)
 - **Symbol Information:** Get symbol properties (digits, spreads, swaps, volumes)
 - **Market Watch:** Manage symbol selection and availability
 
@@ -55,7 +56,7 @@ Compile and execute Expert Advisors:
 - **Backtesting:** Run historical tests with multiple tick modeling
 - **EA Execution:** Run Expert Advisors in real-time
 - **Logging:** Retrieve EA logs for debugging and monitoring
-
+- **Terminal and Account:** Obtaing terminal and acount info_* (integer, string, double)
 ---
 
 ## Quick Start
@@ -132,29 +133,7 @@ tsndep install "https://forge.mql5.io/nique_372/FullMt5McpByLeo.git"
 - For use tsndep command requerid tsndep pacakage (avaible in [pypi](https://pypi.org/project/tsndep)).. This command automatically downloads all dependencies and installs all requirements from the repositories.
 - If any part of the system is private, then it will fail... contact me so I can give you access (if it's a product, you can buy it; if you have any questions, don't hesitate to contact me).
  
----
-
-## Available Tools
-
-### Trade Operations (19 Functions)
-- **Opening:** `open_trade`, `open_limit`, `open_stop`
-- **Management:** `position_list`, `position_get_*` (double/integer/string), `position_close`, `position_modify`
-- **Orders:** `order_list`, `order_close`, `order_modify`, `order_get_*` (double/integer/string)
-- **History:** `history_deal_list`, `history_deal_get_*` (double/integer/string)
-
-### Market Data & Symbols (10 Functions)
-- **OHLC:** `copy_open`, `copy_high`, `copy_low`, `copy_close`, `copy_tick_volume`
-- **Symbols:** `symbol_info_*` (double/integer/string), `symbol_select`, `symbols_total`
-
-### Graphic Objects (5 Functions)
-- `object_create`, `object_delete`, `object_integer`, `object_double`, `object_string`
-
-### Chart Management (6 Functions)
-- `chart_list`, `chart_open`, `chart_close`, `chart_get_integer`, `chart_get_double`, `chart_redraw`
-
-### Code & Terminal (4 Functions)
-- `compile_mql5`, `execute_backtest`, `run_ea`, `get_expert_logs`
-
+ 
 ---
 
 ## License
