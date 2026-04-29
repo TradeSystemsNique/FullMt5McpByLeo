@@ -200,7 +200,7 @@ public:
 void CMcpFunctionCompile::Run(CJsonNode &param, string &res)
  {
   string out_log_path = "";
-  if(!CompileFileWithLogFile(param["full_path_code"].ToString(), out_log_path, (int)param["timeout_ms"].ToInt(), param["instruction"].ToString(""), param["optimize"].ToBool(true)))
+  if(!CompileFileWithLogFile(param["full_path_code"].ToString(""), out_log_path, (int)param["timeout_ms"].ToInt(60000), param["instruction"].ToString(""), param["optimize"].ToBool(true)))
    {
     res = StringFormat("\"ok\":false,\"error\":\"Error compile file, view experts logs, and compile log file = %s\"}", out_log_path);
    }

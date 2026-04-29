@@ -180,7 +180,7 @@ void CMcpFuncOrderGetInteger::Run(CJsonNode& param, string& res)
 
 //---
   const ENUM_ORDER_PROPERTY_INTEGER property = CEnumReg::GetValueNoRef<ENUM_ORDER_PROPERTY_INTEGER>(param["property"].ToString(""), ORDER_TICKET);
-  res = StringFormat("{\"ok\":true,\"result\":%ld}", OrderGetInteger(property));
+  res = StringFormat("{\"ok\":true,\"result\":%I64d}", OrderGetInteger(property));
  }
 
 //+------------------------------------------------------------------+

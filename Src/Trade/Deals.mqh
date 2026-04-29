@@ -119,7 +119,7 @@ void CMcpFuncHistoryDealGetInteger::Run(CJsonNode& param, string& res)
 //---
   const ENUM_DEAL_PROPERTY_INTEGER property = CEnumReg::GetValueNoRef<ENUM_DEAL_PROPERTY_INTEGER>(param["property"].ToString(""), DEAL_TICKET);
   const long value = HistoryDealGetInteger(ticket, property);
-  res = StringFormat("{\"ok\":true,\"result\":%ld}", value);
+  res = StringFormat("{\"ok\":true,\"result\":%I64d}", value);
  }
 
 //+------------------------------------------------------------------+

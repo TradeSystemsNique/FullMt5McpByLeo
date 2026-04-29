@@ -105,7 +105,7 @@ void CMcpFuncPositionGetInteger::Run(CJsonNode& param, string& res)
 
 //---
   const ENUM_POSITION_PROPERTY_INTEGER property = CEnumReg::GetValueNoRef<ENUM_POSITION_PROPERTY_INTEGER>(param["property"].ToString(""), POSITION_TICKET);
-  res = StringFormat("{\"ok\":true,\"result\":%ld}", PositionGetInteger(property));
+  res = StringFormat("{\"ok\":true,\"result\":%I64d}", PositionGetInteger(property));
  }
 
 //+------------------------------------------------------------------+

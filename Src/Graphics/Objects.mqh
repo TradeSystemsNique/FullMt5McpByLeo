@@ -77,7 +77,7 @@ void CMcpFuncObjectCreate::Run(CJsonNode &param, string &res)
        }
       break;
      }
-
+ 
     //---
     case 3: // time1,price1 (arrow\buttom)
      {
@@ -178,7 +178,7 @@ void CMcpFuncObjectInteger::Run(CJsonNode & param, string & res)
   else
    {
     // GET mode
-    res = StringFormat("{\"ok\":true,\"result\":%ld}", ObjectGetInteger(param["chart_id"].ToInt(0), param["object_name"].ToString(""), property, (int)param["prop_modifier"].ToInt(0)));
+    res = StringFormat("{\"ok\":true,\"result\":%I64d}", ObjectGetInteger(param["chart_id"].ToInt(0), param["object_name"].ToString(""), property, (int)param["prop_modifier"].ToInt(0)));
    }
  }
 

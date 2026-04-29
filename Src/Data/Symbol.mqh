@@ -84,12 +84,23 @@ void CMcpFuncSymbolInfoDouble::Run(CJsonNode& param, string& res)
  {
 //---
   const string symbol = param["symbol"].ToString(_Symbol);
-  const double value = SymbolInfoDouble(symbol, CEnumReg::GetValueNoRef<ENUM_SYMBOL_INFO_DOUBLE>(param["property"].ToString(""), SYMBOL_BID));
+  double value;
+//---
+  const bool ok = SymbolInfoDouble(
+                    symbol,
+                    CEnumReg::GetValueNoRef<ENUM_SYMBOL_INFO_DOUBLE>(
+                      param["property"].ToString(""),
+                      WRONG_VALUE
+                    ),
+                    value
+                  );
+
   const int dig = (int)SymbolInfoInteger(symbol, SYMBOL_DIGITS);
 //---
-  res = StringFormat("{\"ok\":true,\"result\":%.*f}", dig, value);
+  res = ok
+        ? StringFormat("{\"ok\":true,\"result\":%.*f}", dig, value)
+        : StringFormat("{\"ok\":false,\"error\":\"Error call SymbolInfoDouble, mt5 last err = %d\"}", ::GetLastError());
  }
-
 //+------------------------------------------------------------------+
 //| symbol_info_integer                                              |
 //+------------------------------------------------------------------+
@@ -108,9 +119,10 @@ public:
 void CMcpFuncSymbolInfoInteger::Run(CJsonNode& param, string& res)
  {
 //---
-  const long value = SymbolInfoInteger(param["symbol"].ToString(_Symbol), CEnumReg::GetValueNoRef<ENUM_SYMBOL_INFO_INTEGER>(param["property"].ToString(""), SYMBOL_DIGITS));
+  long value;
 //---
-  res = StringFormat("{\"ok\":true,\"result\":%ld}", value);
+  res = SymbolInfoInteger(param["symbol"].ToString(_Symbol), CEnumReg::GetValueNoRef<ENUM_SYMBOL_INFO_INTEGER>(param["property"].ToString(""), WRONG_VALUE), value) ?
+        StringFormat("{\"ok\":true,\"result\":%I64d}", value) : StringFormat("{\"ok\":false,\"error\":\"Eror call symbolinfointeger, mt5 last err = %d\"}", ::GetLastError());
  }
 
 //+------------------------------------------------------------------+
@@ -131,9 +143,18 @@ public:
 void CMcpFuncSymbolInfoString::Run(CJsonNode& param, string& res)
  {
 //---
-  const string value = SymbolInfoString(param["symbol"].ToString(_Symbol), CEnumReg::GetValueNoRef<ENUM_SYMBOL_INFO_STRING>(param["property"].ToString(""), SYMBOL_DESCRIPTION));
+  string value;
 //---
-  res = StringFormat("{\"ok\":true,\"result\":\"%s\"}", value);
+  res = SymbolInfoString(
+          param["symbol"].ToString(_Symbol),
+          CEnumReg::GetValueNoRef<ENUM_SYMBOL_INFO_STRING>(
+            param["property"].ToString(""),
+            WRONG_VALUE
+          ),
+          value
+        )
+        ? StringFormat("{\"ok\":true,\"result\":\"%s\"}", value)
+        : StringFormat("{\"ok\":false,\"error\":\"Error call SymbolInfoString, mt5 last err = %d\"}", ::GetLastError());
  }
 
 //+------------------------------------------------------------------+

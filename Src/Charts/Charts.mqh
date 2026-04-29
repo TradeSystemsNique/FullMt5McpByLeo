@@ -1,5 +1,5 @@
 //+------------------------------------------------------------------+
-//|                                                        Charts.mqh |
+//|                                                       Charts.mqh |
 //|                                  Copyright 2026, Niquel Mendoza. |
 //|                          https://www.mql5.com/es/users/nique_372 |
 //+------------------------------------------------------------------+
@@ -32,19 +32,21 @@ public:
 //+------------------------------------------------------------------+
 void CMcpFuncChartList::Run(CJsonNode& param, string& res)
  {
+//---
   long currChart, prevChart = ChartFirst();
-  int i = 0, limit = 100;
-
+  int i = 0, limit = CHARTS_MAX;
+//---
   res = "{\"ok\":true,\"result\":[";
-
+//---
   if(prevChart >= 0)
    {
-    res += StringFormat("%ld", prevChart);
+    res += StringFormat("%I64d", prevChart);
     while(i < limit)
      {
       currChart = ChartNext(prevChart);
-      if(currChart < 0) break;
-      res += StringFormat(",%ld", currChart);
+      if(currChart < 0)
+        break;
+      res += StringFormat(",%I64d", currChart);
       prevChart = currChart;
       i++;
      }
@@ -82,7 +84,7 @@ void CMcpFuncChartOpen::Run(CJsonNode& param, string& res)
     return;
    }
 
-  res = StringFormat("{\"ok\":true,\"result\":%ld}", chart_id);
+  res = StringFormat("{\"ok\":true,\"result\":%I64d}", chart_id);
  }
 
 //+------------------------------------------------------------------+
@@ -103,7 +105,7 @@ public:
 void CMcpFuncChartClose::Run(CJsonNode& param, string& res)
  {
   ::ResetLastError();
-  const bool result = ChartClose((long)param["chart_id"].ToInt(0));
+  const bool result = ChartClose((long)param["chart_id"].ToInt(-1));
 
 //---
   if(!result)
@@ -115,13 +117,13 @@ void CMcpFuncChartClose::Run(CJsonNode& param, string& res)
  }
 
 //+------------------------------------------------------------------+
-//| chart_get_integer                                                |
+//| chart_integer                                                    |
 //+------------------------------------------------------------------+
-class CMcpFuncChartGetInteger : public CMcpFunction
+class CMcpFuncChartInteger : public CMcpFunction
  {
 public:
-                     CMcpFuncChartGetInteger() : CMcpFunction(0, false, "chart_get_integer") {}
-                    ~CMcpFuncChartGetInteger(void) {}
+                     CMcpFuncChartInteger() : CMcpFunction(0, false, "chart_integer") {}
+                    ~CMcpFuncChartInteger(void) {}
 
   void               Run(CJsonNode& param, string& res) override final;
  };
@@ -129,26 +131,44 @@ public:
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
-void CMcpFuncChartGetInteger::Run(CJsonNode& param, string& res)
+void CMcpFuncChartInteger::Run(CJsonNode& param, string& res)
  {
   ::ResetLastError();
-  const ENUM_CHART_PROPERTY_INTEGER property = CEnumReg::GetValueNoRef<ENUM_CHART_PROPERTY_INTEGER>(param["property"].ToString(""), CHART_SCALE);
 
 //---
-  const long value = ChartGetInteger(param["chart_id"].ToInt(0), property, (int)param["sub_window"].ToInt(0));
-
-//---
-  res = StringFormat("{\"ok\":true,\"result\":%ld}", value);
+  if(param.HasKey("value"))
+   {
+    if(ChartSetInteger(param["chart_id"].ToInt(0), CEnumReg::GetValueNoRef<ENUM_CHART_PROPERTY_INTEGER>(param["property"].ToString(""), WRONG_VALUE), param["value"].ToInt()))
+     {
+      res = "{\"ok\":true,\"result\":true}";
+     }
+    else
+     {
+      res = StringFormat("{\"ok\":false,\"error\":\"Error set chart double, last mt5 err = %d\"}", ::GetLastError());
+     }
+   }
+  else
+   {
+    long v = 0;
+    if(ChartGetInteger(param["chart_id"].ToInt(0), CEnumReg::GetValueNoRef<ENUM_CHART_PROPERTY_INTEGER>(param["property"].ToString(""), WRONG_VALUE), (int)param["sub_window"].ToInt(0), v))
+     {
+      res = StringFormat("{\"ok\":true,\"result\":%I64d}", v);
+     }
+    else
+     {
+      res = StringFormat("{\"ok\":false,\"error\":\"Error chart get integer, last err = %d\"}", ::GetLastError());
+     }
+   }
  }
 
 //+------------------------------------------------------------------+
-//| chart_get_double                                                 |
+//| chart_double                                                     |
 //+------------------------------------------------------------------+
-class CMcpFuncChartGetDouble : public CMcpFunction
+class CMcpFuncChartDouble : public CMcpFunction
  {
 public:
-                     CMcpFuncChartGetDouble() : CMcpFunction(0, false, "chart_get_double") {}
-                    ~CMcpFuncChartGetDouble(void) {}
+                     CMcpFuncChartDouble() : CMcpFunction(0, false, "chart_double") {}
+                    ~CMcpFuncChartDouble(void) {}
 
   void               Run(CJsonNode& param, string& res) override final;
  };
@@ -156,16 +176,82 @@ public:
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
-void CMcpFuncChartGetDouble::Run(CJsonNode& param, string& res)
+void CMcpFuncChartDouble::Run(CJsonNode& param, string& res)
  {
   ::ResetLastError();
-  const ENUM_CHART_PROPERTY_DOUBLE property = CEnumReg::GetValueNoRef<ENUM_CHART_PROPERTY_DOUBLE>(param["property"].ToString(""), CHART_SHIFT_SIZE);
 
 //---
-  const double value = ChartGetDouble(param["chart_id"].ToInt(0), property, (int)param["sub_window"].ToInt(0));
+  if(param.HasKey("value"))
+   {
+    if(ChartSetDouble(param["chart_id"].ToInt(0), CEnumReg::GetValueNoRef<ENUM_CHART_PROPERTY_DOUBLE>(param["property"].ToString(""), WRONG_VALUE), param["value"].ToDouble()))
+     {
+      res = "{\"ok\":true,\"result\":true}";
+     }
+    else
+     {
+      res = StringFormat("{\"ok\":false,\"error\":\"Error set chart double, last mt5 err = %d\"}", ::GetLastError());
+     }
+   }
+  else
+   {
+    double v;
+    if(ChartGetDouble(param["chart_id"].ToInt(0), CEnumReg::GetValueNoRef<ENUM_CHART_PROPERTY_DOUBLE>(param["property"].ToString(""), WRONG_VALUE), (int)param["sub_window"].ToInt(0), v))
+     {
+      res = StringFormat("{\"ok\":true,\"result\":%.8f}", v);
+     }
+    else
+     {
+      res = StringFormat("{\"ok\":false,\"error\":\"Error chart get double, last err = %d\"}", ::GetLastError());
+     }
+   }
+//---
+ }
+
+
+//+------------------------------------------------------------------+
+//| chart_string                                                     |
+//+------------------------------------------------------------------+
+class CMcpFuncChartString : public CMcpFunction
+ {
+public:
+                     CMcpFuncChartString() : CMcpFunction(0, false, "chart_string") {}
+                    ~CMcpFuncChartString(void) {}
+
+  void               Run(CJsonNode& param, string& res) override final;
+ };
+
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
+void CMcpFuncChartString::Run(CJsonNode& param, string& res)
+ {
+  ::ResetLastError();
 
 //---
-  res = StringFormat("{\"ok\":true,\"result\":%.8f}", value);
+  if(param.HasKey("value"))
+   {
+    if(ChartSetString(param["chart_id"].ToInt(0), CEnumReg::GetValueNoRef<ENUM_CHART_PROPERTY_STRING>(param["property"].ToString(""), WRONG_VALUE), param["value"].ToString()))
+     {
+      res = "{\"ok\":true,\"result\":true}";
+     }
+    else
+     {
+      res = StringFormat("{\"ok\":false,\"error\":\"Error set chart string, last mt5 err = %d\"}", ::GetLastError());
+     }
+   }
+  else
+   {
+    string v;
+    if(ChartGetString(param["chart_id"].ToInt(0), CEnumReg::GetValueNoRef<ENUM_CHART_PROPERTY_STRING>(param["property"].ToString(""), WRONG_VALUE), v))
+     {
+      res = "{\"ok\":true,\"result\":\"" + v + "\"}";
+     }
+    else
+     {
+      res = StringFormat("{\"ok\":false,\"error\":\"Error chart get string, last err = %d\"}", ::GetLastError());
+     }
+   }
+//---
  }
 
 //+------------------------------------------------------------------+
@@ -186,10 +272,8 @@ public:
 void CMcpFuncChartRedraw::Run(CJsonNode& param, string& res)
  {
   ::ResetLastError();
-
 //---
   ChartRedraw(param["chart_id"].ToInt(0));
-
 //---
   res = "{\"ok\":true,\"result\":\"okey\"}";
  }

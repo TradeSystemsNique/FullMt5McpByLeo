@@ -1,4 +1,4 @@
-//+------------------------------------------------------------------+
+﻿//+------------------------------------------------------------------+
 //|                                                     MarketData.mqh |
 //|                                  Copyright 2026, Niquel Mendoza. |
 //|                          https://www.mql5.com/es/users/nique_372 |
@@ -15,233 +15,282 @@
 //+------------------------------------------------------------------+
 #include "..\\Def\\Def.mqh"
 
+
 //+------------------------------------------------------------------+
-//| copy_open                                                        |
+//| CMcpFuncCopyTicks                                                |
 //+------------------------------------------------------------------+
-class CMcpFuncCopyOpen : public CMcpFunction
+class CMcpFuncCopyTicks : public CMcpFunction
  {
-protected:
-  double             m_buffer[];
+private:
+  MqlTick            m_ticks[];
+
 public:
-                     CMcpFuncCopyOpen() : CMcpFunction(0, false, "copy_open")
-   {
-    ArraySetAsSeries(m_buffer, true);
-   }
-                    ~CMcpFuncCopyOpen(void) {}
+                     CMcpFuncCopyTicks(void);
+                    ~CMcpFuncCopyTicks(void);
 
   void               Run(CJsonNode& param, string& res) override final;
  };
 
+
 //+------------------------------------------------------------------+
-//|                                                                  |
+//| Constructor                                                      |
 //+------------------------------------------------------------------+
-void CMcpFuncCopyOpen::Run(CJsonNode& param, string& res)
+CMcpFuncCopyTicks::CMcpFuncCopyTicks(void) : CMcpFunction(0, false, "copy_ticks")
+ {
+  ArraySetAsSeries(m_ticks, true);
+ }
+
+//+------------------------------------------------------------------+
+//| Destructor                                                       |
+//+------------------------------------------------------------------+
+CMcpFuncCopyTicks::~CMcpFuncCopyTicks(void)
+ {
+ }
+
+/*
+{
+ "symbol" : "XAUUSD",
+ "count" : 10,
+ "flags" : "COPY_TICKS_ALL",
+ "from" : 0
+}
+
+  COPY_TICKS_ALL   = 0,  // Obtener todos los ticks
+  COPY_TICKS_BID   = 1,  // Obtener los ticks donde cambió el precio Bid
+  COPY_TICKS_ASK   = 2,  // Obtener los ticks donde cambió el precio Ask
+  COPY_TICKS_LAST  = 4,  // Obtener los ticks donde cambió el precio Last
+  COPY_TICKS_TRADE = 8,  // Obtener los ticks con volumen de transacción (Last)
+  COPY_TICKS_BUY   = 16, // Obtener los ticks de compra
+  COPY_TICKS_SELL  = 32  // Obtener los ticks de venta
+*/
+
+//+------------------------------------------------------------------+
+//| Run - Copia ticks del símbolo especificado                       |
+//+------------------------------------------------------------------+
+void CMcpFuncCopyTicks::Run(CJsonNode& param, string& res)
  {
   ::ResetLastError();
-  const string symbol = param["symbol"].ToString(_Symbol);
-  const int count = (int)param["count"].ToInt(100);
-  const int8_t dig = (int8_t)SymbolInfoInteger(symbol, SYMBOL_DIGITS);
-  const int copied = CopyOpen(symbol, CEnumReg::GetValueNoRef<ENUM_TIMEFRAMES>(param["timeframe"].ToString(), _Period), (int)param["start"].ToInt(0), count, m_buffer);
 
 //---
+  const string symbol = param["symbol"].ToString(_Symbol);
+  const uint count = (uint)param["count"].ToInt(10);
+  const ulong from = (ulong)param["from"].ToInt((long(TimeCurrent()) * 1000) - (10 * 1000));
+  const uint flags = uint(param["flags"].ToInt(COPY_TICKS_ALL));
+
+//---
+// Validar que se copiaron los ticks correctamente
+  const int copied = CopyTicks(symbol, m_ticks, flags, from, count);
   if(copied != count)
    {
-    res = StringFormat("{\"ok\":false,\"error\":\"copy_open failed, last mt5 error = %d\"}", ::GetLastError());
+    res = StringFormat("{\"ok\":false,\"error\":\"CopyTicks failed, last mt5 error = %d\"}", ::GetLastError());
     return;
    }
 
 //---
   res = "{\"ok\":true,\"result\":[";
+  const int digits = (int)SymbolInfoInteger(symbol, SYMBOL_DIGITS);
+
+//---
   for(int i = 0; i < copied; i++)
    {
     if(i > 0)
       res += ",";
-    res += StringFormat("%.*f", dig, m_buffer[i]);
+
+    // Construir objeto MqlTick en JSON
+    res += StringFormat(
+             "{\"time\":\"%s\",\"bid\":%.*f,\"ask\":%.*f,\"last\":%.*f,\"volume\":%I64u,\"time_msc\":%I64d,\"flags\":%u,\"volume_real\":%.*f}",
+             TimeToString(m_ticks[i].time),
+             digits, m_ticks[i].bid,
+             digits, m_ticks[i].ask,
+             digits, m_ticks[i].last,
+             m_ticks[i].volume,
+             m_ticks[i].time_msc,
+             m_ticks[i].flags,
+             digits, m_ticks[i].volume_real
+           );
    }
   res += "]}";
  }
 
 //+------------------------------------------------------------------+
-//| copy_high                                                        |
+
+
 //+------------------------------------------------------------------+
-class CMcpFuncCopyHigh : public CMcpFunction
+//| copy_rates                                                       |
+//+------------------------------------------------------------------+
+class CMcpFuncCopyData : public CMcpFunction
  {
 protected:
-  double             m_buffer[];
+  double             m_buffer_d[];
+  long               m_buffer_l[];
+  datetime           m_buffer_dt[];
+  int                m_buffer_i[];
+
 public:
-                     CMcpFuncCopyHigh() : CMcpFunction(0, false, "copy_high")
+                     CMcpFuncCopyData() : CMcpFunction(0, false, "copy_data")
    {
-    ArraySetAsSeries(m_buffer, true);
+    ArraySetAsSeries(m_buffer_d, true);
+    ArraySetAsSeries(m_buffer_l, true);
+    ArraySetAsSeries(m_buffer_i, true);
+    ArraySetAsSeries(m_buffer_dt, true);
    }
-                    ~CMcpFuncCopyHigh(void) {}
+                    ~CMcpFuncCopyData(void) {}
 
   void               Run(CJsonNode& param, string& res) override final;
  };
 
+/*
+{
+ "symbol" : "XAUUSD",
+ "count" : 10,
+ "timeframe" "PERIOD_M1",
+ "start" : 0,
+ "mode" : "COPY_CLOSE"
+}
+
+  MCPFUNC_COPY_DATA_CLOSE = 0,
+  MCPFUNC_COPY_DATA_OPEN = 1,
+  MCPFUNC_COPY_DATA_HIGH = 2,
+  MCPFUNC_COPY_DATA_LOW = 3,
+  MCPFUNC_COPY_DATA_TICK_VOLUME = 4,
+  MCPFUNC_COPY_DATA_REAL_VOLUME = 5,
+  MCPFUNC_COPY_DATA_TIME = 6,
+  MCPFUNC_COPY_DATA_SPREAD = 7
+*/
+
+
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
-void CMcpFuncCopyHigh::Run(CJsonNode& param, string& res)
+void CMcpFuncCopyData::Run(CJsonNode& param, string& res)
  {
+//---
   ::ResetLastError();
+  uint8_t t = 0;
+  const int count = (int)param["count"].ToInt(10);
+  const uint8_t mode  = uint8_t(CEnumReg::GetValueNoRef<ENUM_MCPFUNC_COPY_DATA>(param["mode"].ToString(), 0));
   const string symbol = param["symbol"].ToString(_Symbol);
-  const int count = (int)param["count"].ToInt(100);
-  const int dig = (int)SymbolInfoInteger(symbol, SYMBOL_DIGITS);
-  const int copied = CopyHigh(symbol, CEnumReg::GetValueNoRef<ENUM_TIMEFRAMES>(param["timeframe"].ToString(), _Period), (int)param["start"].ToInt(0), count, m_buffer);
+
+// t = [0=double,1=long,2=datetime:string]
+//---
+  int copied = -1;
+  switch(mode)
+   {
+    case  MCPFUNC_COPY_DATA_CLOSE:
+     {
+      copied = CopyClose(symbol, CEnumReg::GetValueNoRef<ENUM_TIMEFRAMES>(param["timeframe"].ToString(), _Period), (int)param["start"].ToInt(0), count, m_buffer_d);
+      break;
+     }
+    case  MCPFUNC_COPY_DATA_OPEN:
+     {
+      copied = CopyOpen(symbol, CEnumReg::GetValueNoRef<ENUM_TIMEFRAMES>(param["timeframe"].ToString(), _Period), (int)param["start"].ToInt(0), count, m_buffer_d);
+      break;
+     }
+    case  MCPFUNC_COPY_DATA_HIGH:
+     {
+      copied = CopyHigh(symbol, CEnumReg::GetValueNoRef<ENUM_TIMEFRAMES>(param["timeframe"].ToString(), _Period), (int)param["start"].ToInt(0), count, m_buffer_d);
+      break;
+     }
+    case  MCPFUNC_COPY_DATA_LOW:
+     {
+      copied = CopyLow(symbol, CEnumReg::GetValueNoRef<ENUM_TIMEFRAMES>(param["timeframe"].ToString(), _Period), (int)param["start"].ToInt(0), count, m_buffer_d);
+      break;
+     }
+    case  MCPFUNC_COPY_DATA_TICK_VOLUME:
+     {
+      t = 1;
+      copied = CopyTickVolume(symbol, CEnumReg::GetValueNoRef<ENUM_TIMEFRAMES>(param["timeframe"].ToString(), _Period), (int)param["start"].ToInt(0), count, m_buffer_l);
+      break;
+     }
+    case  MCPFUNC_COPY_DATA_REAL_VOLUME:
+     {
+      t = 1;
+      copied = CopyRealVolume(symbol, CEnumReg::GetValueNoRef<ENUM_TIMEFRAMES>(param["timeframe"].ToString(), _Period), (int)param["start"].ToInt(0), count, m_buffer_l);
+      break;
+     }
+    case MCPFUNC_COPY_DATA_TIME:
+     {
+      t = 2;
+      copied = CopyTime(symbol, CEnumReg::GetValueNoRef<ENUM_TIMEFRAMES>(param["timeframe"].ToString(), _Period), (int)param["start"].ToInt(0), count, m_buffer_dt);
+      break;
+     }
+    case MCPFUNC_COPY_DATA_SPREAD:
+     {
+      t = 3;
+      copied = CopySpread(symbol, CEnumReg::GetValueNoRef<ENUM_TIMEFRAMES>(param["timeframe"].ToString(), _Period), (int)param["start"].ToInt(0), count, m_buffer_i);
+      break;
+     }
+
+    //---
+    default:
+      res = StringFormat("{\"ok\":false,\"error\":\"Invalid mode = %u\"}", mode);
+      return;
+   }
 
 //---
   if(copied != count)
    {
-    res = StringFormat("{\"ok\":false,\"error\":\"copy_high failed, last mt5 error = %d\"}", ::GetLastError());
+    res = StringFormat("{\"ok\":false,\"error\":\"copy_data failed, last mt5 error = %d\"}", ::GetLastError());
     return;
    }
 
 //---
   res = "{\"ok\":true,\"result\":[";
-  for(int i = 0; i < copied; i++)
+  switch(t)
    {
-    if(i > 0)
-      res += ",";
-    res += StringFormat("%.*f", dig, m_buffer[i]);
-   }
-  res += "]}";
- }
+    //---
+    case 0: // dbl
+     {
+      const int digits = (int)SymbolInfoInteger(symbol, SYMBOL_DIGITS);
+      for(int i = 0; i < copied; i++)
+       {
+        if(i > 0)
+          res += ",";
+        res += StringFormat("%*.f", digits, m_buffer_d[i]);
+       }
+      break;
+     }
 
-//+------------------------------------------------------------------+
-//| copy_low                                                         |
-//+------------------------------------------------------------------+
-class CMcpFuncCopyLow : public CMcpFunction
- {
-protected:
-  double             m_buffer[];
-public:
-                     CMcpFuncCopyLow() : CMcpFunction(0, false, "copy_low")
-   {
-    ArraySetAsSeries(m_buffer, true);
-   }
-                    ~CMcpFuncCopyLow(void) {}
+    //---
+    case 1: // long
+     {
+      for(int i = 0; i < copied; i++)
+       {
+        if(i > 0)
+          res += ",";
+        res += string(m_buffer_l[i]);
+       }
+      break;
+     }
 
-  void               Run(CJsonNode& param, string& res) override final;
- };
+    //---
+    case 2: // date
+     {
+      for(int i = 0; i < copied; i++)
+       {
+        if(i > 0)
+          res += ",";
+        res += TimeToString(m_buffer_dt[i]);
+       }
+      break;
+     }
 
-//+------------------------------------------------------------------+
-//|                                                                  |
-//+------------------------------------------------------------------+
-void CMcpFuncCopyLow::Run(CJsonNode& param, string& res)
- {
-  ::ResetLastError();
-  const string symbol = param["symbol"].ToString(_Symbol);
-  const int count = (int)param["count"].ToInt(100);
-  const int8_t dig = (int8_t)SymbolInfoInteger(symbol, SYMBOL_DIGITS);
-  const int copied = CopyLow(symbol, CEnumReg::GetValueNoRef<ENUM_TIMEFRAMES>(param["timeframe"].ToString(), _Period), (int)param["start"].ToInt(0), count, m_buffer);
-
-//---
-  if(copied != count)
-   {
-    res = StringFormat("{\"ok\":false,\"error\":\"copy_low failed, last mt5 error = %d\"}", ::GetLastError());
-    return;
-   }
-
-//---
-  res = "{\"ok\":true,\"result\":[";
-  for(int i = 0; i < copied; i++)
-   {
-    if(i > 0)
-      res += ",";
-    res += StringFormat("%.*f", dig, m_buffer[i]);
-   }
-  res += "]}";
- }
-
-//+------------------------------------------------------------------+
-//| copy_close                                                       |
-//+------------------------------------------------------------------+
-class CMcpFuncCopyClose : public CMcpFunction
- {
-protected:
-  double             m_buffer[];
-public:
-                     CMcpFuncCopyClose() : CMcpFunction(0, false, "copy_close")
-   {
-    ArraySetAsSeries(m_buffer, true);
-   }
-                    ~CMcpFuncCopyClose(void) {}
-
-  void               Run(CJsonNode& param, string& res) override final;
- };
-
-//+------------------------------------------------------------------+
-//|                                                                  |
-//+------------------------------------------------------------------+
-void CMcpFuncCopyClose::Run(CJsonNode& param, string& res)
- {
-  ::ResetLastError();
-  const string symbol = param["symbol"].ToString(_Symbol);
-  const int count = (int)param["count"].ToInt(100);
-  const int8_t dig = (int8_t)SymbolInfoInteger(symbol, SYMBOL_DIGITS);
-  const int copied = CopyClose(symbol, CEnumReg::GetValueNoRef<ENUM_TIMEFRAMES>(param["timeframe"].ToString(), _Period), (int)param["start"].ToInt(0), count, m_buffer);
-
-//---
-  if(copied != count)
-   {
-    res = StringFormat("{\"ok\":false,\"error\":\"copy_close failed, last mt5 error = %d\"}", ::GetLastError());
-    return;
-   }
-
-//---
-  res = "{\"ok\":true,\"result\":[";
-  for(int i = 0; i < copied; i++)
-   {
-    if(i > 0)
-      res += ",";
-    res += StringFormat("%.*f", dig, m_buffer[i]);
-   }
-  res += "]}";
- }
-
-//+------------------------------------------------------------------+
-//| copy_tick_volume                                                 |
-//+------------------------------------------------------------------+
-class CMcpFuncCopyTickVolume : public CMcpFunction
- {
-protected:
-  long               m_buffer[];
-public:
-                     CMcpFuncCopyTickVolume() : CMcpFunction(0, false, "copy_tick_volume")
-   {
-    ArraySetAsSeries(m_buffer, true);
-   }
-                    ~CMcpFuncCopyTickVolume(void) {}
-
-  void               Run(CJsonNode& param, string& res) override final;
- };
-
-//+------------------------------------------------------------------+
-//|                                                                  |
-//+------------------------------------------------------------------+
-void CMcpFuncCopyTickVolume::Run(CJsonNode& param, string& res)
- {
-  ::ResetLastError();
-  const int count = (int)param["count"].ToInt(100);
-  const int copied = CopyTickVolume(param["symbol"].ToString(_Symbol), CEnumReg::GetValueNoRef<ENUM_TIMEFRAMES>(param["timeframe"].ToString(), _Period), (int)param["start"].ToInt(0), count, m_buffer);
-
-//---
-  if(copied != count)
-   {
-    res = StringFormat("{\"ok\":false,\"error\":\"copy_tick_volume failed, last mt5 error = %d\"}", ::GetLastError());
-    return;
-   }
-
-//---
-  res = "{\"ok\":true,\"result\":[";
-  for(int i = 0; i < copied; i++)
-   {
-    if(i > 0)
-      res += ",";
-    res += StringFormat("%ld", m_buffer[i]);
+    //---
+    case  3: // int
+     {
+      for(int i = 0; i < copied; i++)
+       {
+        if(i > 0)
+          res += ",";
+        res += string(m_buffer_i[i]);
+       }
+      break;
+     }
    }
   res += "]}";
  }
 
 //+------------------------------------------------------------------+
 #endif // FULLMT5MCPBYLEO_SRC_DATA_MARKETDATA_MQH
+
+//+------------------------------------------------------------------+
