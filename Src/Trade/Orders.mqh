@@ -234,7 +234,6 @@ void CMcpFuncCalcOrder::Run(CJsonNode &param, string &res)
     case 0:
      {
       long v = m_get_lote.CalculateSLWithLot(
-                 type,
                  param["risk_per_operation"].ToDouble(0.0),
                  param["entry_price"].ToDouble(0.0),
                  param["lot_size"].ToDouble(0.0),
@@ -255,7 +254,7 @@ void CMcpFuncCalcOrder::Run(CJsonNode &param, string &res)
     //--- MoneyToPoints
     case 1:
      {
-      double chosen_lot = param["lot_size"].ToDouble(0.0);
+      double chosen_lot=0.00;
 
       long v = m_get_lote.MoneyToPoints(
                  type,

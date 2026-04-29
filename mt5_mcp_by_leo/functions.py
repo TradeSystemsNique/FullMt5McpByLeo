@@ -102,7 +102,7 @@ def open_stop(payload: str) -> str:
     return send("open_stop", payload)
 
 
-# === POSITION MANAGEMENT (6) ===
+# === POSITION MANAGEMENT (4) ===
 
 @mcp.tool()
 def position_list(payload: str) -> str:
@@ -124,72 +124,30 @@ def position_list(payload: str) -> str:
 
 
 @mcp.tool()
-def position_get_double(payload: str) -> str:
+def position_get(payload: str) -> str:
     """
-    Get double-type property of a position (ENUM_POSITION_PROPERTY_DOUBLE).
+    Get property from an open position (double, integer, string).
 
     Description:
-        Retrieves floating-point property from open position using native
-        ENUM_POSITION_PROPERTY_DOUBLE enum values.
-    Inputs (JSON):
+        Unified access to MT5 PositionGet* functions.
+    Inputs (JSON string):
         {
-            "ticket": 123456 (int, required - position ticket),
-            "property": "POSITION_VOLUME" (string:ENUM_POSITION_PROPERTY_DOUBLE, required - native enum)
+            "ticket": 123456,               # int, required - position ticket
+            "property": "POSITION_VOLUME",  # string, required - ENUM_POSITION_PROPERTY_*
+            "mode": "double"                # string, required:
+                                            #   0 -> ENUM_POSITION_PROPERTY_DOUBLE
+                                            #   1 -> ENUM_POSITION_PROPERTY_INTEGER
+                                            #   2 -> ENUM_POSITION_PROPERTY_STRING
         }
-    Outputs (JSON):
-        Success: {"ok": true, "result": 0.01}
-        Error: {"ok": false, "error": "position_not_found, last mt5 error=4401"}
+    Outputs:
+        Success:  {"ok": true, "result": 0.01}
+        Error:  {"ok": false, "error": "position_not_found, last mt5 error=4401"}
     Notes:
-        - Ticket must reference open position
-        - Results formatted with 8 decimal places
+        - Ticket must reference an OPEN position
+        - Time fields are returned as Unix timestamps
+        - Results formatted with 8 decimal places when double
     """
-    return send("position_get_double", payload)
-
-
-@mcp.tool()
-def position_get_integer(payload: str) -> str:
-    """
-    Get integer-type property of a position (ENUM_POSITION_PROPERTY_INTEGER).
-
-    Description:
-        Retrieves integer property from open position using native
-        ENUM_POSITION_PROPERTY_INTEGER enum values.
-    Inputs (JSON):
-        {
-            "ticket": 123456 (int, required - position ticket),
-            "property": "POSITION_TYPE" (string:ENUM_POSITION_PROPERTY_INTEGER, required - native enum)
-        }
-    Outputs (JSON):
-        Success: {"ok": true, "result": 0}
-        Error: {"ok": false, "error": "position_not_found, last mt5 error=4401"}
-    Notes:
-        - POSITION_TYPE: 0=BUY, 1=SELL
-        - TIME values are Unix timestamps
-    """
-    return send("position_get_integer", payload)
-
-
-@mcp.tool()
-def position_get_string(payload: str) -> str:
-    """
-    Get string-type property of a position (ENUM_POSITION_PROPERTY_STRING).
-
-    Description:
-        Retrieves string property from open position using native
-        ENUM_POSITION_PROPERTY_STRING enum values.
-
-    Inputs (JSON):
-        {
-            "ticket": 123456 (int, required - position ticket),
-            "property": "POSITION_SYMBOL" (string:ENUM_POSITION_PROPERTY_STRING, required - native enum)
-        }
-
-    Outputs (JSON):
-        Success: {"ok": true, "result": "EURUSD"}
-        Error: {"ok": false, "error": "position_not_found, last mt5 error=4401"}
-    """
-    return send("position_get_string", payload)
-
+    return send("position_get", payload)
 
 @mcp.tool()
 def position_close(payload: str) -> str:
@@ -254,7 +212,7 @@ def position_modify(payload: str) -> str:
     return send("position_modify", payload)
 
 
-# === ORDER MANAGEMENT (6) ===
+# === ORDER MANAGEMENT (5) ===
 
 @mcp.tool()
 def order_list(payload: str) -> str:
@@ -324,71 +282,127 @@ def order_modify(payload: str) -> str:
 
 
 @mcp.tool()
-def order_get_double(payload: str) -> str:
+def order_get(payload: str) -> str:
     """
-    Get double-type property of pending order (ENUM_ORDER_PROPERTY_DOUBLE).
+    Get property from a pending order (double, string, int).
 
     Description:
-        Retrieves floating-point property from pending order using native
-        ENUM_ORDER_PROPERTY_DOUBLE enum values.
-    Inputs (JSON):
+        Unified access to MT5 OrderGet* functions.
+    Inputs (JSON string):
         {
-            "ticket": 654321 (int, required - order ticket),
-            "property": "ORDER_VOLUME_INITIAL" (string:ENUM_ORDER_PROPERTY_DOUBLE, required - native enum)
+            "ticket": 654321,               # int, required - order ticket
+            "property": "ORDER_EXTERNAL_ID",       # string, required - ENUM_ORDER_PROPERTY_*
+            "mode": "double"                # string, required:
+                                            #   0 -> ENUM_ORDER_PROPERTY_DOUBLE
+                                            #   1 -> ENUM_ORDER_PROPERTY_INTEGER
+                                            #   2 -> ENUM_ORDER_PROPERTY_STRING
         }
-    Outputs (JSON):
-        Success: {"ok": true, "result": 0.01}
-        Error: {"ok": false, "error": "order not found, last mt5 error=4401"}
+    Outputs:
+        Success:
+            {"ok": true, "result": 0.01}
+        Error:
+            {"ok": false, "error": "order not found, last mt5 error=4401"}
     Notes:
-        - Results formatted with 8 decimal places
+        - Unified wrapper over MT5 pending order properties
+        - TIME fields are returned as Unix timestamps when applicable
     """
-    return send("order_get_double", payload)
+    return send("order_get", payload)
 
 
 @mcp.tool()
-def order_get_integer(payload: str) -> str:
+def calc_order(payload: str) -> str:
     """
-    Get integer-type property of pending order (ENUM_ORDER_PROPERTY_INTEGER).
+    Unified MT5 trading calculator (CGetLote wrapper).
 
     Description:
-        Retrieves integer property from pending order using native
-        ENUM_ORDER_PROPERTY_INTEGER enum values.
-    Inputs (JSON):
-        {
-            "ticket": 654321 (int, required - order ticket),
-            "property": "ORDER_TYPE" (string:ENUM_ORDER_PROPERTY_INTEGER, required - native enum)
-        }
-    Outputs (JSON):
-        Success: {"ok": true, "result": 2}
-        Error: {"ok": false, "error": "order not found, last mt5 error=4401"}
-    Notes:
-        - TIME values are Unix timestamps
+        This tool centralizes multiple trading calculations from MT5 (lot sizing,
+        risk conversion, stop-loss estimation, margin-related calculations).
+        It works using a "mode" system. Each mode activates a different internal
+        calculation in CGetLote.
+
+    COMMON PARAMETERS
+    - mode (int, required):  Selects the calculation to execute.
+    - symbol (string, required):  Trading symbol (e.g. "EURUSD").
+    - order_type (string:ENUM_ORDER_TYPE, required in most modes)
+    - entry_price (double, depending on mode): Reference price used for margin / lot calculations.
+    - risk_per_operation (double):  Risk in account currency (NOT %).
+    - lot_size (double): Current lot size used in SL / risk calculations.
+    - sl (int): Stop-loss distance in POINTS.
+    
+
+    MODES
+    mode = 0 -> CalculateSLWithLot
+        Computes SL distance based on lot and risk.
+
+        REQUIRED:
+            - symbol
+            - risk_per_operation (double)
+            - entry_price (double)
+            - lot_size (double)
+
+        OPTIONAL:
+            - deviation (int)
+            - stop_limit (int)
+    mode = 1 -> MoneyToPoints
+        Converts risk money into stop-loss points and suggests lot.
+
+        REQUIRED:
+            - symbol
+            - order_type
+            - risk_per_operation
+            - entry_price
+
+        OUTPUT:
+            - result = SL in points
+            - lot = computed lot size (output reference)
+
+    mode = 2 -> GetLoteByRiskPerOperationAndSL
+        Adjusts lot based on SL and risk constraints.
+        REQUIRED:
+            - symbol
+            - max_lot (double)
+            - risk_per_operation
+            - sl (int)
+
+    mode = 3 -> GetMaxLote
+        Calculates maximum possible lot based on free margin.
+        REQUIRED:
+            - symbol
+            - order_type
+            - entry_price
+
+        OPTIONAL:
+            - deviation (int)
+            - stop_limit (int)
+
+    mode = 4 -> GetLoteByRiskPerOperation
+        Calculates optimal lot based on risk and entry conditions.
+        REQUIRED:
+            - symbol
+            - order_type
+            - risk_per_operation
+            - entry_price
+
+        OPTIONAL:
+            - deviation (int)
+            - stop_limit (int)
+
+    OUTPUT FORMAT
+    Success:
+        {"ok": true, "result": 1.25}
+        {"ok": true, "result": 120}
+        {"ok": true, "result": 0.12, "risk": 9.80}
+    Error: {"ok": false, "error": "Invalid mode = X"}
+ 
+    NOTES
+    - This tool does NOT execute trades, only calculations.
+    - deviation used for LIMIT/STOP order price adjustment
+    - stop_limit used ONLY for STOP_LIMIT order construction
     """
-    return send("order_get_integer", payload)
+    return send("calc_order", payload)
 
 
-@mcp.tool()
-def order_get_string(payload: str) -> str:
-    """
-    Get string-type property of pending order (ENUM_ORDER_PROPERTY_STRING).
-
-    Description:
-        Retrieves string property from pending order using native
-        ENUM_ORDER_PROPERTY_STRING enum values.
-    Inputs (JSON):
-        {
-            "ticket": 654321 (int, required - order ticket),
-            "property": "ORDER_SYMBOL" (string:ENUM_ORDER_PROPERTY_STRING, required - native enum)
-        }
-    Outputs (JSON):
-        Success: {"ok": true, "result": "EURUSD"}
-        Error: {"ok": false, "error": "order not found, last mt5 error=4401"}
-    """
-    return send("order_get_string", payload)
-
-
-# === TRADE HISTORY (4) ===
-
+# === TRADE HISTORY (2) ===
 @mcp.tool()
 def history_deal_list(payload: str) -> str:
     """
@@ -414,65 +428,29 @@ def history_deal_list(payload: str) -> str:
 
 
 @mcp.tool()
-def history_deal_get_double(payload: str) -> str:
+def history_deal_get(payload: str) -> str:
     """
-    Get double-type property of completed deal (ENUM_DEAL_PROPERTY_DOUBLE).
+    Get property from a deal (string, double, integer).
 
     Description:
-        Retrieves floating-point property from completed deal using native
-        ENUM_DEAL_PROPERTY_DOUBLE enum values.
-    Inputs (JSON):
+        Unified access to MT5 HistoryDealGet* functions.
+    Inputs (JSON string):
         {
-            "ticket": 111111 (int, required - deal ticket),
-            "property": "DEAL_VOLUME" (string:ENUM_DEAL_PROPERTY_DOUBLE, required - native enum)
+            "ticket": 123456,                # int, required - deal ticket
+            "property": "DEAL_VOLUME",       # string, required - ENUM_DEAL_PROPERTY_*
+            "mode": 1                        # int, required:
+                                             #   "0"  -> ENUM_DEAL_PROPERTY_DOUBLE
+                                             #   "1"  -> ENUM_DEAL_PROPERTY_INTEGER
+                                             #   "2"  -> ENUM_DEAL_PROPERTY_STRING
         }
-    Outputs (JSON):
+    Outputs:
         Success: {"ok": true, "result": 0.01}
-        Error: {"ok": false, "error": "deal not found, last mt5 error=4401"}
+        Error: {"ok": false, "error": "deal not found, last mt5 error=4401"}   
     Notes:
-        - Results formatted with 8 decimal places
+        - Unified wrapper over MT5 pending deal properties
+        - TIME fields are returned as Unix timestamps when applicable
     """
-    return send("history_deal_get_double", payload)
-
-
-@mcp.tool()
-def history_deal_get_integer(payload: str) -> str:
-    """
-    Get integer-type property of completed deal (ENUM_DEAL_PROPERTY_INTEGER).
-
-    Description:
-        Retrieves integer property from completed deal using native
-        ENUM_DEAL_PROPERTY_INTEGER enum values.
-    Inputs (JSON):
-        {
-            "ticket": 111111 (int, required - deal ticket),
-            "property": "DEAL_TYPE" (string:ENUM_DEAL_PROPERTY_INTEGER, required - native enum)
-        }
-    Outputs (JSON):
-        Success: {"ok": true, "result": 0}
-        Error: {"ok": false, "error": "deal not found, last mt5 error=4401"}
-    """
-    return send("history_deal_get_integer", payload)
-
-
-@mcp.tool()
-def history_deal_get_string(payload: str) -> str:
-    """
-    Get string-type property of completed deal (ENUM_DEAL_PROPERTY_STRING).
-
-    Description:
-        Retrieves string property from completed deal using native
-        ENUM_DEAL_PROPERTY_STRING enum values.
-    Inputs (JSON):
-        {
-            "ticket": 111111 (int, required - deal ticket),
-            "property": "DEAL_SYMBOL" (string:ENUM_DEAL_PROPERTY_STRING, required - native enum)
-        }
-    Outputs (JSON):
-        Success: {"ok": true, "result": "EURUSD"}
-        Error: {"ok": false, "error": "deal not found, last mt5 error=4401"}
-    """
-    return send("history_deal_get_string", payload)
+    return send("history_deal_get", payload)
 
 
 # ============================================================================
@@ -553,75 +531,66 @@ def copy_ticks(payload: str) -> str:
     return send("copy_ticks", payload)
 
 
-# === SYMBOL INFO (5) ===
-
+# === SYMBOL INFO (4) ===
 @mcp.tool()
-def symbol_info_double(payload: str) -> str:
+def symbol_info(payload: str) -> str:
     """
-    Get double-type symbol property (ENUM_SYMBOL_INFO_DOUBLE).
+    Get symbol property (double, integer, string).
 
     Description:
-        Retrieves floating-point properties of a trading symbol using
-        native ENUM_SYMBOL_INFO_DOUBLE enum values.
-    Inputs (JSON):
+        Unified access to MT5 SymbolInfo* functions.
+    Inputs (JSON string):
         {
-            "symbol": "EURUSD" (string, required),
-            "property": "SYMBOL_ASK" (string:ENUM_SYMBOL_INFO_DOUBLE, required - native enum)
+            "symbol": "EURUSD",          # string, required - symbol name
+            "property": "SYMBOL_ASK",    # string, required - ENUM_SYMBOL_INFO_*
+            "mode": 0                    # int, required:
+                                         #   0 -> ENUM_SYMBOL_INFO_DOUBLE
+                                         #   1 -> ENUM_SYMBOL_INFO_INTEGER
+                                         #   2 -> ENUM_SYMBOL_INFO_STRING
         }
-    Outputs (JSON):
+    Outputs:
         Success: {"ok": true, "result": 1.08500}
-        Error: {"ok": false, "error": "symbol_info_double failed"}
+        Error: {"ok": false, "error": "symbol_info failed"}
     Notes:
-        - Precision: Depend of symbol
-        - The returned array is in series, so position 0 is the most recent value.
+        - Double: price/volume values (ASK, BID, POINT, etc.)
+        - Integer: digits, flags, session info
+        - String: symbol description, currency, name
     """
-    return send("symbol_info_double", payload)
-
+    return send("symbol_info", payload)
 
 @mcp.tool()
-def symbol_info_integer(payload: str) -> str:
+def symbol_info_session(payload: str) -> str:
     """
-    Get integer-type symbol property (ENUM_SYMBOL_INFO_INTEGER).
+    Get trading/quote session time for a symbol.
 
     Description:
-        Retrieves integer properties of a trading symbol using native
-        ENUM_SYMBOL_INFO_INTEGER enum values.
-    Inputs (JSON):
+        Retrieves session start/end times for trading or quote sessions
+        of a symbol using MT5 SymbolInfoSessionTrade / SymbolInfoSessionQuote.
+    Inputs (JSON string):
         {
-            "symbol": "EURUSD" (string, required),
-            "property": "SYMBOL_DIGITS" (string:ENUM_SYMBOL_INFO_INTEGER, required - native enum)
+            "symbol": "EURUSD",        # string, required - symbol name
+            "day_of_week": "MONDAY",   # string:ENUM_DAY_OF_WEEK, required
+            "session_index": 0,        # int, required - session index (0..n)
+            "mode": 0                  # int, required:
+                                       #   0 -> trading session (SymbolInfoSessionTrade)
+                                       #   1 -> quote session   (SymbolInfoSessionQuote)
         }
-    Outputs (JSON):
-        Success: {"ok": true, "result": 5}
-        Error: {"ok": false, "error": "symbol_info_integer failed"}
+    Outputs:
+        Success:
+            {
+                "ok": true,
+                "result": {
+                    "date_from": "2026.04.29 09:00:00",
+                    "date_to": "2026.04.29 17:00:00"
+                }
+            }
+        Error:
+            {"ok": false, "error": "Invalid mode or mt5 error"}
     Notes:
-        - SYMBOL_DIGITS: typically 3-5 for forex
-        - SYMBOL_SELECT: 0=not selected, 1=selected
+        - session_index selects which session block (markets can have multiple sessions per day)
+        - times are returned in server terminal time format (datetime string)
     """
-    return send("symbol_info_integer", payload)
-
-
-@mcp.tool()
-def symbol_info_string(payload: str) -> str:
-    """
-    Get string-type symbol property (ENUM_SYMBOL_INFO_STRING).
-
-    Description:
-        Retrieves string properties of a trading symbol using native
-        ENUM_SYMBOL_INFO_STRING enum values.
-    Inputs (JSON):
-        {
-            "symbol": "EURUSD" (string, required),
-            "property": "SYMBOL_DESCRIPTION" (string:ENUM_SYMBOL_INFO_STRING, required - native enum)
-        }
-    Outputs (JSON):
-        Success: {"ok": true, "result": "Euro vs US Dollar"}
-        Error: {"ok": false, "error": "symbol_info_string failed"}
-    Notes:
-        - Returns text descriptions and identifiers
-    """
-    return send("symbol_info_string", payload)
-
+    return send("symbol_info_session", payload)
 
 @mcp.tool()
 def symbol_select(payload: str) -> str:
@@ -668,7 +637,7 @@ def symbols_total(payload: str) -> str:
 
 
 # ============================================================================
-# GROUP 3: GRAPHIC OBJECTS (5 Functions)
+# GROUP 3: GRAPHIC OBJECTS (6 Functions)
 # ============================================================================
 
 @mcp.tool()
@@ -1221,3 +1190,60 @@ def get_err_description(payload: str) -> str:
         - Works with all MT5 standard error codes
     """
     return send("get_err_description", payload)
+
+
+
+
+@mcp.tool()
+def account_info(payload: str) -> str:
+    """
+    Get MT5 account information (double, integer, string).
+
+    Description:
+        Unified access to MT5 AccountInfo* functions.
+        This tool groups all account properties into a single endpoint.
+    Inputs (JSON string):
+        {
+            "mode": 0,                # int, required:
+                                      #   0 -> AccountInfoDouble
+                                      #   1 -> AccountInfoInteger
+                                      #   2 -> AccountInfoString
+
+            "property": "ACCOUNT_BALANCE"  # string, required - ENUM_ACCOUNT_INFO_*
+        }
+    Outputs:
+        Success: {"ok": true, "result": 12345.67}
+        Error: {"ok": false, "error": "Invalid mode or property"}
+    Notes:
+        - Time in unix format
+    """
+    return send("account_info", payload)
+
+
+
+@mcp.tool()
+def terminal_info(payload: str) -> str:
+    """
+    Get MT5 terminal information (double, integer, string).
+
+    Description:
+        Unified access to MT5 TerminalInfo* functions.
+        This tool groups system/terminal properties into a single endpoint.
+    Inputs (JSON string):
+        {
+            "mode": 0,                 # int, required:
+                                       #   0 -> TerminalInfoDouble
+                                       #   1 -> TerminalInfoInteger
+                                       #   2 -> TerminalInfoString
+            "property": "TERMINAL_CONNECTED"  # string, required - ENUM_TERMINAL_INFO_*
+        }
+    Outputs:
+        Success:   {"ok": true, "result": 1}
+        Error: {"ok": false, "error": "Invalid mode or property"}
+            
+    Notes:
+        - Represents runtime terminal state (not trading data)
+        - Useful for diagnostics, VPS detection, performance checks
+        - Values depend on local terminal environment
+    """
+    return send("terminal_info", payload)
