@@ -1,5 +1,5 @@
 # ============================================================================
-# GROUP 1: POSITIONS | ORDERS | HISTORY | TRADE (19 funciones)
+# GROUP 1: POSITIONS | ORDERS | HISTORY | TRADE (14 funciones)
 # ============================================================================
 
 open_trade (sell\buy)
@@ -7,39 +7,36 @@ open_limit (sell\buy)
 open_stop  (sell\buy)
 
 position_list
-position_get_double
-position_get_integer
-position_get_string
+position_get (agrupa a los 3 internamente)
 position_close 
 position_modify
 
 order_list
 order_close
 order_modify
-order_get_double
-order_get_integer
-order_get_string
+order_get (agrupa a los 3 internamente)
+
+calc_order (agrupa funciones internas)
 
 history_deal_get_list
-history_deal_get_double
-history_deal_get_integer
-history_deal_get_string
+history_deal_get (agrupa a los 3 internamente)
+
 
 # ============================================================================
-# GROUP 2: DATA OHLC + SYMBOL INFO (7 funciones)
+# GROUP 2: DATA OHLC + SYMBOL INFO (6 funciones)
 # ============================================================================
+
 copy_data
 copy_ticks
- 
-symbol_info_double
-symbol_info_integer
-symbol_info_string
+
+symbol_info_session
+symbol_info (agrupa a los 3 internamente)
 symbol_select
 symbols_total
 
 
 # ============================================================================
-# GROUP 3: GRAPHIC OBJECTS (7 funciones)
+# GROUP 3: GRAPHIC OBJECTS (6 funciones)
 # ============================================================================
 
 object_list
@@ -48,6 +45,7 @@ object_delete
 object_integer
 object_double
 object_string
+
 
 # ============================================================================
 # GROUP 4: CHARTS (7 funciones)
@@ -60,7 +58,7 @@ chart_integer
 chart_double
 chart_string
 chart_redraw
- 
+
 
 # ============================================================================
 # GROUP 5: CODE + TERMINAL (4 funciones)
@@ -73,11 +71,15 @@ get_expert_logs
 
 
 # ============================================================================
-# GROUP 6: Utils (Time|Error description) (2 funciones)
+# GROUP 6: UTILS (Time | Error | Info) (4 funciones)
 # ============================================================================
+
 get_time 
 get_err_description
- 
+account_info (agrupa a los 3 internamente)
+terminal_info (agrupa a los 3 internamente)
+
+
 # ============================================================================
-# TOTAL: 45 FUNCIONES
+# TOTAL: 41 FUNCIONES
 # ============================================================================

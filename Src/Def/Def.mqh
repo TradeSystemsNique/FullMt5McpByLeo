@@ -48,6 +48,21 @@
 #define MQLARTICLES_ENUMREG_ENUM_OBJECT
 
 
+//---
+#define MQLARTICLES_ENUMREG_ENUM_ORDER_TYPE
+#define MQLARTICLES_ENUMREG_ENUM_DAY_OF_WEEK
+
+//---
+#define MQLARTICLES_ENUMREG_ENUM_ACCOUNT_INFO_INTEGER
+#define MQLARTICLES_ENUMREG_ENUM_ACCOUNT_INFO_DOUBLE
+#define MQLARTICLES_ENUMREG_ENUM_ACCOUNT_INFO_STRING
+
+//---
+#define MQLARTICLES_ENUMREG_ENUM_TERMINAL_INFO_INTEGER
+#define MQLARTICLES_ENUMREG_ENUM_TERMINAL_INFO_DOUBLE
+#define MQLARTICLES_ENUMREG_ENUM_TERMINAL_INFO_STRING
+
+
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
@@ -103,9 +118,9 @@ MQLARTICLES_ENUMREG_REG(MCPFUNC_COPY_DATA_SPREAD)
 
 //---
 #include <TSN\\Mcp\\Main.mqh>
-#include <Trade\\Trade.mqh>
 #include <TSN\\ExtraCodes\\Expert.mqh>
 #include <TSN\\ExtraCodes\\Func.mqh>
+#include <TSN\\MQLArticles\\RM\\LoteSizeCalc.mqh>
 
 
 //---

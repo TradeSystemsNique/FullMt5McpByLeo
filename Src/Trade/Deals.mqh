@@ -57,13 +57,13 @@ void CMcpFuncHistoryDealList::Run(CJsonNode& param, string& res)
 
 
 //+------------------------------------------------------------------+
-//| history_deal_get_double                                          |
+//| history_deal_get                                                 |
 //+------------------------------------------------------------------+
-class CMcpFuncHistoryDealGetDouble : public CMcpFunction
+class CMcpFuncHistoryDealGet : public CMcpFunction
  {
 public:
-                     CMcpFuncHistoryDealGetDouble() : CMcpFunction(0, false, "history_deal_get_double") {}
-                    ~CMcpFuncHistoryDealGetDouble(void) {}
+                     CMcpFuncHistoryDealGet() : CMcpFunction(0, false, "history_deal_get") {}
+                    ~CMcpFuncHistoryDealGet(void) {}
 
   void               Run(CJsonNode& param, string& res) override final;
  };
@@ -71,7 +71,7 @@ public:
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
-void CMcpFuncHistoryDealGetDouble::Run(CJsonNode& param, string& res)
+void CMcpFuncHistoryDealGet::Run(CJsonNode& param, string& res)
  {
   ::ResetLastError();
   const ulong ticket = (ulong)param["ticket"].ToInt(0);
@@ -79,81 +79,70 @@ void CMcpFuncHistoryDealGetDouble::Run(CJsonNode& param, string& res)
 //---
   if(!::HistoryDealSelect(ticket))
    {
-    res = StringFormat("{\"ok\":false,\"error\":\"deal not found in history, last mt5 error = %d\"}", ::GetLastError());
+    res = StringFormat("{\"ok\":false,\"error\":\"deal_not_found, last mt5 error = %d\"}", ::GetLastError());
     return;
    }
 
 //---
-  const ENUM_DEAL_PROPERTY_DOUBLE property = CEnumReg::GetValueNoRef<ENUM_DEAL_PROPERTY_DOUBLE>(param["property"].ToString(""), DEAL_VOLUME);
-  const double value = HistoryDealGetDouble(ticket, property);
-  res = StringFormat("{\"ok\":true,\"result\":%.8f}", value);
- }
+  const int8_t mode = (int8_t)param["mode"].ToInt();
 
-//+------------------------------------------------------------------+
-//| history_deal_get_integer                                         |
-//+------------------------------------------------------------------+
-class CMcpFuncHistoryDealGetInteger : public CMcpFunction
- {
-public:
-                     CMcpFuncHistoryDealGetInteger() : CMcpFunction(0, false, "history_deal_get_integer") {}
-                    ~CMcpFuncHistoryDealGetInteger(void) {}
-
-  void               Run(CJsonNode& param, string& res) override final;
- };
-
-//+------------------------------------------------------------------+
-//|                                                                  |
-//+------------------------------------------------------------------+
-void CMcpFuncHistoryDealGetInteger::Run(CJsonNode& param, string& res)
- {
-  ::ResetLastError();
-  const ulong ticket = (ulong)param["ticket"].ToInt(0);
-
-//---
-  if(!::HistoryDealSelect(ticket))
+  switch(mode)
    {
-    res = StringFormat("{\"ok\":false,\"error\":\"deal not found in history, last mt5 error = %d\"}", ::GetLastError());
-    return;
+    //--- DOUBLE
+    case 0:
+     {
+      double v;
+      if(HistoryDealGetDouble(
+           ticket,
+           CEnumReg::GetValueNoRef<ENUM_DEAL_PROPERTY_DOUBLE>(param["property"].ToString(""), WRONG_VALUE),
+           v))
+       {
+        res = StringFormat("{\"ok\":true,\"result\":%.8f}", v);
+        return;
+       }
+      break;
+     }
+
+    //--- INTEGER
+    case 1:
+     {
+      long v;
+      if(HistoryDealGetInteger(
+           ticket,
+           CEnumReg::GetValueNoRef<ENUM_DEAL_PROPERTY_INTEGER>(param["property"].ToString(""), WRONG_VALUE),
+           v))
+       {
+        res = StringFormat("{\"ok\":true,\"result\":%I64d}", v);
+        return;
+       }
+      break;
+     }
+
+    //--- STRING
+    case 2:
+     {
+      string v;
+      if(HistoryDealGetString(
+           ticket,
+           CEnumReg::GetValueNoRef<ENUM_DEAL_PROPERTY_STRING>(param["property"].ToString(""), WRONG_VALUE),
+           v))
+       {
+        res = "{\"ok\":true,\"result\":\"" + v + "\"}";
+        return;
+       }
+      break;
+     }
+
+    default:
+      res = StringFormat("{\"ok\":false,\"error\":\"Invalid mode = %d\"}", mode);
+      return;
    }
 
 //---
-  const ENUM_DEAL_PROPERTY_INTEGER property = CEnumReg::GetValueNoRef<ENUM_DEAL_PROPERTY_INTEGER>(param["property"].ToString(""), DEAL_TICKET);
-  const long value = HistoryDealGetInteger(ticket, property);
-  res = StringFormat("{\"ok\":true,\"result\":%I64d}", value);
+  res = StringFormat("{\"ok\":false,\"error\":\"Failed to call HistoryDealGet*, last mt5 err = %d\"}", ::GetLastError());
  }
 
-//+------------------------------------------------------------------+
-//| history_deal_get_string                                          |
-//+------------------------------------------------------------------+
-class CMcpFuncHistoryDealGetString : public CMcpFunction
- {
-public:
-                     CMcpFuncHistoryDealGetString() : CMcpFunction(0, false, "history_deal_get_string") {}
-                    ~CMcpFuncHistoryDealGetString(void) {}
 
-  void               Run(CJsonNode& param, string& res) override final;
- };
-
-//+------------------------------------------------------------------+
-//|                                                                  |
-//+------------------------------------------------------------------+
-void CMcpFuncHistoryDealGetString::Run(CJsonNode& param, string& res)
- {
-  ::ResetLastError();
-  const ulong ticket = (ulong)param["ticket"].ToInt(0);
-
-//---
-  if(!::HistoryDealSelect(ticket))
-   {
-    res = StringFormat("{\"ok\":false,\"error\":\"deal not found in history, last mt5 error = %d\"}", ::GetLastError());
-    return;
-   }
-
-//---
-  const ENUM_DEAL_PROPERTY_STRING property = CEnumReg::GetValueNoRef<ENUM_DEAL_PROPERTY_STRING>(param["property"].ToString(""), DEAL_SYMBOL);
-  const string value = HistoryDealGetString(ticket, property);
-  res = StringFormat("{\"ok\":true,\"result\":\"%s\"}", value);
- }
 
 //+------------------------------------------------------------------+
 #endif // FULLMT5MCPBYLEO_SRC_TRADE_DEALS_MQH

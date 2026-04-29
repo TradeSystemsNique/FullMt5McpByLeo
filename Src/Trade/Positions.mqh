@@ -45,13 +45,13 @@ void CMcpFuncPositionList::Run(CJsonNode& param, string& res)
  }
 
 //+------------------------------------------------------------------+
-//| position_get_double                                              |
+//| position_get                                                     |
 //+------------------------------------------------------------------+
-class CMcpFuncPositionGetDouble : public CMcpFunction
+class CMcpFuncPositionGet : public CMcpFunction
  {
 public:
-                     CMcpFuncPositionGetDouble() : CMcpFunction(0, false, "position_get_double") {}
-                    ~CMcpFuncPositionGetDouble(void) {}
+                     CMcpFuncPositionGet() : CMcpFunction(0, false, "position_get") {}
+                    ~CMcpFuncPositionGet(void) {}
 
   void               Run(CJsonNode& param, string& res) override final;
  };
@@ -59,7 +59,7 @@ public:
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
-void CMcpFuncPositionGetDouble::Run(CJsonNode& param, string& res)
+void CMcpFuncPositionGet::Run(CJsonNode& param, string& res)
  {
   ::ResetLastError();
   const ulong ticket = param["ticket"].ToInt(0);
@@ -72,74 +72,57 @@ void CMcpFuncPositionGetDouble::Run(CJsonNode& param, string& res)
    }
 
 //---
-  const ENUM_POSITION_PROPERTY_DOUBLE property = CEnumReg::GetValueNoRef<ENUM_POSITION_PROPERTY_DOUBLE>(param["property"].ToString(""), POSITION_VOLUME);
-  res = StringFormat("{\"ok\":true,\"result\":%.8f}", PositionGetDouble(property));
- }
-
-//+------------------------------------------------------------------+
-//| position_get_integer                                             |
-//+------------------------------------------------------------------+
-class CMcpFuncPositionGetInteger : public CMcpFunction
- {
-public:
-                     CMcpFuncPositionGetInteger() : CMcpFunction(0, false, "position_get_integer") {}
-                    ~CMcpFuncPositionGetInteger(void) {}
-
-  void               Run(CJsonNode& param, string& res) override final;
- };
-
-//+------------------------------------------------------------------+
-//|                                                                  |
-//+------------------------------------------------------------------+
-void CMcpFuncPositionGetInteger::Run(CJsonNode& param, string& res)
- {
-  ::ResetLastError();
-  const ulong ticket = (ulong)param["ticket"].ToInt(0);
-
-//---
-  if(!PositionSelectByTicket(ticket))
+  const int8_t mode = (int8_t)param["mode"].ToInt();
+  switch(mode)
    {
-    res = StringFormat("{\"ok\":false,\"error\":\"position_not_found, last mt5 error = %d\"}", ::GetLastError());
-    return;
+
+    //---
+    case 0:
+     {
+      double v;
+      if(PositionGetDouble(CEnumReg::GetValueNoRef<ENUM_POSITION_PROPERTY_DOUBLE>(param["property"].ToString(""), WRONG_VALUE), v))
+       {
+        res = StringFormat("{\"ok\":true,\"result\":%.8f}", v);
+        return;
+       }
+      break;
+     }
+
+    //---
+    case 1:
+     {
+      long v;
+      if(PositionGetInteger(CEnumReg::GetValueNoRef<ENUM_POSITION_PROPERTY_INTEGER>(param["property"].ToString(""), WRONG_VALUE), v))
+       {
+        res = StringFormat("{\"ok\":true,\"result\":%I64d}", v);
+        return;
+       }
+      break;
+     }
+
+    //---
+    case 2:
+     {
+      string v;
+      if(PositionGetString(CEnumReg::GetValueNoRef<ENUM_POSITION_PROPERTY_STRING>(param["property"].ToString(""), WRONG_VALUE), v))
+       {
+        res = "{\"ok\":true,\"result\":\"" + v + "\"}";
+        return;
+       }
+      break;
+     }
+
+    default:
+      res = StringFormat("{\"ok\":false,\"error\":\"Invalid mode = %d\"}", mode);
+      return;
    }
 
+
 //---
-  const ENUM_POSITION_PROPERTY_INTEGER property = CEnumReg::GetValueNoRef<ENUM_POSITION_PROPERTY_INTEGER>(param["property"].ToString(""), POSITION_TICKET);
-  res = StringFormat("{\"ok\":true,\"result\":%I64d}", PositionGetInteger(property));
+  res = StringFormat("{\"ok\":false,\"error\":\"Failed to call PositionGet*, last err mt5 = %d\"}", ::GetLastError());
  }
 
-//+------------------------------------------------------------------+
-//| position_get_string                                              |
-//+------------------------------------------------------------------+
-class CMcpFuncPositionGetString : public CMcpFunction
- {
-public:
-                     CMcpFuncPositionGetString() : CMcpFunction(0, false, "position_get_string") {}
-                    ~CMcpFuncPositionGetString(void) {}
-
-  void               Run(CJsonNode& param, string& res) override final;
- };
-
-//+------------------------------------------------------------------+
-//|                                                                  |
-//+------------------------------------------------------------------+
-void CMcpFuncPositionGetString::Run(CJsonNode& param, string& res)
- {
-  ::ResetLastError();
-  const ulong ticket = (ulong)param["ticket"].ToInt(0);
-
-//---
-  if(!PositionSelectByTicket(ticket))
-   {
-    res = StringFormat("{\"ok\":false,\"error\":\"position_not_found, last mt5 error = %d\"}", ::GetLastError());
-    return;
-   }
-
-//---
-  const ENUM_POSITION_PROPERTY_STRING property = CEnumReg::GetValueNoRef<ENUM_POSITION_PROPERTY_STRING>(param["property"].ToString(""), POSITION_SYMBOL);
-  res = StringFormat("{\"ok\":true,\"result\":\"%s\"}", PositionGetString(property));
- }
-
+ 
 //+------------------------------------------------------------------+
 //| position_close                                                   |
 //+------------------------------------------------------------------+
@@ -157,10 +140,10 @@ public:
 //---
 /*
 {
-  "type": "by_symbol",
-  "value": "XAUUSD",
-  "deviation": 100
-  "volume" : 0.01 // Campo opcional (si no se indica se cierra todo)
+"type": "by_symbol",
+"value": "XAUUSD",
+"deviation": 100
+"volume" : 0.01 // Campo opcional (si no se indica se cierra todo)
 }
 */
 

@@ -120,5 +120,97 @@ void CMcpFuncGetErrDescription::Run(CJsonNode& param, string& res)
 //---
   res = "{\"ok\":true,\"result\":\"" + err + "\"}";
  }
+
+//+------------------------------------------------------------------+
+//| account_info                                                     |
+//+------------------------------------------------------------------+
+class CMcpFuncAccountInfo : public CMcpFunction
+ {
+public:
+                     CMcpFuncAccountInfo() : CMcpFunction(0, false, "account_info") {}
+                    ~CMcpFuncAccountInfo(void) {}
+
+  void               Run(CJsonNode& param, string& res) override final;
+ };
+
+//+------------------------------------------------------------------+
+void CMcpFuncAccountInfo::Run(CJsonNode& param, string& res)
+ {
+  const int8_t mode = (int8_t)param["mode"].ToInt();
+  switch(mode)
+   {
+    //--- DOUBLE
+    case 0:
+     {
+      res = StringFormat("{\"ok\":true,\"result\":%.8f}", AccountInfoDouble(CEnumReg::GetValueNoRef<ENUM_ACCOUNT_INFO_DOUBLE>(param["property"].ToString(""), WRONG_VALUE)));
+      return;
+     }
+
+    //--- INTEGER
+    case 1:
+     {
+      res = StringFormat("{\"ok\":true,\"result\":%I64d}", AccountInfoInteger(CEnumReg::GetValueNoRef<ENUM_ACCOUNT_INFO_INTEGER>(param["property"].ToString(""), WRONG_VALUE)));
+      return;
+     }
+
+    //--- STRING
+    case 2:
+     {
+      res = "{\"ok\":true,\"result\":\"" + AccountInfoString(CEnumReg::GetValueNoRef<ENUM_ACCOUNT_INFO_STRING>(param["property"].ToString(""), WRONG_VALUE)) + "\"}";
+      return;
+     }
+
+    default:
+      res = StringFormat("{\"ok\":false,\"error\":\"Invalid mode = %d\"}", mode);
+      return;
+   }
+ }
+
+//+------------------------------------------------------------------+
+//| terminal_info                                                    |
+//+------------------------------------------------------------------+
+class CMcpFuncTerminalInfo : public CMcpFunction
+ {
+public:
+                     CMcpFuncTerminalInfo() : CMcpFunction(0, false, "terminal_info") {}
+                    ~CMcpFuncTerminalInfo(void) {}
+
+  void               Run(CJsonNode& param, string& res) override final;
+ };
+
+//+------------------------------------------------------------------+
+void CMcpFuncTerminalInfo::Run(CJsonNode& param, string& res)
+ {
+  const int8_t mode = (int8_t)param["mode"].ToInt();
+
+  switch(mode)
+   {
+    //--- DOUBLE
+    case 0:
+     {
+      res = StringFormat("{\"ok\":true,\"result\":%.8f}", TerminalInfoDouble(CEnumReg::GetValueNoRef<ENUM_TERMINAL_INFO_DOUBLE>(param["property"].ToString(""), WRONG_VALUE)));
+      return;
+     }
+
+    //--- INTEGER
+    case 1:
+     {
+      res = StringFormat("{\"ok\":true,\"result\":%I64d}", TerminalInfoInteger(CEnumReg::GetValueNoRef<ENUM_TERMINAL_INFO_INTEGER>(param["property"].ToString(""), WRONG_VALUE)));
+      return;
+     }
+
+    //--- STRING
+    case 2:
+     {
+      res = "{\"ok\":true,\"result\":\"" + TerminalInfoString(CEnumReg::GetValueNoRef<ENUM_TERMINAL_INFO_STRING>(param["property"].ToString(""), WRONG_VALUE)) + "\"}";
+      return;
+     }
+
+    default:
+      res = StringFormat("{\"ok\":false,\"error\":\"Invalid mode = %d\"}", mode);
+      return;
+   }
+ }
+
 //+------------------------------------------------------------------+
 #endif // FULLMT5MCPBYLEO_SRC_UTILS_UTILS_MQH

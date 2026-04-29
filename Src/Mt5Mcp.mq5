@@ -43,7 +43,7 @@ int OnInit()
   g_mcp_server.AddItemFast(new CMcpFuncObjectDouble());
   g_mcp_server.AddItemFast(new CMcpFuncObjectString());
   g_mcp_server.AddItemFast(new CMcpFuncObjectList());
-  
+
 //--- Charts
   g_mcp_server.AddItemFast(new CMcpFuncChartList());
   g_mcp_server.AddItemFast(new CMcpFuncChartOpen());
@@ -56,19 +56,20 @@ int OnInit()
 //--- Data / Symbol
   g_mcp_server.AddItemFast(new CMcpFuncSymbolsTotal());
   g_mcp_server.AddItemFast(new CMcpFuncSymbolSelect());
-  g_mcp_server.AddItemFast(new CMcpFuncSymbolInfoDouble());
-  g_mcp_server.AddItemFast(new CMcpFuncSymbolInfoInteger());
-  g_mcp_server.AddItemFast(new CMcpFuncSymbolInfoString());
+  g_mcp_server.AddItemFast(new CMcpFuncSymbolInfo());
+  g_mcp_server.AddItemFast(new CMcpFuncSymbolInfoSession());
+
 
 //--- Data / Market Data
   g_mcp_server.AddItemFast(new CMcpFuncCopyData());
   g_mcp_server.AddItemFast(new CMcpFuncCopyTicks());
 
+//--- Calc order
+  g_mcp_server.AddItemFast(new CMcpFuncCalcOrder());
+
 //--- Trade / Positions
   g_mcp_server.AddItemFast(new CMcpFuncPositionList());
-  g_mcp_server.AddItemFast(new CMcpFuncPositionGetDouble());
-  g_mcp_server.AddItemFast(new CMcpFuncPositionGetInteger());
-  g_mcp_server.AddItemFast(new CMcpFuncPositionGetString());
+  g_mcp_server.AddItemFast(new CMcpFuncPositionGet());
   g_mcp_server.AddItemFast(new CMcpFuncPositionClose(&g_trade));
   g_mcp_server.AddItemFast(new CMcpFuncPositionModify(&g_trade));
 
@@ -76,15 +77,11 @@ int OnInit()
   g_mcp_server.AddItemFast(new CMcpFuncOrderList());
   g_mcp_server.AddItemFast(new CMcpFuncOrderClose(&g_trade));
   g_mcp_server.AddItemFast(new CMcpFuncOrderModify(&g_trade));
-  g_mcp_server.AddItemFast(new CMcpFuncOrderGetDouble());
-  g_mcp_server.AddItemFast(new CMcpFuncOrderGetInteger());
-  g_mcp_server.AddItemFast(new CMcpFuncOrderGetString());
+  g_mcp_server.AddItemFast(new CMcpFuncOrderGet());
 
 //--- Trade / Deals
   g_mcp_server.AddItemFast(new CMcpFuncHistoryDealList());
-  g_mcp_server.AddItemFast(new CMcpFuncHistoryDealGetDouble());
-  g_mcp_server.AddItemFast(new CMcpFuncHistoryDealGetInteger());
-  g_mcp_server.AddItemFast(new CMcpFuncHistoryDealGetString());
+  g_mcp_server.AddItemFast(new CMcpFuncHistoryDealGet());
 
 //--- Trade / Trade
   g_mcp_server.AddItemFast(new CMcpFuncTradeTrade(&g_trade));
@@ -102,7 +99,8 @@ int OnInit()
 //--- Uitls
   g_mcp_server.AddItemFast(new CMcpFuncGetTime());
   g_mcp_server.AddItemFast(new CMcpFuncGetErrDescription());
-
+  g_mcp_server.AddItemFast(new CMcpFuncTerminalInfo());
+  g_mcp_server.AddItemFast(new CMcpFuncAccountInfo());
 
 //---
   g_mcp_server.Set(InpMsPool, InpMsTimeoutReadNoTls);

@@ -68,11 +68,11 @@ void CMcpFuncSymbolSelect::Run(CJsonNode& param, string& res)
 //+------------------------------------------------------------------+
 //| symbol_info_double                                               |
 //+------------------------------------------------------------------+
-class CMcpFuncSymbolInfoDouble : public CMcpFunction
+class CMcpFuncSymbolInfo : public CMcpFunction
  {
 public:
-                     CMcpFuncSymbolInfoDouble() : CMcpFunction(0, false, "symbol_info_double") {}
-                    ~CMcpFuncSymbolInfoDouble(void) {}
+                     CMcpFuncSymbolInfo() : CMcpFunction(0, false, "symbol_info") {}
+                    ~CMcpFuncSymbolInfo(void) {}
 
   void               Run(CJsonNode& param, string& res) override final;
  };
@@ -80,82 +80,98 @@ public:
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
-void CMcpFuncSymbolInfoDouble::Run(CJsonNode& param, string& res)
+void CMcpFuncSymbolInfo::Run(CJsonNode& param, string& res)
  {
 //---
   const string symbol = param["symbol"].ToString(_Symbol);
-  double value;
-//---
-  const bool ok = SymbolInfoDouble(
-                    symbol,
-                    CEnumReg::GetValueNoRef<ENUM_SYMBOL_INFO_DOUBLE>(
-                      param["property"].ToString(""),
-                      WRONG_VALUE
-                    ),
-                    value
-                  );
+  const int8_t mode = (int8_t)param["mode"].ToInt();
 
-  const int dig = (int)SymbolInfoInteger(symbol, SYMBOL_DIGITS);
 //---
-  res = ok
-        ? StringFormat("{\"ok\":true,\"result\":%.*f}", dig, value)
-        : StringFormat("{\"ok\":false,\"error\":\"Error call SymbolInfoDouble, mt5 last err = %d\"}", ::GetLastError());
+  switch(mode)
+   {
+    case  0: // DBL
+     {
+      double value;
+      const int dig = (int)SymbolInfoInteger(symbol, SYMBOL_DIGITS);
+      //---
+      res = SymbolInfoDouble(symbol, CEnumReg::GetValueNoRef<ENUM_SYMBOL_INFO_DOUBLE>(param["property"].ToString(""), WRONG_VALUE), value)
+            ? StringFormat("{\"ok\":true,\"result\":%.*f}", dig, value)
+            : StringFormat("{\"ok\":false,\"error\":\"Error call SymbolInfoDouble, mt5 last err = %d\"}", ::GetLastError());
+      break;
+     }
+
+    case 1: // INTEGER
+     {
+      long value;
+      //---
+      res = SymbolInfoInteger(symbol, CEnumReg::GetValueNoRef<ENUM_SYMBOL_INFO_INTEGER>(param["property"].ToString(""), WRONG_VALUE), value) ?
+            StringFormat("{\"ok\":true,\"result\":%I64d}", value) : StringFormat("{\"ok\":false,\"error\":\"Eror call symbolinfointeger, mt5 last err = %d\"}", ::GetLastError());
+      break;
+     }
+    case 2: // STRING
+     {
+      string value;
+      //---
+      res = SymbolInfoString(symbol, CEnumReg::GetValueNoRef<ENUM_SYMBOL_INFO_STRING>(param["property"].ToString(""), WRONG_VALUE),  value)
+            ? StringFormat("{\"ok\":true,\"result\":\"%s\"}", value)
+            : StringFormat("{\"ok\":false,\"error\":\"Error call SymbolInfoString, mt5 last err = %d\"}", ::GetLastError());
+      break;
+     }
+    default:
+      res = StringFormat("{\"ok\":false,\"error\":\"Invalid mode = %d\"}", mode);
+      break;
+   }
  }
+
 //+------------------------------------------------------------------+
-//| symbol_info_integer                                              |
+//|                                                                  |
 //+------------------------------------------------------------------+
-class CMcpFuncSymbolInfoInteger : public CMcpFunction
+class CMcpFuncSymbolInfoSession : public CMcpFunction
  {
 public:
-                     CMcpFuncSymbolInfoInteger() : CMcpFunction(0, false, "symbol_info_integer") {}
-                    ~CMcpFuncSymbolInfoInteger(void) {}
-
+                     CMcpFuncSymbolInfoSession(void) : CMcpFunction(0, false, "symbol_info_session") {}
+                    ~CMcpFuncSymbolInfoSession(void) {}
   void               Run(CJsonNode& param, string& res) override final;
  };
 
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
-void CMcpFuncSymbolInfoInteger::Run(CJsonNode& param, string& res)
+void CMcpFuncSymbolInfoSession::Run(CJsonNode &param, string &res)
  {
-//---
-  long value;
-//---
-  res = SymbolInfoInteger(param["symbol"].ToString(_Symbol), CEnumReg::GetValueNoRef<ENUM_SYMBOL_INFO_INTEGER>(param["property"].ToString(""), WRONG_VALUE), value) ?
-        StringFormat("{\"ok\":true,\"result\":%I64d}", value) : StringFormat("{\"ok\":false,\"error\":\"Eror call symbolinfointeger, mt5 last err = %d\"}", ::GetLastError());
+  ::ResetLastError();
+  const int8_t mode = (int8_t)param["mode"].ToInt();
+  datetime to, from;
+  switch(mode)
+   {
+    case  0:
+     {
+      if(!SymbolInfoSessionTrade(param["symbol"].ToString(), CEnumReg::GetValueNoRef<ENUM_DAY_OF_WEEK>(param["day_of_week"].ToString(""), WRONG_VALUE), uint(param["session_index"].ToInt()), from, to))
+       {
+        res = StringFormat("{\"ok\":false,\"error\":\"Error call SymbolInfoSessionTrade, mt5 last err = %d\"}", ::GetLastError());
+        return;
+       }
+      break;
+     }
+
+    case 1:
+     {
+      if(!SymbolInfoSessionQuote(param["symbol"].ToString(), CEnumReg::GetValueNoRef<ENUM_DAY_OF_WEEK>(param["day_of_week"].ToString(""), WRONG_VALUE), uint(param["session_index"].ToInt()), from, to))
+       {
+        res = StringFormat("{\"ok\":false,\"error\":\"Error call SymbolInfoSessionQuote, mt5 last err = %d\"}", ::GetLastError());
+        return;
+       }
+      break;
+     }
+    default:
+      res = StringFormat("{\"ok\":false,\"error\":\"Invalid mode = %d\"}", mode);
+      return;
+   }
+  res = StringFormat("{\"ok\":true,\"result\":{\"date_from\":\"%s\",\"date_to\":\"%s\"}}", TimeToString(from, TIME_DATE | TIME_MINUTES | TIME_SECONDS), TimeToString(to, TIME_DATE | TIME_MINUTES | TIME_SECONDS));
  }
 
-//+------------------------------------------------------------------+
-//| symbol_info_string                                               |
-//+------------------------------------------------------------------+
-class CMcpFuncSymbolInfoString : public CMcpFunction
- {
-public:
-                     CMcpFuncSymbolInfoString() : CMcpFunction(0, false, "symbol_info_string") {}
-                    ~CMcpFuncSymbolInfoString(void) {}
 
-  void               Run(CJsonNode& param, string& res) override final;
- };
 
-//+------------------------------------------------------------------+
-//|                                                                  |
-//+------------------------------------------------------------------+
-void CMcpFuncSymbolInfoString::Run(CJsonNode& param, string& res)
- {
-//---
-  string value;
-//---
-  res = SymbolInfoString(
-          param["symbol"].ToString(_Symbol),
-          CEnumReg::GetValueNoRef<ENUM_SYMBOL_INFO_STRING>(
-            param["property"].ToString(""),
-            WRONG_VALUE
-          ),
-          value
-        )
-        ? StringFormat("{\"ok\":true,\"result\":\"%s\"}", value)
-        : StringFormat("{\"ok\":false,\"error\":\"Error call SymbolInfoString, mt5 last err = %d\"}", ::GetLastError());
- }
 
 //+------------------------------------------------------------------+
 #endif // FULLMT5MCPBYLEO_SRC_DATA_SYMBOL_MQH
