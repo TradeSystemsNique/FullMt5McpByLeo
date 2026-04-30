@@ -5,7 +5,7 @@
 #+------------------------------------------------------------------+
 #| General                                                          |
 #+------------------------------------------------------------------+
-__version__ = "1.0.3"             
+__version__ = "1.0.4"             
 __author__ = "TradeSystemsNique"    
 __license__ = "Niquel & Leo NL-ND License"                
 __copyright__ = "Copyright 2026, TradeSystemsNique"   

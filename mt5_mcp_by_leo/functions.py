@@ -1122,7 +1122,7 @@ def execute_backtest(payload: Dict[str, Any]) -> str:
         {
             "symbol": "EURUSD" (string, required),
             "set_file_name": "MyStrategy.set" (string, required - settings file),
-            "expert_path": "Experts\\MyEA.ex5" (string, required - EA path),
+            "expert_path": "MyEA.ex5" (string, required - EA path relative at folder MQL5\\Experts),
             "start_date": "2024.01.01 00:00:00" (string:datetime:mt5 format, requerid),
             "end_date": "2024.01.01 00:00:00" (string:datetime:mt5 format, requerid),
             "timeframe": "PERIOD_H1" (string, required - native ENUM_TIMEFRAMES),
