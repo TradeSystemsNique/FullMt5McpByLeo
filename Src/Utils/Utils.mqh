@@ -62,7 +62,7 @@ void CMcpFuncGetTime::Run(CJsonNode& param, string& res)
       time = TimeTradeServer();
       break;
     default:
-      res = StringFormat("{\"ok\":false,\"error\":\"Invalid time type = %s\"}", type);
+      res = StringFormat("{\"ok\":false,\"error\":\"Invalid time type = %d\"}", type);
       return;
    }
 

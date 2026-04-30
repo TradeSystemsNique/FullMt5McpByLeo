@@ -18,7 +18,7 @@
 //+------------------------------------------------------------------+
 input string InpSoketAdres = "127.0.0.1";
 input uint InpSoketPort = 9999;
-input int InpMsPool = 125;
+input int InpMsPool = 100;
 input int InpMsTimeoutReadNoTls = 10000;
 
 //+------------------------------------------------------------------+
@@ -52,6 +52,8 @@ int OnInit()
   g_mcp_server.AddItemFast(new CMcpFuncChartDouble());
   g_mcp_server.AddItemFast(new CMcpFuncChartString());
   g_mcp_server.AddItemFast(new CMcpFuncChartRedraw());
+  g_mcp_server.AddItemFast(new CMcpFuncChartSrenshot());
+  g_mcp_server.AddItemFast(new CMcpFuncChartGetSymbolOrPeriod());
 
 //--- Data / Symbol
   g_mcp_server.AddItemFast(new CMcpFuncSymbolsTotal());
@@ -63,6 +65,7 @@ int OnInit()
 //--- Data / Market Data
   g_mcp_server.AddItemFast(new CMcpFuncCopyData());
   g_mcp_server.AddItemFast(new CMcpFuncCopyTicks());
+  g_mcp_server.AddItemFast(new CMcpFuncBarShift());
 
 //--- Calc order
   g_mcp_server.AddItemFast(new CMcpFuncCalcOrder());

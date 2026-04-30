@@ -1,9 +1,7 @@
 #+------------------------------------------------------------------+
 #| Imports                                                          |
 #+------------------------------------------------------------------+
-from .Def import mcp, send
-import json
-
+from .Def import mcp, send, Dict, Any, json
 
 # ============================================================================
 # GROUP 1: TRADE OPERATIONS (19 Functions)
@@ -12,14 +10,14 @@ import json
 # === OPEN POSITIONS (3) ===
 
 @mcp.tool()
-def open_trade(payload: str) -> str:
+def open_trade(payload: Dict[str, Any]) -> str:
     """
     Open a market trade (buy or sell) at current market price.
 
     Description:
         Opens a new market position immediately. Uses CTrade::Buy() or
         CTrade::Sell() depending on type parameter.
-    Inputs (JSON):
+    Inputs (DICT):
         {
             "type": "buy" or "sell" (string, required - case-insensitive),
             "symbol": "EURUSD" (string, required),
@@ -43,14 +41,14 @@ def open_trade(payload: str) -> str:
 
 
 @mcp.tool()
-def open_limit(payload: str) -> str:
+def open_limit(payload: Dict[str, Any]) -> str:
     """
     Open a limit order (pending order at specific price).
 
     Description:
         Creates a pending Buy Limit or Sell Limit order. Triggers when price
         reaches the specified level. Uses CTrade::BuyLimit() or CTrade::SellLimit().
-    Inputs (JSON):
+    Inputs (DICT):
         {
             "type": "buy" or "sell" (string, required),
             "symbol": "EURUSD" (string, required),
@@ -73,14 +71,14 @@ def open_limit(payload: str) -> str:
 
 
 @mcp.tool()
-def open_stop(payload: str) -> str:
+def open_stop(payload: Dict[str, Any]) -> str:
     """
     Open a stop order (pending order beyond current price).
 
     Description:
         Creates a pending Buy Stop or Sell Stop order. Triggers when price
         breaks beyond the specified level. Uses CTrade::BuyStop() or CTrade::SellStop().
-    Inputs (JSON):
+    Inputs (DICT):
         {
             "type": "buy" or "sell" (string, required),
             "symbol": "EURUSD" (string, required),
@@ -105,13 +103,13 @@ def open_stop(payload: str) -> str:
 # === POSITION MANAGEMENT (4) ===
 
 @mcp.tool()
-def position_list(payload: str) -> str:
+def position_list(payload: Dict[str, Any]) -> str:
     """
     List all open positions.
 
     Description:
         Returns array of all open position tickets in the trading account.
-    Inputs (JSON):
+    Inputs (DICT):
         {}
     Outputs (JSON):
         Success: {"ok": true, "result": [123456, 123457, 123458]}
@@ -124,13 +122,13 @@ def position_list(payload: str) -> str:
 
 
 @mcp.tool()
-def position_get(payload: str) -> str:
+def position_get(payload: Dict[str, Any]) -> str:
     """
     Get property from an open position (double, integer, string).
 
     Description:
         Unified access to MT5 PositionGet* functions.
-    Inputs (JSON string):
+    Inputs (DICT):
         {
             "ticket": 123456,               # int, required - position ticket
             "property": "POSITION_VOLUME",  # string, required - ENUM_POSITION_PROPERTY_*
@@ -150,27 +148,27 @@ def position_get(payload: str) -> str:
     return send("position_get", payload)
 
 @mcp.tool()
-def position_close(payload: str) -> str:
+def position_close(payload: Dict[str, Any]) -> str:
     """
     Close open position(s) by symbol or ticket.
 
     Description:
         Closes one or more open positions. Supports closing by symbol name or
         by ticket number, with optional partial closure by volume.
-    Inputs (JSON - Close all by symbol):
+    Inputs (DICT - Close all by symbol):
         {
             "type": "by_symbol" (string, required),
             "value": "EURUSD" (string, required - symbol to close),
             "deviation": 100 (int, optional - price deviation in points)
         }
-    Inputs (JSON - Partial close by volume):
+    Inputs (DICT - Partial close by volume):
         {
             "type": "by_symbol" (string, required),
             "value": "EURUSD" (string, required),
             "volume": 0.01 (double, optional - amount to close),
             "deviation": 100 (int, optional)
         }
-    Inputs (JSON - Close by ticket):
+    Inputs (DICT - Close by ticket):
         {
             "type": "by_ticket" (string, required),
             "value": 123456 (int, required - position ticket),
@@ -189,13 +187,13 @@ def position_close(payload: str) -> str:
 
 
 @mcp.tool()
-def position_modify(payload: str) -> str:
+def position_modify(payload: Dict[str, Any]) -> str:
     """
     Modify stop loss and take profit of open position.
 
     Description:
         Updates the stop loss and/or take profit levels of an open position.
-    Inputs (JSON):
+    Inputs (DICT):
         {
             "ticket": 123456 (int, required - position ticket),
             "sl": 1.0800 (double, required - new stop loss price),
@@ -215,13 +213,13 @@ def position_modify(payload: str) -> str:
 # === ORDER MANAGEMENT (5) ===
 
 @mcp.tool()
-def order_list(payload: str) -> str:
+def order_list(payload: Dict[str, Any]) -> str:
     """
     List all pending orders.
 
     Description:
         Returns array of all pending (not yet activated) order tickets.
-    Inputs (JSON):
+    Inputs (DICT):
         {}
     Outputs (JSON):
         Success: {"ok": true, "result": [654321, 654322]}
@@ -235,13 +233,13 @@ def order_list(payload: str) -> str:
 
 
 @mcp.tool()
-def order_close(payload: str) -> str:
+def order_close(payload: Dict[str, Any]) -> str:
     """
     Cancel pending order.
 
     Description:
         Cancels a pending limit or stop order. Uses CTrade::OrderDelete().
-    Inputs (JSON):
+    Inputs (DICT):
         {
             "ticket": 654321 (int, required - order ticket to cancel)
         }
@@ -255,14 +253,14 @@ def order_close(payload: str) -> str:
 
 
 @mcp.tool()
-def order_modify(payload: str) -> str:
+def order_modify(payload: Dict[str, Any]) -> str:
     """
     Modify pending order price, stop loss, and take profit.
 
     Description:
         Updates price level and protection levels for a pending order.
         Optionally updates order expiration settings.
-    Inputs (JSON):
+    Inputs (DICT):
         {
             "ticket": 654321 (int, required - order ticket),
             "new_price": 1.0800 (double, required - new trigger price),
@@ -282,13 +280,13 @@ def order_modify(payload: str) -> str:
 
 
 @mcp.tool()
-def order_get(payload: str) -> str:
+def order_get(payload: Dict[str, Any]) -> str:
     """
     Get property from a pending order (double, string, int).
 
     Description:
         Unified access to MT5 OrderGet* functions.
-    Inputs (JSON string):
+    Inputs (DICT):
         {
             "ticket": 654321,               # int, required - order ticket
             "property": "ORDER_EXTERNAL_ID",       # string, required - ENUM_ORDER_PROPERTY_*
@@ -310,7 +308,7 @@ def order_get(payload: str) -> str:
 
 
 @mcp.tool()
-def calc_order(payload: str) -> str:
+def calc_order(payload: Dict[str, Any]) -> str:
     """
     Unified MT5 trading calculator (CGetLote wrapper).
 
@@ -404,14 +402,14 @@ def calc_order(payload: str) -> str:
 
 # === TRADE HISTORY (2) ===
 @mcp.tool()
-def history_deal_list(payload: str) -> str:
+def history_deal_list(payload: Dict[str, Any]) -> str:
     """
     Get list of deal tickets within date range.
 
     Description:
         Retrieves all completed deal tickets between start and end dates
         using HistorySelect() to filter deals by time range.
-    Inputs (JSON):
+    Inputs (DICT):
         {
             "start_date_select": "2024.01.01 00:00:00" (string:datetime:mt5 format, requerid),
             "end_date_select": "2024.01.01 00:00:00" (string:datetime:mt5 format, requerid)
@@ -428,13 +426,13 @@ def history_deal_list(payload: str) -> str:
 
 
 @mcp.tool()
-def history_deal_get(payload: str) -> str:
+def history_deal_get(payload: Dict[str, Any]) -> str:
     """
     Get property from a deal (string, double, integer).
 
     Description:
         Unified access to MT5 HistoryDealGet* functions.
-    Inputs (JSON string):
+    Inputs (DICT):
         {
             "ticket": 123456,                # int, required - deal ticket
             "property": "DEAL_VOLUME",       # string, required - ENUM_DEAL_PROPERTY_*
@@ -457,14 +455,14 @@ def history_deal_get(payload: str) -> str:
 # GROUP 2: DATA - OHLC + SYMBOL (7 Functions)
 # ============================================================================
 
-# === MARKET DATA (2) ===
+# === MARKET DATA (3) ===
 
 @mcp.tool()
-def copy_data(payload: str) -> str:
+def copy_data(payload: Dict[str, Any]) -> str:
     """
     Get Open,High,Low,Close,Spread,TickVolume,RealVolume,Time in array in series (0=most recent, size-1=oldest) (Internal use Copy* mt5 function)
     
-    Inputs (JSON):
+    Inputs (DICT):
         {
             "symbol": "EURUSD" (string, required),
             "timeframe": "PERIOD_H1" (string:ENUM_TIMEFRAMES, required),
@@ -493,13 +491,13 @@ def copy_data(payload: str) -> str:
     return send("copy_data", payload)
 
 @mcp.tool()
-def copy_ticks(payload: str) -> str:
+def copy_ticks(payload: Dict[str, Any]) -> str:
     """
     Get tick-level market data (Bid/Ask/Last/...) in obj array (0=most recent, size-1=oldest) 
 
     Description:
         Retrieves raw tick data from MT5 including bid, ask, last price and volume.
-    Inputs (JSON):
+    Inputs (DICT):
         {
             "symbol": "EURUSD" (string, required),
             "from": 17000000000 (string:datetime:unix_format::ms, optional),
@@ -528,9 +526,35 @@ def copy_ticks(payload: str) -> str:
     return send("copy_ticks", payload)
 
 
+@mcp.tool()
+def i_bar_shift(payload: Dict[str, Any]) -> str:
+    """
+    Get the shift (bar index) of a specific time in history.
+    Description:
+        Returns the bar index/shift of a specified time on a given symbol and timeframe.
+        Uses iBarShift() MT5 Function to find the position of a bar matching the exact time or 
+        the nearest bar if exact match is not required.
+    Inputs (DICT):
+        {
+            "symbol": "EURUSD" (string, required),
+            "timeframe": "PERIOD_M1" (string:ENUM_TIMEFRAMES, required),
+            "time": "2024.01.15 12:30:00" (string:datetime:mt5 format, required),
+            "exact": true (boolean, optional, default: false)
+        }
+    Outputs (JSON):
+        Success: {"ok": true, "result": 42}
+        Error: {"ok": false, "error": "error message"}
+    Notes:
+        - If exact=true: returns bar index only if exact time match exists
+        - If exact=false: returns the nearest bar index (recommended for most cases)
+        - Result is a string representation of the bar shift (0 = current bar, 1 = previous bar, etc.)
+        - Returns -1 if bar is not found
+    """
+    return send("i_bar_shift", payload)
+
 # === SYMBOL INFO (4) ===
 @mcp.tool()
-def symbol_info(payload: str) -> str:
+def symbol_info(payload: Dict[str, Any]) -> str:
     """
     Get symbol property (double, integer, string).
 
@@ -556,14 +580,14 @@ def symbol_info(payload: str) -> str:
     return send("symbol_info", payload)
 
 @mcp.tool()
-def symbol_info_session(payload: str) -> str:
+def symbol_info_session(payload: Dict[str, Any]) -> str:
     """
     Get trading/quote session time for a symbol.
 
     Description:
         Retrieves session start/end times for trading or quote sessions
         of a symbol using MT5 SymbolInfoSessionTrade / SymbolInfoSessionQuote.
-    Inputs (JSON string):
+    Inputs (DICT):
         {
             "symbol": "EURUSD",        # string, required - symbol name
             "day_of_week": "MONDAY",   # string:ENUM_DAY_OF_WEEK, required
@@ -590,13 +614,13 @@ def symbol_info_session(payload: str) -> str:
     return send("symbol_info_session", payload)
 
 @mcp.tool()
-def symbol_select(payload: str) -> str:
+def symbol_select(payload: Dict[str, Any]) -> str:
     """
     Add or remove symbol from Market Watch.
 
     Description:
         Adds symbol to Market Watch (select=true) or removes it (select=false).
-    Inputs (JSON):
+    Inputs (DICT):
         {
             "symbol": "EURUSD" (string, required),
             "select": true (bool, required - true=add, false=remove)
@@ -612,14 +636,14 @@ def symbol_select(payload: str) -> str:
 
 
 @mcp.tool()
-def symbols_total(payload: str) -> str:
+def symbols_total(payload: Dict[str, Any]) -> str:
     """
     Get total number of available symbols.
 
     Description:
         Returns count of all available trading symbols or only those selected
         in Market Watch.
-    Inputs (JSON):
+    Inputs (DICT):
         {
             "only_selected_in_market_watch": false (bool, optional - default false)
         }
@@ -638,7 +662,7 @@ def symbols_total(payload: str) -> str:
 # ============================================================================
 
 @mcp.tool()
-def object_create(payload: str) -> str:
+def object_create(payload: Dict[str, Any]) -> str:
     """
     Create a graphical object on a chart (MT5 ObjectCreate wrapper).
 
@@ -646,7 +670,7 @@ def object_create(payload: str) -> str:
         Creates chart objects such as trend lines, rectangles, labels, arrows, etc.
         The "mode" defines how many coordinate points are required.
 
-    INPUT FORMAT (JSON)
+    INPUT FORMAT (DICT)
     {
         "chart_id": 0,             # int, required (0 = current chart)
         "object_name": "Trend1",   # string, required (must be unique)
@@ -699,13 +723,13 @@ def object_create(payload: str) -> str:
 
 
 @mcp.tool()
-def object_delete(payload: str) -> str:
+def object_delete(payload: Dict[str, Any]) -> str:
     """
     Delete graphic object from chart.
 
     Description:
         Removes a graphic object from a chart by name.
-    Inputs (JSON):
+    Inputs (DICT):
         {
             "chart_id": 0 (int, required - 0=current chart),
             "object_name": "TrendLine1" (string, required - object name)
@@ -720,21 +744,21 @@ def object_delete(payload: str) -> str:
 
 
 @mcp.tool()
-def object_integer(payload: str) -> str:
+def object_integer(payload: Dict[str, Any]) -> str:
     """
     Get or set integer property of graphic object (ENUM_OBJECT_PROPERTY_INTEGER).
 
     Description:
         Retrieves or modifies integer properties of graphic objects.
         Operation (GET/SET) determined by presence/absence of value parameter.
-    Inputs (JSON - GET Example):
+    Inputs (DICT - GET Example):
         {
             "chart_id": 0 (int, required),
             "object_name": "TrendLine1" (string, required),
             "property": "OBJPROP_COLOR" (string:ENUM_OBJECT_PROPERTY_INTEGER, required),
             "prop_modifier": 0 (int, optional - default 0)
         }
-    Inputs (JSON - SET Example):
+    Inputs (DICT - SET Example):
         {
             "chart_id": 0 (int, required),
             "object_name": "TrendLine1" (string, required),
@@ -755,21 +779,21 @@ def object_integer(payload: str) -> str:
 
 
 @mcp.tool()
-def object_double(payload: str) -> str:
+def object_double(payload: Dict[str, Any]) -> str:
     """
     Get or set double property of graphic object (ENUM_OBJECT_PROPERTY_DOUBLE).
 
     Description:
         Retrieves or modifies floating-point properties of graphic objects.
         Operation (GET/SET) determined by presence/absence of value parameter.
-    Inputs (JSON - GET Example):
+    Inputs (DICT - GET Example):
         {
             "chart_id": 0 (int, required),
             "object_name": "TrendLine1" (string, required),
             "property": "OBJPROP_PRICE" (string:ENUM_OBJECT_PROPERTY_DOUBLE, required),
             "prop_modifier": 0 (int, optional - default 0)
         }
-    Inputs (JSON - SET Example):
+    Inputs (DICT - SET Example):
         {
             "chart_id": 0 (int, required),
             "object_name": "TrendLine1" (string, required),
@@ -791,21 +815,21 @@ def object_double(payload: str) -> str:
 
 
 @mcp.tool()
-def object_string(payload: str) -> str:
+def object_string(payload: Dict[str, Any]) -> str:
     """
     Get or set string property of graphic object (ENUM_OBJECT_PROPERTY_STRING).
 
     Description:
         Retrieves or modifies string properties of graphic objects.
         Operation (GET/SET) determined by presence/absence of value parameter.
-    Inputs (JSON - GET Example):
+    Inputs (DICT - GET Example):
         {
             "chart_id": 0 (int, required),
             "object_name": "TextLabel1" (string, required),
             "property": "OBJPROP_TEXT" (string:ENUM_OBJECT_PROPERTY_STRING, required),
             "prop_modifier": 0 (int, optional - default 0)
         }
-    Inputs (JSON - SET Example):
+    Inputs (DICT - SET Example):
         {
             "chart_id": 0 (int, required),
             "object_name": "TextLabel1" (string, required),
@@ -825,12 +849,12 @@ def object_string(payload: str) -> str:
     return send("object_string", payload)
 
 @mcp.tool()
-def object_list(payload: str) -> str:
+def object_list(payload: Dict[str, Any]) -> str:
     """
     Get list of object names on chart.
     Description:
         Returns all object names from a chart filtered by type and subwindow.
-    Inputs (JSON):
+    Inputs (DICT):
         {
             "chart_id": 0 (int, optional - default 0),
             "sub_window": 0 (int, optional - default -1 for all),
@@ -848,17 +872,17 @@ def object_list(payload: str) -> str:
 
 
 # ============================================================================
-# GROUP 4: CHARTS (7 Functions)
+# GROUP 4: CHARTS (9 Functions)
 # ============================================================================
 
 @mcp.tool()
-def chart_list(payload: str) -> str:
+def chart_list(payload: Dict[str, Any]) -> str:
     """
     Get list of all open chart windows.
 
     Description:
         Returns array of chart IDs for all currently open chart windows.
-    Inputs (JSON):
+    Inputs (DICT):
         {}
     Outputs (JSON):
         Success: {"ok": true, "result": [0, 2, 4]}
@@ -871,13 +895,13 @@ def chart_list(payload: str) -> str:
 
 
 @mcp.tool()
-def chart_open(payload: str) -> str:
+def chart_open(payload: Dict[str, Any]) -> str:
     """
     Open new chart window.
 
     Description:
         Opens a new chart window for specified symbol and timeframe.
-    Inputs (JSON):
+    Inputs (DICT):
         {
             "symbol": "EURUSD" (string, required),
             "timeframe": "PERIOD_H1" (string:ENUM_TIMEFRAMES, required - native ENUM_TIMEFRAMES)
@@ -892,13 +916,13 @@ def chart_open(payload: str) -> str:
 
 
 @mcp.tool()
-def chart_close(payload: str) -> str:
+def chart_close(payload: Dict[str, Any]) -> str:
     """
     Close chart window.
 
     Description:
         Closes a chart window by ID.
-    Inputs (JSON):
+    Inputs (DICT):
      {
        "chart_id": 2 (int, required - chart ID to close)
      }
@@ -912,20 +936,20 @@ def chart_close(payload: str) -> str:
 
 
 @mcp.tool()
-def chart_integer(payload: str) -> str:
+def chart_integer(payload: Dict[str, Any]) -> str:
     """
     Get\Set integer property of chart (ENUM_CHART_PROPERTY_INTEGER) (MT5 Analogous: ChartGetInteger, ChartSetInteger)
     
     Description:
         Retrieves or set integer properties of a chart window using native
         ENUM_CHART_PROPERTY_INTEGER enum values.
-    Inputs (JSON) GET:
+    Inputs (DICT) GET:
       {
        "chart_id": 0 (int, required),
        "property": "CHART_VISIBLE_BARS" (string:ENUM_CHART_PROPERTY_INTEGER enum, required),
        "sub_window": 0 (int, optional - default 0)
       }
-    Inputs (JSON) SET:
+    Inputs (DICT) SET:
      {
        "chart_id": 0 (int, required),
        "property": "CHART_COLOR_ASK" (string:ENUM_CHART_PROPERTY_INTEGER enum, required),
@@ -940,20 +964,20 @@ def chart_integer(payload: str) -> str:
     return send("chart_integer", payload)
     
 @mcp.tool()
-def chart_double(payload: str) -> str:
+def chart_double(payload: Dict[str, Any]) -> str:
     """
     Get double property of chart (ENUM_CHART_PROPERTY_DOUBLE) (MT5 Analogous: ChartGetDouble, ChartSetDouble).
     
     Description:
         Retrieves or set floating-point properties of a chart window using native
         ENUM_CHART_PROPERTY_DOUBLE enum values.
-    Inputs (JSON) GET:
+    Inputs (DICT) GET:
     {
      "chart_id": 0 (int, required),
      "property": "CHART_FIXED_MAX" (string:ENUM_CHART_PROPERTY_DOUBLE enum, required),
      "sub_window": 0 (int, optional - default 0)
     }
-    Inputs (JSON) SET:
+    Inputs (DICT) SET:
      {
        "chart_id": 0 (int, required),
        "property": "CHART_FIXED_MAX" (string:ENUM_CHART_PROPERTY_DOUBLE enum, required),
@@ -968,13 +992,13 @@ def chart_double(payload: str) -> str:
     return send("chart_double", payload)
 
 @mcp.tool()
-def chart_redraw(payload: str) -> str:
+def chart_redraw(payload: Dict[str, Any]) -> str:
     """
     Redraw chart.
 
     Description:
         Forces a chart to redraw, updating all objects and data.
-    Inputs (JSON):
+    Inputs (DICT):
         {
             "chart_id": 0 (int, required - chart ID to redraw)
         }
@@ -987,17 +1011,17 @@ def chart_redraw(payload: str) -> str:
     return send("chart_redraw", payload)
 
 @mcp.tool()
-def chart_string(payload: str) -> str:
+def chart_string(payload: Dict[str, Any]) -> str:
     """
     Get/Set string property of chart (ENUM_CHART_PROPERTY_STRING).
     Description:
         Retrieves or modifies string properties of a chart.
-    Inputs (JSON - GET):
+    Inputs (DICT - GET):
         {
             "chart_id": 0 (int, required),
             "property": "CHART_COMMENT" (string:ENUM_CHART_PROPERTY_STRING, required)
         }
-    Inputs (JSON - SET):
+    Inputs (DICT - SET):
         {
             "chart_id": 0 (int, required),
             "property": "CHART_COMMENT" (string:ENUM_CHART_PROPERTY_STRING, required),
@@ -1010,19 +1034,59 @@ def chart_string(payload: str) -> str:
     """
     return send("chart_string", payload)
 
+@mcp.tool()
+def chart_get_symbol_or_period(payload: Dict[str, Any]) -> str:
+    """
+    Get chart symbol or period based on mode.
+    Description:
+        Retrieves either the timeframe or symbol of a chart based on the mode parameter.
+    Inputs (DICT):
+        {
+            "chart_id": 0 (int, required),
+            "mode": 0 (int, required) - 0=get timeframe, 1=get symbol
+        }
+    Outputs (JSON):
+        mode=0 (timeframe): {"ok": true, "result": "PERIOD_H1"}
+        mode=1 (symbol): {"ok": true, "result": "EURUSD"}
+        Error: {"ok": false, "error": "Invalid mode = X, use 0=get timeframe, 1=get symbol"}
+    """
+    return send("chart_get_symbol_or_period", payload)
+
+@mcp.tool()
+def chart_screenshot(payload: Dict[str, Any]) -> str:
+    """
+    Capture chart screenshot and save to file.
+    Description:
+        Takes a screenshot of a chart and saves it to disk, optionally moving it 
+        to the common terminal folder.
+    Inputs (DICT):
+        {
+            "chart_id": 0 (int, required),
+            "file_name": "screenshot.png" (string, required, relative at MQL5\\Files\\ folder if comon_flag=false, else relative to Common\\Files\\ folder),
+            "with": 800 (int, optional) - default: chart actual width in pixels,
+            "height": 600 (int, optional) - default: chart actual height in pixels,
+            "common_flag": true (bool, optional) - default: true, move to common folder
+        }
+    Outputs (JSON):
+        Success: {"ok": true, "result": {"full_path": "C:\\path\\to\\file.png"}}
+        Error ChartScreenShot: {"ok": false, "error": "Failed call ChartScreenShot, last mt5 error = 1234"}
+        Error FileMove: {"ok": false, "error": "Failed call FileMove, last mt5 error = 5678"}
+    """
+    return send("chart_screenshot", payload)
+
 # ============================================================================
 # GROUP 5: CODE + TERMINAL (4 Functions)
 # ============================================================================
 
 @mcp.tool()
-def compile_mql5(payload: str) -> str:
+def compile_mql5(payload: Dict[str, Any]) -> str:
     """
     Compile MQL5 source code.
 
     Description:
         Compiles MQL5 source code file to EX5 bytecode using specified
         CPU instruction set. Used for Expert Advisors, indicators, scripts.
-    Inputs (JSON):
+    Inputs (DICT):
         {
             "full_path_code": "C:\\Users\\Leo\\MetaTrader5\\MQL5\\Experts\\MyEA.mq5" (string, required),
             "instruction": "avx2" (string, optional - CPU instruction set),
@@ -1047,14 +1111,14 @@ def compile_mql5(payload: str) -> str:
 
 
 @mcp.tool()
-def execute_backtest(payload: str) -> str:
+def execute_backtest(payload: Dict[str, Any]) -> str:
     """
     Execute historical backtest.
 
     Description:
         Runs historical backtest (strategy testing) with specified parameters.
         Results saved to file for analysis.
-    Inputs (JSON):
+    Inputs (DICT):
         {
             "symbol": "EURUSD" (string, required),
             "set_file_name": "MyStrategy.set" (string, required - settings file),
@@ -1086,47 +1150,86 @@ def execute_backtest(payload: str) -> str:
 
 
 @mcp.tool()
-def run_ea(payload: str) -> str:
+def run_ea(payload: dict) -> str:
     """
-    Run Expert Advisor (EA) on live or demo account.
+    Run Expert Advisor (EA) on a chart in real-time.
 
     Description:
-        Executes an Expert Advisor in real-time on specified symbol/timeframe.
-        EA runs until manually stopped or encounters error.
-    Inputs (JSON):
+        Launches an Expert Advisor on a specified symbol/timeframe chart.
+        The EA will execute continuously with tick-based updates until manually stopped.
+        Parameters are passed by position order to match the EA's input variables.
+    
+    Inputs (DICT):
         {
-            "symbol": "EURUSD" (string, required),
-            "timeframe": "PERIOD_H1" (string, required),
-            "ms_espera": 5000 (int, required - delay between ticks in milliseconds),
-            "expert_path": "Experts\\MyEA.ex5" (string, required, path relative at MQL5\\ folder),
-            "run_flags": "" (str, optional - execution flags = ["DLL", "AutoTrading", "DLL|AutoTrading"]),
+            "symbol": "EURUSD" (string, required - trading symbol),
+            "timeframe": "PERIOD_H1" (string, required - chart timeframe, e.g., PERIOD_M1, PERIOD_H1, PERIOD_D1),
+            "ms_espera": 5000 (int, required - millisecond delay between ticks: 500-5000 typical),
+            "expert_path": "Experts\\MyEA.ex5" (string, required - path to .ex5 file relative to MQL5\\ folder, incluyed Experts\\ folder in rute),
+            "run_flags": "" (string, optional - execution permissions separated by |, e.g., "DLL|AutoTrading"),
             "params": [
                 {"data_type": "TYPE_INT", "value": 10},
                 {"data_type": "TYPE_DOUBLE", "value": 0.01},
-                {"data_type": "TYPE_TYPE_STRING", "value": "Parameter"}
-            ] (obj array, optional - EA input parameters obj structure = {"ENUM_DATATYPE", value})
+                {"data_type": "TYPE_STRING", "value": "MyParam"}
+            ] (array, optional - EA input parameters by position)
         }
+    
     Outputs (JSON):
-        Success: {"ok": true, "result": "EA running"}
-        Error: {"ok": false, "error": "Failed to start EA"}
+        Success: {"ok": true, "result": "EA successfully launched on chart with chart id = 12345"}
+        Error: {"ok": false, "error": "error description"}
+    
+    Parameter Mapping (IMPORTANTE - Por Posición):
+        Parameters are matched to EA inputs by POSITION ORDER, not by name.
+        - First param object → First EA input variable (InpA)
+        - Second param object → Second EA input variable (InpB)
+        - If params are missing or incomplete, EA uses its default values
+        
+        CRITICAL - Value Format by Data Type:
+        - TYPE_INT, TYPE_UINT, TYPE_SHORT, TYPE_USHORT, TYPE_CHAR, TYPE_UCHAR, TYPE_BOOL, TYPE_LONG, TYPE_ULONG::
+          value: 10 (numeric)
+        - TYPE_FLOAT, TYPE_DOUBLE:
+          value: 0.01 (numeric, decimal)
+        - TYPE_STRING:
+          value: "MyString" (string text)
+        - TYPE_DATETIME:
+          value: "2024.01.15 12:30:00" (STRING format: "YYYY.MM.DD HH:MM:SS")
+        - TYPE_COLOR:
+          value: ["255,128,64" or "0xFF8040" or mt5:web_colors eg=clrBlue]
+        
+        IMPORTANT: Even numeric types like DATETIME and COLOR must be passed as STRING values
+                   The system will convert them to the appropriate type internally.
+    
     Notes:
-        - ms_espera: typical range 500-5000ms
-        - Expert Advisor must be compiled (.ex5 format)
-        - Only one EA per symbol/timeframe pair
-        - EA continues running until manually stopped
+        - EA continues running until manually stopped or MT5 closes
+        - ms_espera controls tick simulation speed (lower = faster)
+        - run_flags examples: "DLL" (allow DLLs), "AutoTrading" (allow auto-trading), "DLL|AutoTrading" (both)
+        - If EA is already running, parameters will be updated (chart reuse mode)
+    
+    Example 
+        {
+            "symbol": "EURUSD",
+            "timeframe": "PERIOD_H1",
+            "ms_espera": 1000,
+            "expert_path": "Experts\\MyEA.ex5",
+            "run_flags": "AutoTrading",
+            "params": [
+                {"data_type": "TYPE_DATETIME", "value": "2024.01.15 14:30:00"},
+                {"data_type": "TYPE_COLOR", "value": "clrRed"},
+                {"data_type": "TYPE_STRING", "value": "MyConfig"}
+            ]
+        }
     """
     return send("run_ea", payload)
 
 
 @mcp.tool()
-def get_expert_logs(payload: str) -> str:
+def get_expert_logs(payload: Dict[str, Any]) -> str:
     """
     Get recent Expert Advisor logs.
 
     Description:
         Retrieves the most recent log entries from Expert Advisor execution.
         Useful for debugging and monitoring EA behavior.
-    Inputs (JSON):
+    Inputs (DICT):
         {
             "start_date": "2024.01.01" (string:datetime:mt5_format, requerid),
             "logs_lines": 100 (int, optional - number of lines, default 50)
@@ -1153,15 +1256,15 @@ def get_expert_logs(payload: str) -> str:
 # ============================================================================
 
 @mcp.tool()
-def get_time(payload: str) -> str:
+def get_time(payload: Dict[str, Any]) -> str:
     """
     Get current time in different formats (GMT, local, server, etc.).
 
     Description:
         Returns time based on requested type using MT5 internal functions.
-    Inputs (JSON):
+    Inputs (DICT):
         {
-            "type": "MCPFUNC_TIME_GMT" (string:MCPFUNC_TIME_GMT, required)
+            "type": "MCPFUNC_TIME_CURRENT" (string:ENUM_MCPFUNC_TYPE_TIME, required)
         }
     Available Types (ENUM_MCPFUNC_TYPE_TIME):
         - MCPFUNC_TIME_GMT      -> TimeGMT()
@@ -1178,13 +1281,13 @@ def get_time(payload: str) -> str:
 
 
 @mcp.tool()
-def get_err_description(payload: str) -> str:
+def get_err_description(payload: Dict[str, Any]) -> str:
     """
     Get human-readable description of MT5 error code.
     Description:
         Converts MT5 error code into readable message using internal
         CMt5ErrorDesc::GetError().
-    Inputs (JSON):
+    Inputs (DICT):
         {
             "error_code": 10001 (int, required),
             "include_code": true (bool, optional, default true)
@@ -1203,7 +1306,7 @@ def get_err_description(payload: str) -> str:
 
 
 @mcp.tool()
-def account_info(payload: str) -> str:
+def account_info(payload: Dict[str, Any]) -> str:
     """
     Get MT5 account information (double, integer, string).
 
@@ -1230,7 +1333,7 @@ def account_info(payload: str) -> str:
 
 
 @mcp.tool()
-def terminal_info(payload: str) -> str:
+def terminal_info(payload: Dict[str, Any]) -> str:
     """
     Get MT5 terminal information (double, integer, string).
 

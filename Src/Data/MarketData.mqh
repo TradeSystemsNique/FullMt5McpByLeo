@@ -99,7 +99,7 @@ void CMcpFuncCopyTicks::Run(CJsonNode& param, string& res)
     // Construir objeto MqlTick en JSON
     res += StringFormat(
              "{\"time\":\"%s\",\"bid\":%.*f,\"ask\":%.*f,\"last\":%.*f,\"volume\":%I64u,\"time_msc\":%I64d,\"flags\":%u,\"volume_real\":%.*f}",
-             TimeToString(m_ticks[i].time,TIME_DATE|TIME_SECONDS|TIME_MINUTES),
+             TimeToString(m_ticks[i].time, TIME_DATE | TIME_SECONDS | TIME_MINUTES),
              digits, m_ticks[i].bid,
              digits, m_ticks[i].ask,
              digits, m_ticks[i].last,
@@ -113,6 +113,28 @@ void CMcpFuncCopyTicks::Run(CJsonNode& param, string& res)
  }
 
 //+------------------------------------------------------------------+
+
+
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
+class CMcpFuncBarShift : public CMcpFunction
+ {
+public:
+                     CMcpFuncBarShift(void) : CMcpFunction(0, false, "i_bar_shift") {}
+                    ~CMcpFuncBarShift(void) {}
+  void               Run(CJsonNode& param, string& res) override final;
+ };
+
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
+void CMcpFuncBarShift::Run(CJsonNode &param, string &res)
+ {
+  res = StringFormat("{\"ok\":true,\"result\":%d}", iBarShift(param["symbol"].ToString(_Symbol), CEnumReg::GetValueNoRef<ENUM_TIMEFRAMES>(param["timeframe"].ToString(), _Period),
+                     StringToTime(param["time"].ToString("0")), param["exact"].ToBool(false)));
+ }
+ 
 
 
 //+------------------------------------------------------------------+
@@ -167,7 +189,8 @@ void CMcpFuncCopyData::Run(CJsonNode& param, string& res)
 //---
   ::ResetLastError();
   uint8_t t = 0;
-  const int count = (int)param["count"].ToInt(10);
+  const int start = (int)param["start"].ToInt();
+  const int count = (int)param["count"].ToInt();
   const uint8_t mode  = uint8_t(CEnumReg::GetValueNoRef<ENUM_MCPFUNC_COPY_DATA>(param["mode"].ToString(), 0));
   const string symbol = param["symbol"].ToString(_Symbol);
 
@@ -175,49 +198,49 @@ void CMcpFuncCopyData::Run(CJsonNode& param, string& res)
 //---
   int copied = -1;
   switch(mode)
-   { 
+   {
     case  MCPFUNC_COPY_DATA_CLOSE:
      {
-      copied = CopyClose(symbol, CEnumReg::GetValueNoRef<ENUM_TIMEFRAMES>(param["timeframe"].ToString(), _Period), (int)param["start"].ToInt(0), count, m_buffer_d);
+      copied = CopyClose(symbol, CEnumReg::GetValueNoRef<ENUM_TIMEFRAMES>(param["timeframe"].ToString(), _Period), start, count, m_buffer_d);
       break;
      }
     case  MCPFUNC_COPY_DATA_OPEN:
      {
-      copied = CopyOpen(symbol, CEnumReg::GetValueNoRef<ENUM_TIMEFRAMES>(param["timeframe"].ToString(), _Period), (int)param["start"].ToInt(0), count, m_buffer_d);
+      copied = CopyOpen(symbol, CEnumReg::GetValueNoRef<ENUM_TIMEFRAMES>(param["timeframe"].ToString(), _Period), start, count, m_buffer_d);
       break;
      }
     case  MCPFUNC_COPY_DATA_HIGH:
      {
-      copied = CopyHigh(symbol, CEnumReg::GetValueNoRef<ENUM_TIMEFRAMES>(param["timeframe"].ToString(), _Period), (int)param["start"].ToInt(0), count, m_buffer_d);
+      copied = CopyHigh(symbol, CEnumReg::GetValueNoRef<ENUM_TIMEFRAMES>(param["timeframe"].ToString(), _Period), start, count, m_buffer_d);
       break;
      }
     case  MCPFUNC_COPY_DATA_LOW:
      {
-      copied = CopyLow(symbol, CEnumReg::GetValueNoRef<ENUM_TIMEFRAMES>(param["timeframe"].ToString(), _Period), (int)param["start"].ToInt(0), count, m_buffer_d);
+      copied = CopyLow(symbol, CEnumReg::GetValueNoRef<ENUM_TIMEFRAMES>(param["timeframe"].ToString(), _Period), start, count, m_buffer_d);
       break;
      }
     case  MCPFUNC_COPY_DATA_TICK_VOLUME:
      {
       t = 1;
-      copied = CopyTickVolume(symbol, CEnumReg::GetValueNoRef<ENUM_TIMEFRAMES>(param["timeframe"].ToString(), _Period), (int)param["start"].ToInt(0), count, m_buffer_l);
+      copied = CopyTickVolume(symbol, CEnumReg::GetValueNoRef<ENUM_TIMEFRAMES>(param["timeframe"].ToString(), _Period), start, count, m_buffer_l);
       break;
      }
     case  MCPFUNC_COPY_DATA_REAL_VOLUME:
      {
       t = 1;
-      copied = CopyRealVolume(symbol, CEnumReg::GetValueNoRef<ENUM_TIMEFRAMES>(param["timeframe"].ToString(), _Period), (int)param["start"].ToInt(0), count, m_buffer_l);
+      copied = CopyRealVolume(symbol, CEnumReg::GetValueNoRef<ENUM_TIMEFRAMES>(param["timeframe"].ToString(), _Period), start, count, m_buffer_l);
       break;
      }
     case MCPFUNC_COPY_DATA_TIME:
      {
       t = 2;
-      copied = CopyTime(symbol, CEnumReg::GetValueNoRef<ENUM_TIMEFRAMES>(param["timeframe"].ToString(), _Period), (int)param["start"].ToInt(0), count, m_buffer_dt);
+      copied = CopyTime(symbol, CEnumReg::GetValueNoRef<ENUM_TIMEFRAMES>(param["timeframe"].ToString(), _Period), start, count, m_buffer_dt);
       break;
      }
     case MCPFUNC_COPY_DATA_SPREAD:
      {
       t = 3;
-      copied = CopySpread(symbol, CEnumReg::GetValueNoRef<ENUM_TIMEFRAMES>(param["timeframe"].ToString(), _Period), (int)param["start"].ToInt(0), count, m_buffer_i);
+      copied = CopySpread(symbol, CEnumReg::GetValueNoRef<ENUM_TIMEFRAMES>(param["timeframe"].ToString(), _Period), start, count, m_buffer_i);
       break;
      }
 
@@ -230,7 +253,7 @@ void CMcpFuncCopyData::Run(CJsonNode& param, string& res)
 //---
   if(copied != count)
    {
-    res = StringFormat("{\"ok\":false,\"error\":\"copy_data failed, last mt5 error = %d\"}", ::GetLastError());
+    res = StringFormat("{\"ok\":false,\"error\":\"copy_data failed, last mt5 error = %d, [start = %d, count = %d]\"}", ::GetLastError(), start, count);
     return;
    }
 

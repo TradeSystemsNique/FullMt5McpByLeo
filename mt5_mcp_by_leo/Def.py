@@ -6,6 +6,7 @@ import json
 import threading
 import argparse
 from mcp.server.fastmcp import FastMCP
+from typing import Dict, Any
 
 #+------------------------------------------------------------------+
 #| Args                                                             |
@@ -33,6 +34,7 @@ def esperar_mt5():
     server_sock.bind((HOST, PORT))
     server_sock.listen(1)
     mt5_conn, _ = server_sock.accept()  # espera a que MT5 conecte
+    mt5_conn.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
 
 # Arranca en hilo separado, no bloquea el MCP
 # La idea esq ue exista mientras que se termine por fin de conectar con mt5
@@ -41,20 +43,26 @@ threading.Thread(target=esperar_mt5, daemon=True).start()
 #+------------------------------------------------------------------+
 #| Send                                                             |
 #+------------------------------------------------------------------+
-def send(name: str, payload: str) -> str:
+def send(name: str, payload: dict) -> str:
     if mt5_conn is None:
         return json.dumps({"ok": False, "error": "mt5_no_conectado"})
     
-    # Inline con f-string, sin conversiones innecesarias
-    msg : str = f'{{"name": "{name}", "data": {payload}}}\n'
-    mt5_conn.sendall(msg.encode("utf-8"))
+    try:
+        payload_clean = json.dumps(payload, separators=(',', ':'))
+        msg = f'{{"name":"{name}","data":{payload_clean}}}\n'
+        
+        # Enviamos
+        mt5_conn.sendall( msg.encode("utf-8"))
+        
+        # Esperamos la repuesta
+        response = b""
+        while not response.endswith(b"\n"):
+            chunk = mt5_conn.recv(4096)
+            if not chunk:
+                return json.dumps({"ok": False, "error": "mt5_desconectado"})
+            response += chunk
+        
+        return response.decode("utf-8").strip()
     
-    # Obtnemos la repuesta en chunks
-    response : str = b""
-    while not response.endswith(b"\n"):
-        chunk = mt5_conn.recv(4096)
-        if not chunk:
-            break
-        response += chunk
-    
-    return response.decode("utf-8").strip()
+    except Exception as e:
+        return json.dumps({"ok": False, "error": str(e)})

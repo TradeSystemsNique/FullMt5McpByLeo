@@ -23,11 +23,12 @@ history_deal_get (agrupa a los 3 internamente)
 
 
 # ============================================================================
-# GROUP 2: DATA OHLC + SYMBOL INFO (6 funciones)
+# GROUP 2: DATA OHLC + SYMBOL INFO (7 funciones)
 # ============================================================================
 
 copy_data
 copy_ticks
+i_bar_shift
 
 symbol_info_session
 symbol_info (agrupa a los 3 internamente)
@@ -48,7 +49,7 @@ object_string
 
 
 # ============================================================================
-# GROUP 4: CHARTS (7 funciones)
+# GROUP 4: CHARTS (9 funciones)
 # ============================================================================
 
 chart_list
@@ -58,6 +59,8 @@ chart_integer
 chart_double
 chart_string
 chart_redraw
+chart_screenshot
+chart_get_symbol_or_period
 
 
 # ============================================================================
@@ -81,5 +84,5 @@ terminal_info (agrupa a los 3 internamente)
 
 
 # ============================================================================
-# TOTAL: 41 FUNCIONES
+# TOTAL: 44 FUNCIONES
 # ============================================================================

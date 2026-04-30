@@ -58,11 +58,11 @@ void CMcpFunctionRunBacktest::Run(CJsonNode &param, string &res)
   ::ResetLastError();
   if(!::EventChartCustom(m_chart_id_runner, DEFMTTESTER_E_ON_TASK, m_current_chart_id, DEFMTTESTER_TO_DBL_ON_TASK(true), fn))
    {
-    res = StringFormat("\"ok\":false,\"error\":\"Error to send event to run backtest, last err = %d\"}", ::GetLastError());
+    res = StringFormat("{\"ok\":false,\"error\":\"Error to send event to run backtest, last err = %d\"}", ::GetLastError());
    }
   else
    {
-    res = "\"ok\":true,\"result\":\"Backtest sent to MT5 Tester\"}";
+    res = "{\"ok\":true,\"result\":\"Backtest sent to MT5 Tester\"}";
    }
  }
 
@@ -100,7 +100,7 @@ void CMcpFunctionRunEA::Run(CJsonNode &param, string &res)
   const long chart_id = OpenChartAndDevoler(ChartID(), param["symbol"].ToString(_Symbol), CEnumReg::GetValueNoRef<ENUM_TIMEFRAMES>(param["timeframe"].ToString(), _Period), int(param["ms_espera"].ToInt(750)));
   if(chart_id == -1)
    {
-    res = StringFormat("\"ok\":false,\"error\":\"Error open chart, last mt5 err = %d\"}", ::GetLastError());
+    res = StringFormat("{\"ok\":false,\"error\":\"Error open chart, last mt5 err = %d\"}", ::GetLastError());
    }
 
 //---
@@ -176,11 +176,11 @@ void CMcpFunctionRunEA::Run(CJsonNode &param, string &res)
 //---
   if(!EXPERT::Run(chart_id, exp_param, EXPERT::FlagsPermisosStrToFlags(param["run_flags"].ToString(), '|')))
    {
-    res = "\"ok\":false,\"error\":\"Error run EA, view logs..\"}";
+    res = "{\"ok\":false,\"error\":\"Error run EA, view logs..\"}";
    }
   else
    {
-    res = StringFormat("\"ok\":true,\"result\":\"EA successfully launched on chart with chart id = %I64d\"}", chart_id);
+    res = StringFormat("{\"ok\":true,\"result\":\"EA successfully launched on chart with chart id = %I64d\"}", chart_id);
    }
  }
 
@@ -202,11 +202,11 @@ void CMcpFunctionCompile::Run(CJsonNode &param, string &res)
   string out_log_path = "";
   if(!CompileFileWithLogFile(param["full_path_code"].ToString(""), out_log_path, (int)param["timeout_ms"].ToInt(60000), param["instruction"].ToString(""), param["optimize"].ToBool(true)))
    {
-    res = StringFormat("\"ok\":false,\"error\":\"Error compile file, view experts logs, and compile log file = %s\"}", out_log_path);
+    res = StringFormat("{\"ok\":false,\"error\":\"Error compile file, view experts logs, and compile log file = %s\"}", out_log_path);
    }
   else
    {
-    res = StringFormat("\"ok\":true,\"result\":\"Success compiling file, log file='%s'\"}", out_log_path);
+    res = StringFormat("{\"ok\":true,\"result\":\"Success compiling file, log file='%s'\"}", out_log_path);
    }
  }
 

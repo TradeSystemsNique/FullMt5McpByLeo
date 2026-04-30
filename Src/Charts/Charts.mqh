@@ -279,4 +279,89 @@ void CMcpFuncChartRedraw::Run(CJsonNode& param, string& res)
  }
 
 //+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
+class CMcpFuncChartGetSymbolOrPeriod : public CMcpFunction
+ {
+public:
+                     CMcpFuncChartGetSymbolOrPeriod(void) : CMcpFunction(0, false, "chart_get_symbol_or_period") {}
+                    ~CMcpFuncChartGetSymbolOrPeriod(void) {}
+  //---
+  void               Run(CJsonNode& param, string& res) override final;
+ };
+
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
+void CMcpFuncChartGetSymbolOrPeriod::Run(CJsonNode &param, string &res)
+ {
+  const int8_t mode = (int8_t)param["mode"].ToInt();
+  switch(mode)
+   {
+    case 0:
+     {
+      res = "{\"ok\":true,\"result\":\"" + EnumToString(ChartPeriod(param["chart_id"].ToInt(0))) +  "\"}";
+      break;
+     }
+    case 1:
+     {
+      res = "{\"ok\":true,\"result\":\"" + ChartSymbol(param["chart_id"].ToInt(0)) +  "\"}";
+      break;
+     }
+    default:
+      res = StringFormat("{\"ok\":false,\"error\":\"Invalid mode = %d, use 0=get timeframe, 1=get symbol\"}", mode);
+      break;
+   }
+ }
+
+
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
+class CMcpFuncChartSrenshot : public CMcpFunction
+ {
+public:
+                     CMcpFuncChartSrenshot(void) : CMcpFunction(0, false, "chart_screenshot") {}
+                    ~CMcpFuncChartSrenshot(void) {}
+  //---
+  void               Run(CJsonNode& param, string& res) override final;
+ };
+
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
+void CMcpFuncChartSrenshot::Run(CJsonNode &param, string &res)
+ {
+//---
+  const string fn = param["file_name"].ToString();
+  const long chart_id = param["chart_id"].ToInt();
+  ::ResetLastError();
+  if(!ChartScreenShot(chart_id, fn, (int)param["with"].ToInt(ChartGetInteger(chart_id, CHART_WIDTH_IN_PIXELS)),
+                      (int)param["height"].ToInt(ChartGetInteger(chart_id, CHART_HEIGHT_IN_PIXELS)), ALIGN_CENTER))
+   {
+    res = StringFormat("{\"ok\":false,\"error\":\"Failed call ChartScreenShot, last mt5 error = %d\"}", ::GetLastError());
+    return;
+   }
+
+
+//---
+  if(param["common_flag"].ToBool(true))
+   {
+    if(!FileMove(fn, 0, fn, FILE_COMMON | FILE_REWRITE))
+     {
+      res = StringFormat("{\"ok\":false,\"error\":\"Failed call FileMove, last mt5 error = %d\"}", ::GetLastError());
+     }
+    else
+     {
+      res = StringFormat("{\"ok\":true,\"result\":{\"full_path\":\"%s\"}}", (TERMINAL_MT5_COMMON_PATH + "\\Files\\" + fn));
+     }
+   }
+  else
+   {
+    res = StringFormat("{\"ok\":true,\"result\":{\"full_path\":\"%s\"}}", (TERMINAL_MT5_ROOT + "Files\\" + fn));
+   }
+ }
+
+
+//+------------------------------------------------------------------+
 #endif // FULLMT5MCPBYLEO_SRC_CHARTS_CHARTS_MQH
