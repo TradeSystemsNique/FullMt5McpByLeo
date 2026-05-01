@@ -9,9 +9,15 @@
 #property strict
 
 //+------------------------------------------------------------------+
+//| Defines                                                          |
+//+------------------------------------------------------------------+
+#define PUBLIC_VERSION
+
+//+------------------------------------------------------------------+
 //| Include                                                          |
 //+------------------------------------------------------------------+
 #include "All.mqh"
+#include "Secrets.mqh"
 
 //+------------------------------------------------------------------+
 //| Inputs                                                           |
@@ -24,7 +30,7 @@ input int InpMsTimeoutReadNoTls = 10000;
 //+------------------------------------------------------------------+
 //| Global variables                                                 |
 //+------------------------------------------------------------------+
-CMcpServer g_mcp_server;
+IMcpBase* g_mcp_server;
 CTrade g_trade;
 
 //+------------------------------------------------------------------+
@@ -32,6 +38,13 @@ CTrade g_trade;
 //+------------------------------------------------------------------+
 int OnInit()
  {
+//---
+#ifdef TSN_MCPSERVER_FUNC_CTS
+  g_mcp_server = TSN_MCPSERVER_FUNC_CTS(THE_BOT_PLACE_USER_ID);
+#else
+  g_mcp_server = McpServerByLeo_Create(THE_BOT_PLACE_USER_ID); 
+#endif // TSN_MCPSERVER_FUNC_CTS
+
 //---
   ::EventSetMillisecondTimer(InpMsPool);
   g_mcp_server.AddLogFlags(LOG_ALL);
@@ -118,6 +131,9 @@ int OnInit()
 //+------------------------------------------------------------------+
 void OnDeinit(const int reason)
  {
+//---
+  if(CheckPointer(g_mcp_server) == POINTER_DYNAMIC)
+    delete g_mcp_server;
 //---
  }
 //+------------------------------------------------------------------+

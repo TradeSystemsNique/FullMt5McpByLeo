@@ -122,6 +122,9 @@ MQLARTICLES_ENUMREG_REG(MCPFUNC_COPY_DATA_SPREAD)
 #include <TSN\\ExtraCodes\\Func.mqh>
 #include <TSN\\MQLArticles\\RM\\LoteSizeCalc.mqh>
 
+//--- TBP ID
+#include <TSN\\ConfigIdTbp.mqh>
+
 
 //---
 #endif // FULLMT5MCPBYLEO_SRC_DEF_DEF_MQH 
