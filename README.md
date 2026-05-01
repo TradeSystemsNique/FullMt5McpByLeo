@@ -125,14 +125,17 @@ In MT5: **Tools** → **Options** → **Allowed URLs for WebRequest**
 - Click **Accept**
 - Enable AutoTrading and DLL imports
 
-### 4. Compile & Attach EA
+### 4. Open claude desktop 
+Open Claude Desktop. At that moment, a Python script is running in the background until it establishes a connection with the EA McpServer.ex5.
+
+### 5. Compile & Attach EA 
 
 ```
 MetaEditor: Open Src/Mt5Mcp.mq5 → Compile (F5) Or Dowland Mt5Mcp.ex5 of releases (last version).
 MT5: Drag Mt5Mcp.ex5 onto your chart and cofigure it, The parameters of the EA, such as port/host, must match the JSON of Claude Desktop
 ```
 
-### 5. Use in Claude
+### 6. Use in Claude
 
 ```
 Open a 0.01 lot BUY on EURUSD with SL at 1.0800 and TP at 1.0900
