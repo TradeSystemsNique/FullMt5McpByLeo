@@ -57,9 +57,45 @@ Compile and execute Expert Advisors:
 - **EA Execution:** Run Expert Advisors in real-time
 - **Logging:** Retrieve EA logs for debugging and monitoring
 - **Terminal and Account:** Obtaing terminal and acount info_* (integer, string, double)
+
 ---
 
-## Quick Start
+## Repository Structure
+
+```
+FullMt5McpByLeo/
+├── Src/                              # MQL5 Backend Functions
+│    ....
+├── mt5_mcp_by_leo/                   # Python MCP Server
+│    ....
+```
+
+---
+
+## Requirements
+
+- For repo code
+> - Check: [dependencies.json](./dependencies.json)
+
+- For user use:
+> - Check: [pyproject.toml](./pyproject.toml) por py dependencies and min py version.
+> - EX5 of releases (Runner an McPServer).
+> - McpServer requerid a EX5 Library, pucharse in: [TheBotPlace - McpServerByLeo](https://www.thebotplace.com/bot/mcpserverbyleo)
+
+---
+
+## Installation of repo code 
+
+```bash
+cd "C:\Users\YOUR USER\AppData\Roaming\MetaQuotes\Terminal\YOUR ID\MQL5\Shared Projects"
+tsndep install "https://forge.mql5.io/nique_372/FullMt5McpByLeo.git"
+```
+- For use tsndep command requerid tsndep pacakage (avaible in [pypi](https://pypi.org/project/tsndep)).. This command automatically downloads all dependencies and installs all requirements from the repositories.
+- If any part of the system is private, then it will fail... contact me so I can give you access (if it's a product, you can buy it; if you have any questions, don't hesitate to contact me).
+
+---
+
+## Quick Start (for final users)
 
 ### 1. Install Pacakage
 
@@ -92,11 +128,9 @@ In MT5: **Tools** → **Options** → **Allowed URLs for WebRequest**
 ### 4. Compile & Attach EA
 
 ```
-MetaEditor: Open Src/Mt5Mcp.mq5 → Compile (F5) 
+MetaEditor: Open Src/Mt5Mcp.mq5 → Compile (F5) Or Dowland Mt5Mcp.ex5 of releases (last version).
 MT5: Drag Mt5Mcp.ex5 onto your chart and cofigure it, The parameters of the EA, such as port/host, must match the JSON of Claude Desktop
 ```
-Notes:
-- To run backtests, you need to add the ea Runner.ex5 (from releases) to any chart.
 
 ### 5. Use in Claude
 
@@ -104,36 +138,6 @@ Notes:
 Open a 0.01 lot BUY on EURUSD with SL at 1.0800 and TP at 1.0900
 ```
 
----
-
-## Repository Structure
-
-```
-FullMt5McpByLeo/
-├── Src/                              # MQL5 Backend Functions
-│    ....
-├── mt5_mcp_by_leo/                   # Python MCP Server
-│    ....
-```
-
----
-
-## Requirements
-- Python >= 3.10
-- Dependencies listed in dependencies.json (or sub-dependencies of this repo)
-
----
-
-## Installation
-
-```bash
-cd "C:\Users\YOUR USER\AppData\Roaming\MetaQuotes\Terminal\YOUR ID\MQL5\Shared Projects"
-tsndep install "https://forge.mql5.io/nique_372/FullMt5McpByLeo.git"
-```
-- For use tsndep command requerid tsndep pacakage (avaible in [pypi](https://pypi.org/project/tsndep)).. This command automatically downloads all dependencies and installs all requirements from the repositories.
-- If any part of the system is private, then it will fail... contact me so I can give you access (if it's a product, you can buy it; if you have any questions, don't hesitate to contact me).
- 
- 
 ---
 
 ## License
