@@ -7,5 +7,5 @@ from .functions import *  # Import functions to register all @mcp.tool() decorat
 #| Entry point                                                      |
 #+------------------------------------------------------------------+
 def main():
-    mcp.run()
+    g_registrador.run()
  

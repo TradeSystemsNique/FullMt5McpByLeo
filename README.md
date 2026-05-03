@@ -97,13 +97,36 @@ tsndep install "https://forge.mql5.io/nique_372/FullMt5McpByLeo.git"
 
 ## Quick Start (for final users)
 
-### 1. Install Pacakage
+###  1. Install Pacakage
 
 ```bash
 pip install mt5-mcp-by-leo
 ```
 
-### 2. Configure Claude Desktop
+### 2. Create a config json 
+
+Open Common\\Files
+And create a file with this structure:
+
+```json
+{
+    "general_config": {
+        "port": 9999,
+        "host": "127.0.0.1",
+        "mode": "fast_mcp"
+    },
+    "fast_mcp": {
+        "name": "FastMcpServer"
+    },
+    "http": {
+        "http_port": 8000,
+        "name": "HTTP Server",
+        "tools_namespace": "tools"
+    }
+}
+```
+
+### 3. Configure in Claude Desktop
 
 Add to your `claude_desktop_config.json`:
 
@@ -112,30 +135,38 @@ Add to your `claude_desktop_config.json`:
   "mcpServers": {
     "mt5_mcp_by_leo": {
       "command": "python",
-      "args": ["-m", "mt5_mcp_by_leo", "--host", "127.0.0.1", "--port", "9999"]
+      "args": ["-m", 
+      "mt5_mcp_by_leo", 
+      "--config", 
+      "PATH_TO_FILE", 
+      "--config_encodig", 
+      "utf-8"
+      ]
     }
   }
 }
 ```
 
-### 3. Configure MetaTrader 5
+- PATH_TO_FILE: Path to json config file
+
+### 4. Configure MetaTrader 5
 
 In MT5: **Tools** → **Options** → **Allowed URLs for WebRequest**
 - Add `127.0.0.1` or host you configured.
 - Click **Accept**
 - Enable AutoTrading and DLL imports
 
-### 4. Open claude desktop 
+### 5. Open claude desktop 
 Open Claude Desktop. At that moment, a Python script is running in the background until it establishes a connection with the EA McpServer.ex5.
 
-### 5. Compile & Attach EA 
+### 6 Compile & Attach EA 
 
 ```
 MetaEditor: Open Src/Mt5Mcp.mq5 → Compile (F5) Or Dowland Mt5Mcp.ex5 of releases (last version).
 MT5: Drag Mt5Mcp.ex5 onto your chart and cofigure it, The parameters of the EA, such as port/host, must match the JSON of Claude Desktop
 ```
 
-### 6. Use in Claude
+### 7. Use in Claude
 
 ```
 Open a 0.01 lot BUY on EURUSD with SL at 1.0800 and TP at 1.0900

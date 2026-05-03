@@ -24,7 +24,7 @@
 //+------------------------------------------------------------------+
 input string InpSoketAdres = "127.0.0.1";
 input uint InpSoketPort = 9999;
-input int InpMsPool = 100;
+input int InpMsPool = 75;
 input int InpMsTimeoutReadNoTls = 10000;
 
 //+------------------------------------------------------------------+

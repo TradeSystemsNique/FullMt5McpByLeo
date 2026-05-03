@@ -1,68 +1,50 @@
 #+------------------------------------------------------------------+
 #| Imports                                                          |
 #+------------------------------------------------------------------+
-import socket
+import mcp_mt5_conection
+from typing import Dict, Any 
 import json
-import threading
 import argparse
-from mcp.server.fastmcp import FastMCP
-from typing import Dict, Any
+from argparse import Namespace
 
 #+------------------------------------------------------------------+
 #| Args                                                             |
 #+------------------------------------------------------------------+
-parser = argparse.ArgumentParser()
-parser.add_argument("--host", type=str, default="127.0.0.1")
-parser.add_argument("--port", type=int, default=9999)
-args = parser.parse_args()
-
-HOST = args.host
-PORT = args.port
-
+g_parser : argparse.ArgumentParser = argparse.ArgumentParser()
+g_parser.add_argument("--config", type=str, default="")
+g_parser.add_argument("--config_encodig", type=str, default="utf-8")
+g_args : Namespace = g_parser.parse_args()
+ 
+# Leemos config 
+g_config : dict = None 
+with open(g_args.config, "r", encoding=g_args.config_encodig) as f:
+    g_config = json.load(f)
+    
+    
+# Config esperada:
+"""
+{
+    "general_config" : {
+        "port" : 9999,
+        "host" : "localhost"
+        "mode" : "fast_mcp"
+    }
+    "fast_mcp" : {
+        "name" :  "FastMcpServer"
+    }
+    "http" : {
+        "http_port" : 8000,
+        "name" : "HTTP Server",
+        "tools_namespace" : "tools"
+    }
+    
+}
+"""    
+    
 #+------------------------------------------------------------------+
 #| General                                                          |
 #+------------------------------------------------------------------+
-mcp = FastMCP("Mt5McpByLeo")
+g_conection : mcp_mt5_conection.CMt5McpConection = mcp_mt5_conection.CMt5McpConection(g_config["general_config"]["host"],g_config["general_config"]["port"]) 
+g_registrador : mcp_mt5_conection.CToolRegister = mcp_mt5_conection.CToolRegisterMCP(g_config,g_conection) if g_config["general_config"]["mode"] == "fast_mcp" else mcp_mt5_conection.CToolRegisterFastApi(g_config,g_conection) 
 
-# Conexion de MT5 (se llena cuando MT5 conecta)
-mt5_conn = None
 
-def esperar_mt5():
-    global mt5_conn
-    server_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    server_sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-    server_sock.bind((HOST, PORT))
-    server_sock.listen(1)
-    mt5_conn, _ = server_sock.accept()  # espera a que MT5 conecte
-    mt5_conn.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
-
-# Arranca en hilo separado, no bloquea el MCP
-# La idea esq ue exista mientras que se termine por fin de conectar con mt5
-threading.Thread(target=esperar_mt5, daemon=True).start()
-
-#+------------------------------------------------------------------+
-#| Send                                                             |
-#+------------------------------------------------------------------+
-def send(name: str, payload: dict) -> str:
-    if mt5_conn is None:
-        return json.dumps({"ok": False, "error": "mt5_no_conectado"})
-    
-    try:
-        payload_clean = json.dumps(payload, separators=(',', ':'))
-        msg = f'{{"name":"{name}","data":{payload_clean}}}\n'
-        
-        # Enviamos
-        mt5_conn.sendall( msg.encode("utf-8"))
-        
-        # Esperamos la repuesta
-        response = b""
-        while not response.endswith(b"\n"):
-            chunk = mt5_conn.recv(4096)
-            if not chunk:
-                return json.dumps({"ok": False, "error": "mt5_desconectado"})
-            response += chunk
-        
-        return response.decode("utf-8").strip()
-    
-    except Exception as e:
-        return json.dumps({"ok": False, "error": str(e)})
