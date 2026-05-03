@@ -1,4 +1,4 @@
-<!-- mcp-name: io.github.TradeSystemsNique/fullmt5mcp-by-leo -->
+<!-- mcp-name: io.github.TradeSystemsNique/mt5-mcp-by-leo -->
 <p align="center">
   <img src="https://img.shields.io/badge/Language-Python-3776ab?style=flat-square"/>
   <img src="https://img.shields.io/badge/MQL5-Backend-13C7DE?style=flat-square"/>

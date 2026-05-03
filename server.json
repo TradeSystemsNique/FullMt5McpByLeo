@@ -1,0 +1,20 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.TradeSystemsNique/mt5-mcp-by-leo",
+  "description": "Complete MCP server for MT5: Through the MCP protocol, it allows [Trades, Orders, History, Graphic Objects, Terminal Logs, Compilation, etc.]",
+  "version": "1.0.0",
+  "repository": {
+    "url": "https://github.com/TradeSystemsNique/FullMt5McpByLeo",
+    "source": "github"
+  },
+  "packages": [
+    {
+      "registryType": "pypi",
+      "identifier": "mt5-mcp-by-leo",
+      "version": "1.0.7",
+      "transport": {
+        "type": "stdio"
+      }
+    }
+  ]
+}
