@@ -172,6 +172,9 @@ MT5: Drag Mt5Mcp.ex5 onto your chart and cofigure it, The parameters of the EA, 
 Open a 0.01 lot BUY on EURUSD with SL at 1.0800 and TP at 1.0900
 ```
 
+Note:
+> You can also use HTTP Remote with the help of "mcp-remote" (see: https://forge.mql5.io/nique_372/McpServer/wiki/Running-HTTP)
+
 ---
 
 ## License
