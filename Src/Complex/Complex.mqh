@@ -206,7 +206,7 @@ void CMcpFunctionCompile::Run(CJsonNode &param, string &res)
    }
   else
    {
-    res = StringFormat("{\"ok\":true,\"result\":\"Success compiling file, log file='%s'\"}", out_log_path);
+    res = StringFormat("{\"ok\":true,\"result\":\"Success compiling file, log file=(%s)\"}", out_log_path);
    }
  }
 
