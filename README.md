@@ -66,7 +66,7 @@ Compile and execute Expert Advisors:
 FullMt5McpByLeo/
 ├── Src/                              # MQL5 Backend Functions
 │    ....
-├── mt5_mcp_by_leo/                   # Python MCP Server
+├── mt5_mcp_by_leo/                   # Json tools definition
 │    ....
 ```
 
@@ -78,9 +78,8 @@ FullMt5McpByLeo/
 > - Check: [dependencies.json](./dependencies.json)
 
 - For user use:
-> - Check: [pyproject.toml](./pyproject.toml) por py dependencies and min py version.
 > - EX5 of releases (Runner an McPServer).
-> - McpServer requerid a EX5 Library, pucharse in: [TheBotPlace - McpServerByLeo](https://www.thebotplace.com/bot/mcpserverbyleo)
+> - McpServer requerid a EX5 Library, and EXE for McpServer, pucharse in: [TheBotPlace - McpServerByLeo](https://www.thebotplace.com/bot/mcpserverbyleo)
 
 ---
 
@@ -97,36 +96,37 @@ tsndep install "https://forge.mql5.io/nique_372/FullMt5McpByLeo.git"
 
 ## Quick Start (for final users)
 
-###  1. Install Pacakage
-
-```bash
-pip install mt5-mcp-by-leo
-```
-
-### 2. Create a config json 
+ 
+### 1. Create a config json 
 
 Open Common\\Files
-And create a file with this structure:
+And create a json file with this structure:
 
 ```json
 {
-    "general_config": {
-        "port": 9999,
-        "host": "127.0.0.1",
-        "mode": "fast_mcp"
-    },
-    "fast_mcp": {
-        "name": "FastMcpServer"
-    },
-    "http": {
-        "http_port": 8000,
-        "name": "HTTP Server",
-        "tools_namespace": "tools"
-    }
+  "general": {
+    "type_reg": "stdio_stdin",
+    "json_tools_fpath": "C:\\Users\\leoxd\\AppData\\Roaming\\MetaQuotes\\Terminal\\D0E8209F77C8CF37AD8BF550E51FF075\\MQL5\\Shared Projects\\FullMt5McpByLeo\\mt5_mcp_by_leo\\tools.json"
+  },
+  "mt5_conn": {
+    "host": "127.0.0.1",
+    "port": 9999
+  },
+  "http_lib": {
+    "name": "McpMt5Server",
+    "version": "1.0.0",
+    "host": "127.0.0.1",
+    "port": 8080,
+    "endpoint": "/"
+  },
+  "stdio_stdin": {
+    "name": "MT5 MCP Server",
+    "version": "1.0.0"
+  }
 }
 ```
 
-### 3. Configure in Claude Desktop
+### 2. Configure in Claude Desktop
 
 Add to your `claude_desktop_config.json`:
 
@@ -134,13 +134,8 @@ Add to your `claude_desktop_config.json`:
 {
   "mcpServers": {
     "mt5_mcp_by_leo": {
-      "command": "python",
-      "args": ["-m", 
-      "mt5_mcp_by_leo", 
-      "--config", 
-      "PATH_TO_FILE", 
-      "--config_encodig", 
-      "utf-8"
+      "command": "PATH_TO_EXE",
+      "args": ["PATH_TO_FILE"
       ]
     }
   }
@@ -148,25 +143,26 @@ Add to your `claude_desktop_config.json`:
 ```
 
 - PATH_TO_FILE: Path to json config file
+- PATH_TO_EXE: Path to exe McpServer file
 
-### 4. Configure MetaTrader 5
+### 3. Configure MetaTrader 5
 
 In MT5: **Tools** → **Options** → **Allowed URLs for WebRequest**
 - Add `127.0.0.1` or host you configured.
 - Click **Accept**
 - Enable AutoTrading and DLL imports
 
-### 5. Open claude desktop 
+### 4. Open claude desktop 
 Open Claude Desktop. At that moment, a Python script is running in the background until it establishes a connection with the EA McpServer.ex5.
 
-### 6 Compile & Attach EA 
+### 5. Compile & Attach EA 
 
 ```
 MetaEditor: Open Src/Mt5Mcp.mq5 → Compile (F5) Or Dowland Mt5Mcp.ex5 of releases (last version).
 MT5: Drag Mt5Mcp.ex5 onto your chart and cofigure it, The parameters of the EA, such as port/host, must match the JSON of Claude Desktop
 ```
 
-### 7. Use in Claude
+### 6. Use in Claude
 
 ```
 Open a 0.01 lot BUY on EURUSD with SL at 1.0800 and TP at 1.0900

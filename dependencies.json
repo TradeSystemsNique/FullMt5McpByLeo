@@ -13,32 +13,5 @@
             "comment": "private, contac me to get access"
         }
     ],
-    "min_mt5_build": 5430,
-    "other_languages": [
-        {
-            "name": "Python",
-            "version": ">=3.10.9",
-            "requirements": "requirements.txt"
-        }
-    ],
-    "hooks": {
-        "pre_install": [
-            {
-                "command": "pip install -r \"${{repo.root}}${{os.sep}}FullMt5McpByLeo${{os.sep}requirements.txt\"",
-                "permitir_fallo": false,
-                "timeout_ms": 30000
-            }
-        ],
-        "post_install": [],
-        "post_install_only_on_success": true,
-        "pre_update": [
-            {
-                "command": "pip install -r \"${{repo.root}}${{os.sep}}FullMt5McpByLeo${{os.sep}}requirements.txt\" --upgrade",
-                "permitir_fallo": false,
-                "timeout_ms": 30000
-            }
-        ],
-        "post_update": [],
-        "post_update_only_on_success": true
-    }
+    "min_mt5_build": 5430
 }
