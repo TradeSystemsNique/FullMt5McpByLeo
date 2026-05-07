@@ -1,0 +1,1215 @@
+{
+  "functions": [
+    {
+      "name": "open_trade",
+      "_desc": {
+        "description": "Abre una posición de mercado (compra/venta) a precio actual",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "description": "Tipo de operación | string:buy|sell | buy, sell | requerido"
+            },
+            "symbol": {
+              "type": "string",
+              "description": "Símbolo de trading | string | EURUSD, XAUUSD | requerido"
+            },
+            "lot_size": {
+              "type": "number",
+              "description": "Volumen de la posición | double:0+ | 0.01, 0.1, 1.0 | requerido"
+            },
+            "price": {
+              "type": "number",
+              "description": "Precio de entrada (Ask para compras, Bid para ventas) | double:precio | 1.0850 | requerido"
+            },
+            "sl": {
+              "type": "number",
+              "description": "Stop Loss | double:precio | 1.0800 | 0.0"
+            },
+            "tp": {
+              "type": "number",
+              "description": "Take Profit | double:precio | 1.0900 | 0.0"
+            },
+            "magic": {
+              "type": "integer",
+              "description": "Número mágico para identificar órdenes | int:0+ | 12345 | 0"
+            },
+            "comment": {
+              "type": "string",
+              "description": "Comentario de la operación | string | Long bias signal | vacío"
+            }
+          },
+          "required": ["type", "symbol", "lot_size", "price"]
+        }
+      }
+    },
+    {
+      "name": "open_limit",
+      "_desc": {
+        "description": "Crea una orden límite pendiente (Buy Limit o Sell Limit)",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "description": "Tipo de orden límite | string:buy|sell | buy, sell | requerido"
+            },
+            "symbol": {
+              "type": "string",
+              "description": "Símbolo de trading | string | EURUSD, XAUUSD | requerido"
+            },
+            "lot_size": {
+              "type": "number",
+              "description": "Volumen de la orden | double:0+ | 0.01, 0.1 | requerido"
+            },
+            "price": {
+              "type": "number",
+              "description": "Precio de activación de la orden | double:precio | 1.0750 | requerido"
+            },
+            "sl": {
+              "type": "number",
+              "description": "Stop Loss | double:precio | 1.0700 | 0.0"
+            },
+            "tp": {
+              "type": "number",
+              "description": "Take Profit | double:precio | 1.0850 | 0.0"
+            },
+            "magic": {
+              "type": "integer",
+              "description": "Número mágico | int:0+ | 12345 | 0"
+            },
+            "comment": {
+              "type": "string",
+              "description": "Comentario de la orden | string | Limit on support | vacío"
+            },
+            "time_expiration": {
+              "type": "string",
+              "description": "Tiempo de expiracion de la orden | string:mt5:datetime | 2021.01.01 10:00:00 | 0"
+            },
+            "type_time": {
+              "type": "string",
+              "description": "Tiempo de vida de la orden (tipo) | string:mt5:ENUM_ORDER_TYPE_TIME | ORDER_TIME_GTC, ORDER_TIME_DAY | ORDER_TIME_GTC"
+            }
+          },
+          "required": ["type", "symbol", "lot_size", "price"]
+        }
+      }
+    },
+    {
+      "name": "open_stop",
+      "_desc": {
+        "description": "Crea una orden stop pendiente (Buy Stop o Sell Stop) para breakouts",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "description": "Tipo de orden stop | string:buy|sell | buy, sell | requerido"
+            },
+            "symbol": {
+              "type": "string",
+              "description": "Símbolo de trading | string | EURUSD, XAUUSD | requerido"
+            },
+            "lot_size": {
+              "type": "number",
+              "description": "Volumen de la orden | double:0+ | 0.01, 0.1 | requerido"
+            },
+            "price": {
+              "type": "number",
+              "description": "Precio de activación del stop | double:precio | 1.0950 | requerido"
+            },
+            "sl": {
+              "type": "number",
+              "description": "Stop Loss | double:precio | 1.0900 | 0.0"
+            },
+            "tp": {
+              "type": "number",
+              "description": "Take Profit | double:precio | 1.1050 | 0.0"
+            },
+            "magic": {
+              "type": "integer",
+              "description": "Número mágico | int:0+ | 12345 | 0"
+            },
+            "comment": {
+              "type": "string",
+              "description": "Comentario de la orden | string | Stop on resistance | vacío"
+            },
+            "time_expiration": {
+              "type": "string",
+              "description": "Tiempo de expiracion de la orden | string:mt5:datetime | 2021.01.01 10:00:00 | 0"
+            },
+            "type_time": {
+              "type": "string",
+              "description": "Tiempo de vida de la orden (tipo) | string:mt5:ENUM_ORDER_TYPE_TIME | ORDER_TIME_GTC, ORDER_TIME_DAY | ORDER_TIME_GTC"
+            }
+          },
+          "required": ["type", "symbol", "lot_size", "price"]
+        }
+      }
+    },
+    {
+      "name": "position_list",
+      "_desc": {
+        "description": "Lista todos los tickets de posiciones abiertas en la cuenta",
+        "inputSchema": {
+          "type": "object",
+          "properties": {}
+        }
+      }
+    },
+    {
+      "name": "position_get",
+      "_desc": {
+        "description": "Obtiene una propiedad específica de una posición abierta",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "ticket": {
+              "type": "integer",
+              "description": "Ticket de la posición | int:0+ | 123456 | requerido"
+            },
+            "property": {
+              "type": "string",
+              "description": "Propiedad a obtener | string:mt5:ENUM_POSITION_PROPERTY_* | POSITION_VOLUME, POSITION_PROFIT | requerido"
+            },
+            "mode": {
+              "type": "integer",
+              "description": "Tipo de propiedad | int:0-2 | 0=double, 1=integer, 2=string | requerido"
+            }
+          },
+          "required": ["ticket", "property", "mode"]
+        }
+      }
+    },
+    {
+      "name": "position_close",
+      "_desc": {
+        "description": "Cierra posiciones abiertas por símbolo o ticket, con opción de cierre parcial",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "description": "Método de cierre | string:by_symbol|by_ticket | by_symbol, by_ticket | requerido"
+            },
+            "value": {
+              "type": ["string", "integer"],
+              "description": "Símbolo (si type=by_symbol) o ticket (si type=by_ticket) | string|int | EURUSD, 123456 | requerido"
+            },
+            "volume": {
+              "type": "string",
+              "description": "Volumen a cerrar (parcial) | string:double:0+ | 0.01 | si no esta definido cierra todo"
+            },
+            "deviation": {
+              "type": "integer",
+              "description": "Desviación de precio en puntos | int:0+ | 100 | 0"
+            }
+          },
+          "required": ["type", "value"]
+        }
+      }
+    },
+    {
+      "name": "position_modify",
+      "_desc": {
+        "description": "Modifica el Stop Loss y Take Profit de una posición abierta",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "ticket": {
+              "type": "integer",
+              "description": "Ticket de la posición | int:0+ | 123456 | requerido"
+            },
+            "sl": {
+              "type": "number",
+              "description": "Nuevo Stop Loss | double:precio | 1.0800 | default=sl antiguo"
+            },
+            "tp": {
+              "type": "number",
+              "description": "Nuevo Take Profit | double:precio | 1.0950 | default=tp antiguo"
+            }
+          },
+          "required": ["ticket"]
+        }
+      }
+    },
+    {
+      "name": "order_list",
+      "_desc": {
+        "description": "Lista todos los tickets de órdenes pendientes (no activadas)",
+        "inputSchema": {
+          "type": "object",
+          "properties": {}
+        }
+      }
+    },
+    {
+      "name": "order_close",
+      "_desc": {
+        "description": "Cancela una orden pendiente (límite o stop)",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "ticket": {
+              "type": "integer",
+              "description": "Ticket de la orden a cancelar | int:0+ | 654321 | requerido"
+            }
+          },
+          "required": ["ticket"]
+        }
+      }
+    },
+    {
+      "name": "order_modify",
+      "_desc": {
+        "description": "Modifica precio, Stop Loss y Take Profit de una orden pendiente",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "ticket": {
+              "type": "integer",
+              "description": "Ticket de la orden | int:0+ | 654321 | requerido"
+            },
+            "new_price": {
+              "type": "number",
+              "description": "Nuevo precio de activación | double:precio | 1.0800 | default=precio antiguo"
+            },
+            "new_sl": {
+              "type": "number",
+              "description": "Nuevo Stop Loss | double:precio | 1.0750 | default=sl antiguo"
+            },
+            "new_tp": {
+              "type": "number",
+              "description": "Nuevo Take Profit | double:precio | 1.0900 | default=tp antiguo"
+            },
+            "new_type_time": {
+              "type": "string",
+              "description": "Tipo de expiración | string:mt5:ENUM_ORDER_TYPE_TIME | ORDER_TIME_GTC, ORDER_TIME_DAY | default"
+            },
+            "new_expiration_time": {
+              "type": "string",
+              "description": "Hora de expiración | string:datetime | 2026-05-01 12:00:00 | default"
+            }
+          },
+          "required": ["ticket"]
+        }
+      }
+    },
+    {
+      "name": "order_get",
+      "_desc": {
+        "description": "Obtiene una propiedad específica de una orden pendiente",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "ticket": {
+              "type": "integer",
+              "description": "Ticket de la orden | int:0+ | 654321 | requerido"
+            },
+            "property": {
+              "type": "string",
+              "description": "Propiedad a obtener | string:mt5:ENUM_ORDER_PROPERTY_* | ORDER_VOLUME, ORDER_PRICE | requerido"
+            },
+            "mode": {
+              "type": "integer",
+              "description": "Tipo de propiedad | int:0-2 | 0=double, 1=integer, 2=string | requerido"
+            }
+          },
+          "required": ["ticket", "property", "mode"]
+        }
+      }
+    },
+    {
+      "name": "calc_order",
+      "_desc": {
+        "description": "Calculadora unificada MT5 para sizing, riesgo, SL y márgenes. 5 métodos (mode 0-4)",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "mode": {
+              "type": "integer",
+              "description": "Índice del método | int:0-4 | 0=SL con lote, 1=dinero a puntos, 2=lote por SL, 3=máximo lote, 4=lote por riesgo | requerido"
+            },
+            "symbol": {
+              "type": "string",
+              "description": "Símbolo de trading | string | EURUSD, XAUUSD | requerido"
+            },
+            "order_type": {
+              "type": "string",
+              "description": "Tipo de orden MT5 | string:mt5:ENUM_ORDER_TYPE | ORDER_TYPE_BUY, ORDER_TYPE_SELL | modos [1,3,4]"
+            },
+            "entry_price": {
+              "type": "number",
+              "description": "Precio de entrada | double:0+ | 1.0850 | modos [0,1,4]"
+            },
+            "risk_per_operation": {
+              "type": "number",
+              "description": "Riesgo por operación en moneda cuenta | double:0+ | 100.00 | modos [0,1,2,4]"
+            },
+            "lot_size": {
+              "type": "number",
+              "description": "Tamaño lote actual | double:0+ | 0.01 | modo [0]"
+            },
+            "sl": {
+              "type": "integer",
+              "description": "Stop Loss en puntos | int:0+ | 50 | modo [2]"
+            },
+            "max_lot": {
+              "type": "number",
+              "description": "Máximo lote permitido | double:0+ | 1.0 | modo [2]"
+            },
+            "deviation": {
+              "type": "integer",
+              "description": "Desviación de precio en puntos | int:0+ | 10 | default=0"
+            },
+            "stop_limit": {
+              "type": "integer",
+              "description": "Parámetro stop limit en puntos | int:0+ | 20 | default=0"
+            }
+          },
+          "required": ["mode", "symbol"]
+        }
+      }
+    },
+    {
+      "name": "history_deal_list",
+      "_desc": {
+        "description": "Lista tickets de operaciones completadas dentro de un rango de fechas",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "start_date_select": {
+              "type": "string",
+              "description": "Fecha inicio del rango | string:datetime:mt5 | 2024.01.01 00:00:00 | requerido"
+            },
+            "end_date_select": {
+              "type": "string",
+              "description": "Fecha fin del rango | string:datetime:mt5 | 2024.12.31 23:59:59 | requerido"
+            }
+          },
+          "required": ["start_date_select", "end_date_select"]
+        }
+      }
+    },
+    {
+      "name": "history_deal_get",
+      "_desc": {
+        "description": "Obtiene una propiedad específica de una operación completada",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "ticket": {
+              "type": "integer",
+              "description": "Ticket de la operación | int:0+ | 123456 | requerido"
+            },
+            "property": {
+              "type": "string",
+              "description": "Propiedad a obtener | string:mt5:ENUM_DEAL_PROPERTY | DEAL_VOLUME, DEAL_PROFIT | requerido"
+            },
+            "mode": {
+              "type": "integer",
+              "description": "Tipo de propiedad | int:0-2 | 0=double, 1=integer, 2=string | requerido"
+            }
+          },
+          "required": ["ticket", "property", "mode"]
+        }
+      }
+    },
+    {
+      "name": "copy_data",
+      "_desc": {
+        "description": "Obtiene datos OHLC,Time,Volume de velas (índice 0=más reciente, size-1=más antiguo)",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "symbol": {
+              "type": "string",
+              "description": "Símbolo de trading | string | EURUSD, XAUUSD | requerido"
+            },
+            "timeframe": {
+              "type": "string",
+              "description": "Timeframe de velas | string:mt5:ENUM_TIMEFRAMES | PERIOD_H1, PERIOD_D1 | requerido"
+            },
+            "start": {
+              "type": "integer",
+              "description": "Índice inicio (0=más reciente) | int:0+ | 0, 10, 100 | requerido"
+            },
+            "count": {
+              "type": "integer",
+              "description": "Número de velas a obtener | int:1+ | 100, 500 | requerido"
+            },
+            "mode": {
+              "type": "string",
+              "description": "Tipo de dato | string | OPEN, HIGH, LOW, CLOSE, TICK_VOLUME, REAL_VOLUME, TIME, SPREAD | requerido"
+            }
+          },
+          "required": ["symbol", "timeframe", "start", "count", "mode"]
+        }
+      }
+    },
+    {
+      "name": "copy_ticks",
+      "_desc": {
+        "description": "Obtiene datos tick (Bid/Ask/Last) con objetos completos (0=más reciente)",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "symbol": {
+              "type": "string",
+              "description": "Símbolo de trading | string | EURUSD, XAUUSD | requerido"
+            },
+            "from": {
+              "type": "string",
+              "description": "Timestamp inicio en milisegundos Unix | string:unix_ms | 1704067200000 | vacío"
+            },
+            "count": {
+              "type": "integer",
+              "description": "Número de ticks a obtener | int:1+ | 100, 1000 | requerido"
+            },
+            "flags": {
+              "type": "integer",
+              "description": "Flags de filtro | int:ENUM_COPY_TICKS | 3=ALL, 1=INFO, 2=TRADE | vacío"
+            }
+          },
+          "required": ["symbol", "count"]
+        }
+      }
+    },
+    {
+      "name": "i_bar_shift",
+      "_desc": {
+        "description": "Obtiene el índice de vela (shift) para un tiempo específico en el historial",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "symbol": {
+              "type": "string",
+              "description": "Símbolo de trading | string | EURUSD, XAUUSD | requerido"
+            },
+            "timeframe": {
+              "type": "string",
+              "description": "Timeframe | string:mt5:ENUM_TIMEFRAMES | PERIOD_M1, PERIOD_H1 | requerido"
+            },
+            "time": {
+              "type": "string",
+              "description": "Tiempo buscado | string:datetime:mt5 | 2024.01.15 12:30:00 | requerido"
+            },
+            "exact": {
+              "type": "boolean",
+              "description": "Si true requiere coincidencia exacta | boolean | true, false | false"
+            }
+          },
+          "required": ["symbol", "timeframe", "time"]
+        }
+      }
+    },
+    {
+      "name": "symbol_info",
+      "_desc": {
+        "description": "Obtiene una propiedad específica de un símbolo de trading",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "symbol": {
+              "type": "string",
+              "description": "Símbolo de trading | string | EURUSD, XAUUSD | requerido"
+            },
+            "property": {
+              "type": "string",
+              "description": "Propiedad a obtener | string:mt5:ENUM_SYMBOL_INFO_* | SYMBOL_ASK, SYMBOL_BID | requerido"
+            },
+            "mode": {
+              "type": "integer",
+              "description": "Tipo de propiedad | int:0-2 | 0=double, 1=integer, 2=string | requerido"
+            }
+          },
+          "required": ["symbol", "property", "mode"]
+        }
+      }
+    },
+    {
+      "name": "symbol_info_session",
+      "_desc": {
+        "description": "Obtiene horario de sesión (trading/quote) para un símbolo y día",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "symbol": {
+              "type": "string",
+              "description": "Símbolo de trading | string | EURUSD, XAUUSD | requerido"
+            },
+            "day_of_week": {
+              "type": "string",
+              "description": "Día de semana | string:ENUM_DAY_OF_WEEK | MONDAY, FRIDAY | requerido"
+            },
+            "session_index": {
+              "type": "integer",
+              "description": "Índice de sesión | int:0+ | 0, 1, 2 | requerido"
+            },
+            "mode": {
+              "type": "integer",
+              "description": "Tipo de sesión | int:0-1 | 0=trading, 1=quote | requerido"
+            }
+          },
+          "required": ["symbol", "day_of_week", "session_index", "mode"]
+        }
+      }
+    },
+    {
+      "name": "symbol_select",
+      "_desc": {
+        "description": "Agrega o remueve símbolo de Market Watch",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "symbol": {
+              "type": "string",
+              "description": "Símbolo de trading | string | EURUSD, XAUUSD | requerido"
+            },
+            "select": {
+              "type": "boolean",
+              "description": "Acción | boolean | true=agregar, false=remover | requerido"
+            }
+          },
+          "required": ["symbol", "select"]
+        }
+      }
+    },
+    {
+      "name": "symbols_total",
+      "_desc": {
+        "description": "Obtiene cantidad total de símbolos disponibles o en Market Watch",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "only_selected_in_market_watch": {
+              "type": "boolean",
+              "description": "Contar solo en Market Watch | boolean | true, false | false"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "object_create",
+      "_desc": {
+        "description": "Crea un objeto gráfico en el gráfico (líneas, rectángulos, etiquetas, flechas)",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "chart_id": {
+              "type": "integer",
+              "description": "ID del gráfico | int | 0, 1, 2 | 0"
+            },
+            "object_name": {
+              "type": "string",
+              "description": "Nombre único del objeto | string | Trend1, RectA | requerido"
+            },
+            "object_type": {
+              "type": "string",
+              "description": "Tipo de objeto | string:mt5:ENUM_OBJECT | OBJ_TREND, OBJ_RECTANGLE | requerido"
+            },
+            "sub_window": {
+              "type": "integer",
+              "description": "Ventana del gráfico | int | 0=principal, 1+=indicador | 0"
+            },
+            "mode": {
+              "type": "integer",
+              "description": "Modo de coordenadas | int:0-3 | 0=3 puntos, 1=2 puntos, 2=1 punto, 3=sin coords | requerido"
+            },
+            "time1": {
+              "type": "string",
+              "description": "Fecha/hora del punto 1 | string:datetime | 2025.01.01 00:00 | vacío"
+            },
+            "price1": {
+              "type": "number",
+              "description": "Precio del punto 1 | double | 1.0850 | 0.0"
+            },
+            "time2": {
+              "type": "string",
+              "description": "Fecha/hora del punto 2 | string:datetime | 2025.01.02 10:00 | vacío"
+            },
+            "price2": {
+              "type": "number",
+              "description": "Precio del punto 2 | double | 1.0900 | 0.0"
+            },
+            "time3": {
+              "type": "string",
+              "description": "Fecha/hora del punto 3 | string:datetime | 2025.01.03 14:00 | vacío"
+            },
+            "price3": {
+              "type": "number",
+              "description": "Precio del punto 3 | double | 1.0800 | 0.0"
+            }
+          },
+          "required": ["object_name", "object_type", "mode"]
+        }
+      }
+    },
+    {
+      "name": "object_delete",
+      "_desc": {
+        "description": "Elimina un objeto gráfico del gráfico",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "chart_id": {
+              "type": "integer",
+              "description": "ID del gráfico | int | 0, 1, 2 | 0"
+            },
+            "object_name": {
+              "type": "string",
+              "description": "Nombre del objeto a eliminar | string | TrendLine1, RectA | requerido"
+            }
+          },
+          "required": ["object_name"]
+        }
+      }
+    },
+    {
+      "name": "object_integer",
+      "_desc": {
+        "description": "Obtiene o establece propiedad entera de objeto gráfico (GET si falta value, SET si incluye value)",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "chart_id": {
+              "type": "integer",
+              "description": "ID del gráfico | int | 0, 1, 2 | 0"
+            },
+            "object_name": {
+              "type": "string",
+              "description": "Nombre del objeto | string | TrendLine1, RectA | requerido"
+            },
+            "property": {
+              "type": "string",
+              "description": "Propiedad a leer/escribir | string:mt5:ENUM_OBJECT_PROPERTY_INTEGER | OBJPROP_COLOR, OBJPROP_WIDTH | requerido"
+            },
+            "prop_modifier": {
+              "type": "integer",
+              "description": "Modificador de propiedad | int:0+ | 0=punto1, 1=punto2, 2=punto3 | 0"
+            },
+            "value": {
+              "type": "integer",
+              "description": "Valor a establecer (solo para SET) | int | 16711680 | vacío"
+            }
+          },
+          "required": ["object_name", "property"]
+        }
+      }
+    },
+    {
+      "name": "object_double",
+      "_desc": {
+        "description": "Obtiene o establece propiedad doble de objeto gráfico (GET si falta value, SET si incluye value)",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "chart_id": {
+              "type": "integer",
+              "description": "ID del gráfico | int | 0, 1, 2 | 0"
+            },
+            "object_name": {
+              "type": "string",
+              "description": "Nombre del objeto | string | TrendLine1, RectA | requerido"
+            },
+            "property": {
+              "type": "string",
+              "description": "Propiedad a leer/escribir | string:mt5:ENUM_OBJECT_PROPERTY_DOUBLE | OBJPROP_PRICE, OBJPROP_SCALE | requerido"
+            },
+            "prop_modifier": {
+              "type": "integer",
+              "description": "Modificador de propiedad | int:0+ | 0=punto1, 1=punto2, 2=punto3 | 0"
+            },
+            "value": {
+              "type": "number",
+              "description": "Valor a establecer (solo para SET) | double | 1.0900 | vacío"
+            }
+          },
+          "required": ["object_name", "property"]
+        }
+      }
+    },
+    {
+      "name": "object_string",
+      "_desc": {
+        "description": "Obtiene o establece propiedad string de objeto gráfico (GET si falta value, SET si incluye value)",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "chart_id": {
+              "type": "integer",
+              "description": "ID del gráfico | int | 0, 1, 2 | 0"
+            },
+            "object_name": {
+              "type": "string",
+              "description": "Nombre del objeto | string | TextLabel1, RectA | requerido"
+            },
+            "property": {
+              "type": "string",
+              "description": "Propiedad a leer/escribir | string:mt5:ENUM_OBJECT_PROPERTY_STRING | OBJPROP_TEXT, OBJPROP_FONT | requerido"
+            },
+            "prop_modifier": {
+              "type": "integer",
+              "description": "Modificador de propiedad | int:0+ | 0 típico | 0"
+            },
+            "value": {
+              "type": "string",
+              "description": "Valor a establecer (solo para SET) | string | New Label Text | vacío"
+            }
+          },
+          "required": ["object_name", "property"]
+        }
+      }
+    },
+    {
+      "name": "object_list",
+      "_desc": {
+        "description": "Obtiene lista de nombres de objetos en el gráfico filtrados por tipo y ventana",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "chart_id": {
+              "type": "integer",
+              "description": "ID del gráfico | int | 0, 1, 2 | 0"
+            },
+            "sub_window": {
+              "type": "integer",
+              "description": "Ventana del gráfico | int | 0=principal, -1=todas | -1"
+            },
+            "object_type": {
+              "type": "string",
+              "description": "Tipo de objeto a filtrar | string:mt5:ENUM_OBJECT | OBJ_TREND, OBJ_RECTANGLE | vacío"
+            }
+          },
+          "required": []
+        }
+      }
+    },
+    {
+      "name": "chart_list",
+      "_desc": {
+        "description": "Obtiene lista de todas las ventanas de gráficos abiertos",
+        "inputSchema": {
+          "type": "object",
+          "properties": {}
+        }
+      }
+    },
+    {
+      "name": "chart_open",
+      "_desc": {
+        "description": "Abre una nueva ventana de gráfico para un símbolo y marco temporal específico",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "symbol": {
+              "type": "string",
+              "description": "Símbolo de trading | string | EURUSD, XAUUSD | requerido"
+            },
+            "timeframe": {
+              "type": "string",
+              "description": "Marco temporal del gráfico | string:mt5:ENUM_TIMEFRAMES | PERIOD_H1, PERIOD_D1, PERIOD_M15 | requerido"
+            }
+          },
+          "required": ["symbol", "timeframe"]
+        }
+      }
+    },
+    {
+      "name": "chart_close",
+      "_desc": {
+        "description": "Cierra una ventana de gráfico por su ID (no se puede cerrar ID 0)",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "chart_id": {
+              "type": "integer",
+              "description": "ID del gráfico a cerrar | int:1+ | 1, 2, 3 | requerido"
+            }
+          },
+          "required": ["chart_id"]
+        }
+      }
+    },
+    {
+      "name": "chart_integer",
+      "_desc": {
+        "description": "Obtiene o establece propiedad entera del gráfico (GET si falta value, SET si incluye value)",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "chart_id": {
+              "type": "integer",
+              "description": "ID del gráfico | int | 0, 1, 2 | 0=current chart"
+            },
+            "property": {
+              "type": "string",
+              "description": "Propiedad a leer/escribir | string:mt5:ENUM_CHART_PROPERTY_INTEGER | CHART_VISIBLE_BARS, CHART_COLOR_ASK | requerido"
+            },
+            "sub_window": {
+              "type": "integer",
+              "description": "Ventana del gráfico (GET) | int | 0=principal, 1+=indicador | 0"
+            },
+            "value": {
+              "type": "integer",
+              "description": "Valor a establecer (solo para SET) | int | 170000000 | vacío"
+            }
+          },
+          "required": ["chart_id", "property"]
+        }
+      }
+    },
+    {
+      "name": "chart_double",
+      "_desc": {
+        "description": "Obtiene o establece propiedad doble del gráfico (GET si falta value, SET si incluye value)",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "chart_id": {
+              "type": "integer",
+              "description": "ID del gráfico | int | 0, 1, 2 | 0=current chart"
+            },
+            "property": {
+              "type": "string",
+              "description": "Propiedad a leer/escribir | string:mt5:ENUM_CHART_PROPERTY_DOUBLE | CHART_FIXED_MAX, CHART_FIXED_MIN | requerido"
+            },
+            "sub_window": {
+              "type": "integer",
+              "description": "Ventana del gráfico (GET) | int | 0=principal, 1+=indicador | 0"
+            },
+            "value": {
+              "type": "number",
+              "description": "Valor a establecer (solo para SET) | double | 2450.00 | vacío"
+            }
+          },
+          "required": ["chart_id", "property"]
+        }
+      }
+    },
+    {
+      "name": "chart_redraw",
+      "_desc": {
+        "description": "Redibuja el gráfico actualizando todos los objetos y datos",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "chart_id": {
+              "type": "integer",
+              "description": "ID del gráfico a redibujar | int | 0, 1, 2 | 0"
+            }
+          },
+          "required": []
+        }
+      }
+    },
+    {
+      "name": "chart_string",
+      "_desc": {
+        "description": "Obtiene o establece propiedad string del gráfico (GET si falta value, SET si incluye value)",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "chart_id": {
+              "type": "integer",
+              "description": "ID del gráfico | int | 0, 1, 2 | 0=current chart"
+            },
+            "property": {
+              "type": "string",
+              "description": "Propiedad a leer/escribir | string:mt5:ENUM_CHART_PROPERTY_STRING | CHART_COMMENT | requerido"
+            },
+            "value": {
+              "type": "string",
+              "description": "Valor a establecer (solo para SET) | string | New Comment | vacío"
+            }
+          },
+          "required": ["chart_id", "property"]
+        }
+      }
+    },
+    {
+      "name": "chart_get_symbol_or_period",
+      "_desc": {
+        "description": "Obtiene el símbolo o marco temporal del gráfico según el modo",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "chart_id": {
+              "type": "integer",
+              "description": "ID del gráfico | int | 0, 1, 2 | 0=current chart"
+            },
+            "mode": {
+              "type": "integer",
+              "description": "Modo de consulta | int:0-1 | 0=obtener timeframe, 1=obtener símbolo | requerido"
+            }
+          },
+          "required": ["chart_id", "mode"]
+        }
+      }
+    },
+    {
+      "name": "chart_screenshot",
+      "_desc": {
+        "description": "Captura screenshot del gráfico y lo guarda a archivo",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "chart_id": {
+              "type": "integer",
+              "description": "ID del gráfico | int | 0, 1, 2 | requerido"
+            },
+            "file_name": {
+              "type": "string",
+              "description": "Nombre del archivo | string | screenshot.png, images/chart.png | requerido"
+            },
+            "width": {
+              "type": "integer",
+              "description": "Ancho en píxeles | int:0+ | 800 | ancho actual"
+            },
+            "height": {
+              "type": "integer",
+              "description": "Alto en píxeles | int:0+ | 600 | alto actual"
+            },
+            "common_flag": {
+              "type": "boolean",
+              "description": "Mover a carpeta común | boolean | true=Common, false=MQL5 | true"
+            }
+          },
+          "required": ["chart_id", "file_name"]
+        }
+      }
+    },
+    {
+      "name": "compile_mql5",
+      "_desc": {
+        "description": "Compila código fuente MQL5 a bytecode EX5 con set de instrucciones CPU específico",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "full_path_code": {
+              "type": "string",
+              "description": "Ruta completa al archivo MQL5 | string | C:\\\\Users\\\\Leo\\\\MQL5\\\\Experts\\\\MyEA.mq5 | requerido"
+            },
+            "instruction": {
+              "type": "string",
+              "description": "Set de instrucciones CPU | string | avx2, avx, avx512 | vacío"
+            },
+            "optimize": {
+              "type": "boolean",
+              "description": "Habilitar optimizaciones | boolean | true, false | false"
+            },
+            "timeout_ms": {
+              "type": "integer",
+              "description": "Timeout de compilación en ms | int:0+ | 60000, 120000 | 60000"
+            }
+          },
+          "required": ["full_path_code"]
+        }
+      }
+    },
+    {
+      "name": "execute_backtest",
+      "_desc": {
+        "description": "Ejecuta backtest histórico con parámetros especificados",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "symbol": {
+              "type": "string",
+              "description": "Símbolo de trading | string | EURUSD, XAUUSD | requerido"
+            },
+            "set_file_name": {
+              "type": "string",
+              "description": "Archivo de configuración | string | MyStrategy.set | requerido"
+            },
+            "expert_path": {
+              "type": "string",
+              "description": "Ruta del EA compilado | string | Experts\\\\MyEA.ex5 | requerido"
+            },
+            "start_date": {
+              "type": "string",
+              "description": "Fecha inicio del backtest | string:datetime:mt5 | 2024.01.01 00:00:00 | requerido"
+            },
+            "end_date": {
+              "type": "string",
+              "description": "Fecha fin del backtest | string:datetime:mt5 | 2024.12.31 23:59:59 | requerido"
+            },
+            "timeframe": {
+              "type": "string",
+              "description": "Marco temporal | string:mt5:ENUM_TIMEFRAMES | PERIOD_H1, PERIOD_D1 | requerido"
+            },
+            "leverage": {
+              "type": "integer",
+              "description": "Apalancamiento de trading | int:1+ | 100, 50, 1 | requerido"
+            },
+            "visual_mode": {
+              "type": "boolean",
+              "description": "Mostrar animación visual | boolean | true=animado, false=rápido | false"
+            },
+            "modelado": {
+              "type": "string",
+              "description": "Modo de modelado de ticks | string | EVERY_TICK, OCHLM1, ONLY_OPEN, REAL_TICK | requerido"
+            },
+            "file_in_common": {
+              "type": "boolean",
+              "description": "Guardar resultados en carpeta común | boolean | true, false | false"
+            },
+            "data_file_name": {
+              "type": "string",
+              "description": "Nombre del archivo de resultados | string | MyResults, output | vacío"
+            }
+          },
+          "required": ["symbol", "set_file_name", "expert_path", "start_date", "end_date", "timeframe", "leverage", "visual_mode", "modelado"]
+        }
+      }
+    },
+    {
+      "name": "run_ea",
+      "_desc": {
+        "description": "Ejecuta Expert Advisor en tiempo real en gráfico específico",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "symbol": {
+              "type": "string",
+              "description": "Símbolo de trading | string | EURUSD, XAUUSD | requerido"
+            },
+            "timeframe": {
+              "type": "string",
+              "description": "Marco temporal del gráfico | string:mt5:ENUM_TIMEFRAMES | PERIOD_H1, PERIOD_D1, PERIOD_M15 | requerido"
+            },
+            "ms_espera": {
+              "type": "integer",
+              "description": "Milisegundos de espera para sincronizar | int:100+ | 1000, 5000 | requerido"
+            },
+            "expert_path": {
+              "type": "string",
+              "description": "Ruta al archivo EA compilado | string | Experts\\\\MyEA.ex5 | requerido"
+            },
+            "run_flags": {
+              "type": "string",
+              "description": "Flags de ejecución separados por pipe | string | DLL, AutoTrading, DLL|AutoTrading | vacío"
+            },
+            "params": {
+              "type": "array",
+              "description": "Parámetros del EA en orden posicional | array:objects | vacío",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "data_type": {
+                    "type": "string",
+                    "description": "Tipo de dato | string | TYPE_INT, TYPE_DOUBLE, TYPE_STRING, TYPE_DATETIME, TYPE_COLOR | requerido"
+                  },
+                  "value": {
+                    "type": ["string", "number"],
+                    "description": "Valor del parámetro | string|number | 10, 0.01, MyString, 2024.01.15 12:30:00, clrRed | requerido"
+                  }
+                },
+                "required": ["data_type", "value"]
+              }
+            }
+          },
+          "required": ["symbol", "timeframe", "ms_espera", "expert_path"]
+        }
+      }
+    },
+    {
+      "name": "get_expert_logs",
+      "_desc": {
+        "description": "Obtiene los logs recientes de ejecución del Expert Advisor",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "start_date": {
+              "type": "string",
+              "description": "Fecha de inicio para filtrar logs | string:datetime:mt5 | 2024.01.01, 2026.04.28 10:15:00 | requerido"
+            },
+            "logs_lines": {
+              "type": "integer",
+              "description": "Número de líneas de logs | int:1+ | 50, 100, 200 | 50"
+            }
+          },
+          "required": ["start_date"]
+        }
+      }
+    },
+    {
+      "name": "get_time",
+      "_desc": {
+        "description": "Obtiene la hora actual en diferentes formatos (GMT, local, servidor)",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "description": "Tipo de hora a obtener | string | GMT, CURRENT, LOCAL, SERVER | requerido"
+            }
+          },
+          "required": ["type"]
+        }
+      }
+    },
+    {
+      "name": "get_err_description",
+      "_desc": {
+        "description": "Obtiene descripción legible del código de error MT5",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "error_code": {
+              "type": "integer",
+              "description": "Código de error MT5 | int:0+ | 10001, 10002 | requerido"
+            },
+            "include_code": {
+              "type": "boolean",
+              "description": "Incluir número de código en resultado | boolean | true, false | true"
+            }
+          },
+          "required": ["error_code"]
+        }
+      }
+    },
+    {
+      "name": "account_info",
+      "_desc": {
+        "description": "Obtiene información de la cuenta MT5 (double, integer, string)",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "mode": {
+              "type": "integer",
+              "description": "Tipo de propiedad | int:0-2 | 0=double, 1=integer, 2=string | requerido"
+            },
+            "property": {
+              "type": "string",
+              "description": "Propiedad de la cuenta | string:mt5:ENUM_ACCOUNT_INFO_* | ACCOUNT_BALANCE, ACCOUNT_EQUITY, ACCOUNT_LOGIN | requerido"
+            }
+          },
+          "required": ["mode", "property"]
+        }
+      }
+    },
+    {
+      "name": "terminal_info",
+      "_desc": {
+        "description": "Obtiene información del terminal MT5 (double, integer, string)",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "mode": {
+              "type": "integer",
+              "description": "Tipo de propiedad | int:0-2 | 0=double, 1=integer, 2=string | requerido"
+            },
+            "property": {
+              "type": "string",
+              "description": "Propiedad del terminal | string:mt5:ENUM_TERMINAL_INFO_* | TERMINAL_CONNECTED, TERMINAL_TRADE_ALLOWED, TERMINAL_PATH | requerido"
+            }
+          },
+          "required": ["mode", "property"]
+        }
+      }
+    }
+  ]
+}
