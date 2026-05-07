@@ -1,6 +1,6 @@
 <!-- mcp-name: io.github.TradeSystemsNique/mt5-mcp-by-leo -->
 <p align="center">
-  <img src="https://img.shields.io/badge/Language-Python-3776ab?style=flat-square"/>
+  <img src="https://img.shields.io/badge/Language-C++-3776ab?style=flat-square"/>
   <img src="https://img.shields.io/badge/MQL5-Backend-13C7DE?style=flat-square"/>
   <img src="https://img.shields.io/badge/Protocol-MCP-1B6CA8?style=flat-square"/>
   <img src="https://img.shields.io/badge/Platform-MetaTrader%205-0D1B2A?style=flat-square"/>
