@@ -63,6 +63,8 @@ Compile and execute Expert Advisors:
 - **Logging:** Retrieve EA logs for debugging and monitoring
 - **Terminal and Account:** Obtaing terminal and acount info_* (integer, string, double)
 
+>  Note: Python version package mt5_mcp_by_leo is deprecated. now replace by C++ exe server.
+
 ---
 
 ## Repository Structure
