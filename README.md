@@ -22,6 +22,11 @@ FullMt5McpByLeo is a complete, production-ready MCP server that enables Claude a
 
 ---
 
+
+## Main Features (General)
+- Fast execution; the MCP server is written in C++ using simdjson, super-optimized code for maximum speed. The average response time is around 10ms (from when Claude calls a function until its response; note that this may depend on the size of the request... on average it's 10ms).
+- Unlike other MCPs for MT5, this MCP has two parts, one in MQL5 and the other in C++, giving access to the full MQL5 API and not limited to the mt5 package for Python, which lacks functions for handling charts, etc.
+
 ## Main Features (MCP Functions)
 
 ### Trade Operations
