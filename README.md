@@ -87,7 +87,9 @@ FullMt5McpByLeo/
 - For user use:
 > - EX5 of releases (Runner an McPServer).
 > - EXE from releases
-> - License for McpServer requerid a EX5 Library, and EXE for McpServer, pucharse in: [TheBotPlace - McpServerByLeo](https://www.thebotplace.com/bot/mcpserverbyleo)
+> - EX5 Library McpServerByLeo pucharse in: [TheBotPlace - McpServerByLeo](https://www.thebotplace.com/bot/mcpserverbyleo) When you purchase the library, you should already have an account on TheBotPlace. This account will have an ID, which you will put in the .json file of your MCP IA (YOUR_TBP_ID).
+
+ 
 
 ---
 
