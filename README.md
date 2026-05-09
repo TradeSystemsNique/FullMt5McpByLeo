@@ -86,6 +86,7 @@ FullMt5McpByLeo/
 
 - For user use:
 > - EX5 of releases (Runner an McPServer).
+> - EXE from releases
 > - License for McpServer requerid a EX5 Library, and EXE for McpServer, pucharse in: [TheBotPlace - McpServerByLeo](https://www.thebotplace.com/bot/mcpserverbyleo)
 
 ---
