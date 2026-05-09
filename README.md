@@ -86,7 +86,7 @@ FullMt5McpByLeo/
 
 - For user use:
 > - EX5 of releases (Runner an McPServer).
-> - McpServer requerid a EX5 Library, and EXE for McpServer, pucharse in: [TheBotPlace - McpServerByLeo](https://www.thebotplace.com/bot/mcpserverbyleo)
+> - License for McpServer requerid a EX5 Library, and EXE for McpServer, pucharse in: [TheBotPlace - McpServerByLeo](https://www.thebotplace.com/bot/mcpserverbyleo)
 
 ---
 
@@ -103,8 +103,10 @@ tsndep install "https://forge.mql5.io/nique_372/FullMt5McpByLeo.git"
 
 ## Quick Start (for final users)
 
+### 1. Downland
+Download the latest .exe and .ex5 files from the repo releases....
  
-### 1. Create a config json 
+### 2. Create a config json 
 
 Open Common\\Files
 And create a json file with this structure:
@@ -113,7 +115,7 @@ And create a json file with this structure:
 {
   "general": {
     "type_reg": "stdio_stdin",
-    "json_tools_fpath": "C:\\Users\\leoxd\\AppData\\Roaming\\MetaQuotes\\Terminal\\D0E8209F77C8CF37AD8BF550E51FF075\\MQL5\\Shared Projects\\FullMt5McpByLeo\\mt5_mcp_by_leo\\tools.json"
+    "json_tools_fpath": "JSON_TOOL_PATH"
   },
   "mt5_conn": {
     "host": "127.0.0.1",
@@ -133,6 +135,8 @@ And create a json file with this structure:
 }
 ```
 
+- JSON_TOOL_PATH: Path to the tools configuration json (you can download the json from the mt5_mcp_by_leo folder and place it in documents for example and put the path to said file here...) Or if you have the repository cloned, you can use the path to tools.json
+
 ### 2. Configure in Claude Desktop
 
 Add to your `claude_desktop_config.json`:
@@ -142,15 +146,17 @@ Add to your `claude_desktop_config.json`:
   "mcpServers": {
     "mt5_mcp_by_leo": {
       "command": "PATH_TO_EXE",
-      "args": ["PATH_TO_FILE"
+      "args": ["PATH_TO_FILE", "YOUR_TBP_ID", "YOUR_MT5_ACCOUNT_LOGIN_ID" 
       ]
     }
   }
 }
 ```
 
-- PATH_TO_FILE: Path to json config file
 - PATH_TO_EXE: Path to exe McpServer file
+- PATH_TO_FILE: Path to json config file
+- YOUR_TBP_ID: Your The Bot Place user ID
+- YOUR_MT5_ACCOUNT_LOGIN_ID: ACCOUNT_LOGGIN of your mt5 account where Mt5Mcp EA is running
 
 ### 3. Configure MetaTrader 5
 
