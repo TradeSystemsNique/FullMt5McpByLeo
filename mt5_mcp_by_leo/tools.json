@@ -441,7 +441,7 @@
             },
             "mode": {
               "type": "string",
-              "description": "Tipo de dato | string | OPEN, HIGH, LOW, CLOSE, TICK_VOLUME, REAL_VOLUME, TIME, SPREAD | requerido"
+              "description": "Tipo de dato | string::ENUM_MCPFUNC_COPY_DATA | MCPFUNC_COPY_DATA_X, siendo que x = [OPEN or HIGH or LOW or CLOSE or TICK_VOLUME or REAL_VOLUME or TIME or SPREAD], eg: MCPFUNC_COPY_DATA_CLOSE | requerido"
             }
           },
           "required": ["symbol", "timeframe", "start", "count", "mode"]
@@ -966,11 +966,11 @@
             },
             "width": {
               "type": "integer",
-              "description": "Ancho en píxeles | int:0+ | 800 | ancho actual"
+              "description": "Ancho en píxeles | int:0+ | 800 | default: ancho actual del grafico chart_id"
             },
             "height": {
               "type": "integer",
-              "description": "Alto en píxeles | int:0+ | 600 | alto actual"
+              "description": "Alto en píxeles | int:0+ | 600 | default: alto actual del grafico chart_id"
             },
             "common_flag": {
               "type": "boolean",
@@ -994,7 +994,7 @@
             },
             "instruction": {
               "type": "string",
-              "description": "Set de instrucciones CPU | string | avx2, avx, avx512 | vacío"
+              "description": "Instrucciones CPU | string | valores posibles = [avx2 or avx or avx512] | vacío = x64 por defecto"
             },
             "optimize": {
               "type": "boolean",
