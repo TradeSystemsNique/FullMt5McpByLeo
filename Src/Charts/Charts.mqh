@@ -15,6 +15,8 @@
 //+------------------------------------------------------------------+
 #include "..\\Def\\Def.mqh"
 
+namespace TSN 
+{
 //+------------------------------------------------------------------+
 //| chart_list                                                       |
 //+------------------------------------------------------------------+
@@ -138,7 +140,7 @@ void CMcpFuncChartInteger::Run(CJsonNode& param, string& res)
 //---
   if(param.HasKey("value"))
    {
-    if(ChartSetInteger(param["chart_id"].ToInt(0), CEnumReg::GetValueNoRef<ENUM_CHART_PROPERTY_INTEGER>(param["property"].ToString(""), WRONG_VALUE), param["value"].ToInt()))
+    if(ChartSetInteger(param["chart_id"].ToInt(0), CEnumReg::GetValueNoRef<ENUM_CHART_PROPERTY_INTEGER>(param["property"].ToString(""), WRONG_VALUE), param["value"].ToInt(0)))
      {
       res = "{\"ok\":true,\"result\":true}";
      }
@@ -183,7 +185,7 @@ void CMcpFuncChartDouble::Run(CJsonNode& param, string& res)
 //---
   if(param.HasKey("value"))
    {
-    if(ChartSetDouble(param["chart_id"].ToInt(0), CEnumReg::GetValueNoRef<ENUM_CHART_PROPERTY_DOUBLE>(param["property"].ToString(""), WRONG_VALUE), param["value"].ToDouble()))
+    if(ChartSetDouble(param["chart_id"].ToInt(0), CEnumReg::GetValueNoRef<ENUM_CHART_PROPERTY_DOUBLE>(param["property"].ToString(""), WRONG_VALUE), param["value"].ToDouble(0.00)))
      {
       res = "{\"ok\":true,\"result\":true}";
      }
@@ -295,7 +297,7 @@ public:
 //+------------------------------------------------------------------+
 void CMcpFuncChartGetSymbolOrPeriod::Run(CJsonNode &param, string &res)
  {
-  const int8_t mode = (int8_t)param["mode"].ToInt();
+  const int8_t mode = (int8_t)param["mode"].ToInt(-1);
   switch(mode)
    {
     case 0:
@@ -334,7 +336,7 @@ void CMcpFuncChartSrenshot::Run(CJsonNode &param, string &res)
  {
 //---
   const string fn = param["file_name"].ToString();
-  const long chart_id = param["chart_id"].ToInt();
+  const long chart_id = param["chart_id"].ToInt(0);
   ::ResetLastError();
   if(!ChartScreenShot(chart_id, fn, (int)param["with"].ToInt(ChartGetInteger(chart_id, CHART_WIDTH_IN_PIXELS)),
                       (int)param["height"].ToInt(ChartGetInteger(chart_id, CHART_HEIGHT_IN_PIXELS)), ALIGN_CENTER))
@@ -361,6 +363,7 @@ void CMcpFuncChartSrenshot::Run(CJsonNode &param, string &res)
     res = StringFormat("{\"ok\":true,\"result\":{\"full_path\":\"%s\"}}", (TERMINAL_MT5_ROOT + "Files\\" + fn));
    }
  }
+} 
 
 
 //+------------------------------------------------------------------+

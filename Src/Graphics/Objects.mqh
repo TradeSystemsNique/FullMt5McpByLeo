@@ -16,6 +16,11 @@
 #include "..\\Def\\Def.mqh"
 
 //+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
+namespace TSN
+{
+//+------------------------------------------------------------------+
 //| object_create                                                    |
 //+------------------------------------------------------------------+
 class CMcpFuncObjectCreate  : public CMcpFunction
@@ -34,14 +39,14 @@ void CMcpFuncObjectCreate::Run(CJsonNode &param, string &res)
  {
 //---
   ::ResetLastError();
-  const uint8_t mode = (uint8_t)param["mode"].ToInt();
+  const uint8_t mode = (uint8_t)param["mode"].ToInt(0);
   switch(mode)
    {
     //---
     case  0: // time1,price1,time2,price2,time3,price3 (chanel\elipse\triangle)
      {
       if(!ObjectCreate(param["chart_id"].ToInt(0), param["object_name"].ToString(""),
-                       CEnumReg::GetValueNoRef<ENUM_OBJECT>(param["object_type"].ToString(), WRONG_VALUE), int(param["sub_window"].ToInt()),
+                       CEnumReg::GetValueNoRef<ENUM_OBJECT>(param["object_type"].ToString(), WRONG_VALUE), int(param["sub_window"].ToInt(0)),
                        StringToTime(param["time1"].ToString("0")), param["price1"].ToDouble(0.00), StringToTime(param["time2"].ToString("0")), param["price2"].ToDouble(0.00),
                        StringToTime(param["time3"].ToString("0")), param["price3"].ToDouble(0.00)
                       ))
@@ -56,7 +61,7 @@ void CMcpFuncObjectCreate::Run(CJsonNode &param, string &res)
     case  1: // time1,price1,time2,price2 (rectangle|fibbo|)
      {
       if(!ObjectCreate(param["chart_id"].ToInt(0), param["object_name"].ToString(""),
-                       CEnumReg::GetValueNoRef<ENUM_OBJECT>(param["object_type"].ToString(), WRONG_VALUE), int(param["sub_window"].ToInt()),
+                       CEnumReg::GetValueNoRef<ENUM_OBJECT>(param["object_type"].ToString(), WRONG_VALUE), int(param["sub_window"].ToInt(0)),
                        StringToTime(param["time1"].ToString("0")), param["price1"].ToDouble(0.00), StringToTime(param["time2"].ToString("0")), param["price2"].ToDouble(0.00)))
        {
         res = StringFormat("{\"ok\":false,\"error\":\"object_create failed, last mt5 error = %d\"}", ::GetLastError());
@@ -69,7 +74,7 @@ void CMcpFuncObjectCreate::Run(CJsonNode &param, string &res)
     case 2: // time1,price1 (arrow\buttom|vline|hline)
      {
       if(!ObjectCreate(param["chart_id"].ToInt(0), param["object_name"].ToString(""),
-                       CEnumReg::GetValueNoRef<ENUM_OBJECT>(param["object_type"].ToString(), WRONG_VALUE), int(param["sub_window"].ToInt()),
+                       CEnumReg::GetValueNoRef<ENUM_OBJECT>(param["object_type"].ToString(), WRONG_VALUE), int(param["sub_window"].ToInt(0)),
                        StringToTime(param["time1"].ToString("0")), param["price1"].ToDouble(0.00)))
        {
         res = StringFormat("{\"ok\":false,\"error\":\"object_create failed, last mt5 error = %d\"}", ::GetLastError());
@@ -82,7 +87,7 @@ void CMcpFuncObjectCreate::Run(CJsonNode &param, string &res)
     case 3: // RectLabel\Buttom\Edit (va sin nada se setea con ObjectSetInteger.)
      {
       if(!ObjectCreate(param["chart_id"].ToInt(0), param["object_name"].ToString(""),
-                       CEnumReg::GetValueNoRef<ENUM_OBJECT>(param["object_type"].ToString(), WRONG_VALUE), int(param["sub_window"].ToInt()),
+                       CEnumReg::GetValueNoRef<ENUM_OBJECT>(param["object_type"].ToString(), WRONG_VALUE), int(param["sub_window"].ToInt(0)),
                        0, 0.00))
        {
         res = StringFormat("{\"ok\":false,\"error\":\"object_create failed, last mt5 error = %d\"}", ::GetLastError());
@@ -293,6 +298,7 @@ void CMcpFuncObjectList::Run(CJsonNode & param, string & res)
  }
 
 //+------------------------------------------------------------------+
+} // namespace TSN
 #endif // FULLMT5MCPBYLEO_SRC_GRAPHICS_OBJECTS_MQH
 
 //+------------------------------------------------------------------+

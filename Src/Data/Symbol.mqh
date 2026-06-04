@@ -16,6 +16,11 @@
 #include "..\\Def\\Def.mqh"
 
 //+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
+namespace TSN
+{
+//+------------------------------------------------------------------+
 //| symbols_total                                                    |
 //+------------------------------------------------------------------+
 class CMcpFuncSymbolsTotal : public CMcpFunction
@@ -84,7 +89,7 @@ void CMcpFuncSymbolInfo::Run(CJsonNode& param, string& res)
  {
 //---
   const string symbol = param["symbol"].ToString(_Symbol);
-  const int8_t mode = (int8_t)param["mode"].ToInt();
+  const int8_t mode = (int8_t)param["mode"].ToInt(0);
 
 //---
   switch(mode)
@@ -140,13 +145,13 @@ public:
 void CMcpFuncSymbolInfoSession::Run(CJsonNode &param, string &res)
  {
   ::ResetLastError();
-  const int8_t mode = (int8_t)param["mode"].ToInt();
+  const int8_t mode = (int8_t)param["mode"].ToInt(0);
   datetime to, from;
   switch(mode)
    {
     case  0:
      {
-      if(!SymbolInfoSessionTrade(param["symbol"].ToString(), CEnumReg::GetValueNoRef<ENUM_DAY_OF_WEEK>(param["day_of_week"].ToString(""), WRONG_VALUE), uint(param["session_index"].ToInt()), from, to))
+      if(!SymbolInfoSessionTrade(param["symbol"].ToString(), CEnumReg::GetValueNoRef<ENUM_DAY_OF_WEEK>(param["day_of_week"].ToString(""), WRONG_VALUE), uint(param["session_index"].ToInt(0)), from, to))
        {
         res = StringFormat("{\"ok\":false,\"error\":\"Error call SymbolInfoSessionTrade, mt5 last err = %d\"}", ::GetLastError());
         return;
@@ -156,7 +161,7 @@ void CMcpFuncSymbolInfoSession::Run(CJsonNode &param, string &res)
 
     case 1:
      {
-      if(!SymbolInfoSessionQuote(param["symbol"].ToString(), CEnumReg::GetValueNoRef<ENUM_DAY_OF_WEEK>(param["day_of_week"].ToString(""), WRONG_VALUE), uint(param["session_index"].ToInt()), from, to))
+      if(!SymbolInfoSessionQuote(param["symbol"].ToString(), CEnumReg::GetValueNoRef<ENUM_DAY_OF_WEEK>(param["day_of_week"].ToString(""), WRONG_VALUE), uint(param["session_index"].ToInt(0)), from, to))
        {
         res = StringFormat("{\"ok\":false,\"error\":\"Error call SymbolInfoSessionQuote, mt5 last err = %d\"}", ::GetLastError());
         return;
@@ -174,4 +179,5 @@ void CMcpFuncSymbolInfoSession::Run(CJsonNode &param, string &res)
 
 
 //+------------------------------------------------------------------+
+} // namespace TSN
 #endif // FULLMT5MCPBYLEO_SRC_DATA_SYMBOL_MQH

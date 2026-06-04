@@ -16,7 +16,11 @@
 //+------------------------------------------------------------------+
 #include "..\\Def\\Def.mqh"
 
-
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
+namespace TSN
+{
 //+------------------------------------------------------------------+
 //| CMcpFuncGetTime - Obtiene diferentes tipos de tiempo             |
 //+------------------------------------------------------------------+
@@ -136,7 +140,7 @@ public:
 //+------------------------------------------------------------------+
 void CMcpFuncAccountInfo::Run(CJsonNode& param, string& res)
  {
-  const int8_t mode = (int8_t)param["mode"].ToInt();
+  const int8_t mode = (int8_t)param["mode"].ToInt(0);
   switch(mode)
    {
     //--- DOUBLE
@@ -181,7 +185,7 @@ public:
 //+------------------------------------------------------------------+
 void CMcpFuncTerminalInfo::Run(CJsonNode& param, string& res)
  {
-  const int8_t mode = (int8_t)param["mode"].ToInt();
+  const int8_t mode = (int8_t)param["mode"].ToInt(0);
 
   switch(mode)
    {
@@ -213,4 +217,5 @@ void CMcpFuncTerminalInfo::Run(CJsonNode& param, string& res)
  }
 
 //+------------------------------------------------------------------+
+} // namespace TSN
 #endif // FULLMT5MCPBYLEO_SRC_UTILS_UTILS_MQH

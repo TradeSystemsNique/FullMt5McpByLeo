@@ -16,10 +16,11 @@
 //+------------------------------------------------------------------+
 #include "..\\Def\\Def.mqh"
 
-
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
+namespace TSN
+{
 class CMcpFunctionRunBacktest : public CMcpFunction
  {
 private:
@@ -113,7 +114,7 @@ void CMcpFunctionRunEA::Run(CJsonNode &param, string &res)
   exp_param[0].string_value = param["expert_path"].ToString();
 
 //---
-  CJsonIterator it = param["params"].begin();
+  CJsonIteratorArray it = param["params"].BeginArr();
   int k = 1;
   while(it.IsValid())
    {
@@ -125,41 +126,41 @@ void CMcpFunctionRunEA::Run(CJsonNode &param, string &res)
     switch(exp_param[k].type)
      {
       case TYPE_BOOL:
-        exp_param[k].integer_value = parametro["value"].ToInt();
+        exp_param[k].integer_value = parametro["value"].ToInt(0);
         break;
       case TYPE_CHAR:
-        exp_param[k].integer_value = parametro["value"].ToInt();
+        exp_param[k].integer_value = parametro["value"].ToInt(0);
         break;
       case TYPE_UCHAR:
-        exp_param[k].integer_value = parametro["value"].ToInt();
+        exp_param[k].integer_value = parametro["value"].ToInt(0);
         break;
       case TYPE_SHORT:
-        exp_param[k].integer_value = parametro["value"].ToInt();
+        exp_param[k].integer_value = parametro["value"].ToInt(0);
         break;
       case TYPE_USHORT:
-        exp_param[k].integer_value = parametro["value"].ToInt();
+        exp_param[k].integer_value = parametro["value"].ToInt(0);
         break;
       case TYPE_COLOR:
         exp_param[k].integer_value = long(color(parametro["value"].ToString("")));
         break;
       case TYPE_INT:
-        exp_param[k].integer_value = parametro["value"].ToInt();
+        exp_param[k].integer_value = parametro["value"].ToInt(0);
         break;
       case TYPE_UINT:
-        exp_param[k].integer_value = parametro["value"].ToInt();
+        exp_param[k].integer_value = parametro["value"].ToInt(0);
         break;
       case TYPE_DATETIME:
         exp_param[k].integer_value = long(datetime(parametro["value"].ToString("0")));
         break;
       case TYPE_LONG:
       case TYPE_ULONG:
-        exp_param[k].integer_value = parametro["value"].ToInt();
+        exp_param[k].integer_value = parametro["value"].ToInt(0);
         break;
       case TYPE_FLOAT:
-        exp_param[k].double_value = parametro["value"].ToDouble();
+        exp_param[k].double_value = parametro["value"].ToDouble(0.00);
         break;
       case TYPE_DOUBLE:
-        exp_param[k].double_value = parametro["value"].ToDouble();
+        exp_param[k].double_value = parametro["value"].ToDouble(0.00);
         break;
       case TYPE_STRING:
         exp_param[k].string_value = parametro["value"].ToString("");
@@ -210,4 +211,5 @@ void CMcpFunctionCompile::Run(CJsonNode &param, string &res)
    }
  }
 
+} // namespace TSN
 #endif // FULLMT5MCPBYLEO_SRC_COMPLEX_COMPLEX_MQH

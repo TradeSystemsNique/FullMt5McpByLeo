@@ -15,7 +15,11 @@
 //+------------------------------------------------------------------+
 #include "..\\Def\\Def.mqh"
 
-
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
+namespace TSN
+{
 //+------------------------------------------------------------------+
 //| CMcpFuncCopyTicks                                                |
 //+------------------------------------------------------------------+
@@ -189,8 +193,8 @@ void CMcpFuncCopyData::Run(CJsonNode& param, string& res)
 //---
   ::ResetLastError();
   uint8_t t = 0;
-  const int start = (int)param["start"].ToInt();
-  const int count = (int)param["count"].ToInt();
+  const int start = (int)param["start"].ToInt(0);
+  const int count = (int)param["count"].ToInt(0);
   const uint8_t mode  = uint8_t(CEnumReg::GetValueNoRef<ENUM_MCPFUNC_COPY_DATA>(param["mode"].ToString(), 0));
   const string symbol = param["symbol"].ToString(_Symbol);
 
@@ -314,6 +318,7 @@ void CMcpFuncCopyData::Run(CJsonNode& param, string& res)
  }
 
 //+------------------------------------------------------------------+
+} // namespace TSN
 #endif // FULLMT5MCPBYLEO_SRC_DATA_MARKETDATA_MQH
 
 //+------------------------------------------------------------------+

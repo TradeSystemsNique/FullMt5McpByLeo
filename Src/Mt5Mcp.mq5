@@ -30,7 +30,7 @@ input int InpMsTimeoutReadNoTls = 10000;
 //+------------------------------------------------------------------+
 //| Global variables                                                 |
 //+------------------------------------------------------------------+
-IMcpBase* g_mcp_server;
+TSN::IMcpBase* g_mcp_server;
 CTrade g_trade;
 
 //+------------------------------------------------------------------+
@@ -50,73 +50,73 @@ int OnInit()
   g_mcp_server.AddLogFlags(LOG_ALL);
 
 //--- Graphics / Objects
-  g_mcp_server.AddItemFast(new CMcpFuncObjectCreate());
-  g_mcp_server.AddItemFast(new CMcpFuncObjectDelete());
-  g_mcp_server.AddItemFast(new CMcpFuncObjectInteger());
-  g_mcp_server.AddItemFast(new CMcpFuncObjectDouble());
-  g_mcp_server.AddItemFast(new CMcpFuncObjectString());
-  g_mcp_server.AddItemFast(new CMcpFuncObjectList());
+  g_mcp_server.AddItemFast(new TSN::CMcpFuncObjectCreate());
+  g_mcp_server.AddItemFast(new TSN::CMcpFuncObjectDelete());
+  g_mcp_server.AddItemFast(new TSN::CMcpFuncObjectInteger());
+  g_mcp_server.AddItemFast(new TSN::CMcpFuncObjectDouble());
+  g_mcp_server.AddItemFast(new TSN::CMcpFuncObjectString());
+  g_mcp_server.AddItemFast(new TSN::CMcpFuncObjectList());
 
 //--- Charts
-  g_mcp_server.AddItemFast(new CMcpFuncChartList());
-  g_mcp_server.AddItemFast(new CMcpFuncChartOpen());
-  g_mcp_server.AddItemFast(new CMcpFuncChartClose());
-  g_mcp_server.AddItemFast(new CMcpFuncChartInteger());
-  g_mcp_server.AddItemFast(new CMcpFuncChartDouble());
-  g_mcp_server.AddItemFast(new CMcpFuncChartString());
-  g_mcp_server.AddItemFast(new CMcpFuncChartRedraw());
-  g_mcp_server.AddItemFast(new CMcpFuncChartSrenshot());
-  g_mcp_server.AddItemFast(new CMcpFuncChartGetSymbolOrPeriod());
+  g_mcp_server.AddItemFast(new TSN::CMcpFuncChartList());
+  g_mcp_server.AddItemFast(new TSN::CMcpFuncChartOpen());
+  g_mcp_server.AddItemFast(new TSN::CMcpFuncChartClose());
+  g_mcp_server.AddItemFast(new TSN::CMcpFuncChartInteger());
+  g_mcp_server.AddItemFast(new TSN::CMcpFuncChartDouble());
+  g_mcp_server.AddItemFast(new TSN::CMcpFuncChartString());
+  g_mcp_server.AddItemFast(new TSN::CMcpFuncChartRedraw());
+  g_mcp_server.AddItemFast(new TSN::CMcpFuncChartSrenshot());
+  g_mcp_server.AddItemFast(new TSN::CMcpFuncChartGetSymbolOrPeriod());
 
 //--- Data / Symbol
-  g_mcp_server.AddItemFast(new CMcpFuncSymbolsTotal());
-  g_mcp_server.AddItemFast(new CMcpFuncSymbolSelect());
-  g_mcp_server.AddItemFast(new CMcpFuncSymbolInfo());
-  g_mcp_server.AddItemFast(new CMcpFuncSymbolInfoSession());
+  g_mcp_server.AddItemFast(new TSN::CMcpFuncSymbolsTotal());
+  g_mcp_server.AddItemFast(new TSN::CMcpFuncSymbolSelect());
+  g_mcp_server.AddItemFast(new TSN::CMcpFuncSymbolInfo());
+  g_mcp_server.AddItemFast(new TSN::CMcpFuncSymbolInfoSession());
 
 
 //--- Data / Market Data
-  g_mcp_server.AddItemFast(new CMcpFuncCopyData());
-  g_mcp_server.AddItemFast(new CMcpFuncCopyTicks());
-  g_mcp_server.AddItemFast(new CMcpFuncBarShift());
+  g_mcp_server.AddItemFast(new TSN::CMcpFuncCopyData());
+  g_mcp_server.AddItemFast(new TSN::CMcpFuncCopyTicks());
+  g_mcp_server.AddItemFast(new TSN::CMcpFuncBarShift());
 
 //--- Calc order
-  g_mcp_server.AddItemFast(new CMcpFuncCalcOrder());
+  g_mcp_server.AddItemFast(new TSN::CMcpFuncCalcOrder());
 
 //--- Trade / Positions
-  g_mcp_server.AddItemFast(new CMcpFuncPositionList());
-  g_mcp_server.AddItemFast(new CMcpFuncPositionGet());
-  g_mcp_server.AddItemFast(new CMcpFuncPositionClose(&g_trade));
-  g_mcp_server.AddItemFast(new CMcpFuncPositionModify(&g_trade));
+  g_mcp_server.AddItemFast(new TSN::CMcpFuncPositionList());
+  g_mcp_server.AddItemFast(new TSN::CMcpFuncPositionGet());
+  g_mcp_server.AddItemFast(new TSN::CMcpFuncPositionClose(&g_trade));
+  g_mcp_server.AddItemFast(new TSN::CMcpFuncPositionModify(&g_trade));
 
 //--- Trade / Orders
-  g_mcp_server.AddItemFast(new CMcpFuncOrderList());
-  g_mcp_server.AddItemFast(new CMcpFuncOrderClose(&g_trade));
-  g_mcp_server.AddItemFast(new CMcpFuncOrderModify(&g_trade));
-  g_mcp_server.AddItemFast(new CMcpFuncOrderGet());
+  g_mcp_server.AddItemFast(new TSN::CMcpFuncOrderList());
+  g_mcp_server.AddItemFast(new TSN::CMcpFuncOrderClose(&g_trade));
+  g_mcp_server.AddItemFast(new TSN::CMcpFuncOrderModify(&g_trade));
+  g_mcp_server.AddItemFast(new TSN::CMcpFuncOrderGet());
 
 //--- Trade / Deals
-  g_mcp_server.AddItemFast(new CMcpFuncHistoryDealList());
-  g_mcp_server.AddItemFast(new CMcpFuncHistoryDealGet());
+  g_mcp_server.AddItemFast(new TSN::CMcpFuncHistoryDealList());
+  g_mcp_server.AddItemFast(new TSN::CMcpFuncHistoryDealGet());
 
 //--- Trade / Trade
-  g_mcp_server.AddItemFast(new CMcpFuncTradeTrade(&g_trade));
-  g_mcp_server.AddItemFast(new CMcpFuncTradeOpenLimit(&g_trade));
-  g_mcp_server.AddItemFast(new CMcpFuncTradeOpenStop(&g_trade));
+  g_mcp_server.AddItemFast(new TSN::CMcpFuncTradeTrade(&g_trade));
+  g_mcp_server.AddItemFast(new TSN::CMcpFuncTradeOpenLimit(&g_trade));
+  g_mcp_server.AddItemFast(new TSN::CMcpFuncTradeOpenStop(&g_trade));
 
 //--- Complex / Advanced
-  g_mcp_server.AddItemFast(new CMcpFunctionRunBacktest());
-  g_mcp_server.AddItemFast(new CMcpFunctionRunEA());
-  g_mcp_server.AddItemFast(new CMcpFunctionCompile());
+  g_mcp_server.AddItemFast(new TSN::CMcpFunctionRunBacktest());
+  g_mcp_server.AddItemFast(new TSN::CMcpFunctionRunEA());
+  g_mcp_server.AddItemFast(new TSN::CMcpFunctionCompile());
 
 //--- Complex / Logs
-  g_mcp_server.AddItemFast(new CMcpFunctionExpertLogs());
+  g_mcp_server.AddItemFast(new TSN::CMcpFunctionExpertLogs());
 
 //--- Uitls
-  g_mcp_server.AddItemFast(new CMcpFuncGetTime());
-  g_mcp_server.AddItemFast(new CMcpFuncGetErrDescription());
-  g_mcp_server.AddItemFast(new CMcpFuncTerminalInfo());
-  g_mcp_server.AddItemFast(new CMcpFuncAccountInfo());
+  g_mcp_server.AddItemFast(new TSN::CMcpFuncGetTime());
+  g_mcp_server.AddItemFast(new TSN::CMcpFuncGetErrDescription());
+  g_mcp_server.AddItemFast(new TSN::CMcpFuncTerminalInfo());
+  g_mcp_server.AddItemFast(new TSN::CMcpFuncAccountInfo());
 
 //---
   g_mcp_server.Set(InpMsPool, InpMsTimeoutReadNoTls);

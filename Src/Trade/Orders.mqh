@@ -16,6 +16,11 @@
 #include "..\\Def\\Def.mqh"
 
 //+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
+namespace TSN
+{
+//+------------------------------------------------------------------+
 //| order_get_total                                                  |
 //+------------------------------------------------------------------+
 class CMcpFuncOrderList : public CMcpFunction
@@ -146,7 +151,7 @@ void CMcpFuncOrderGet::Run(CJsonNode& param, string& res)
    }
 
 //---
-  const int8_t mode = (int8_t)param["mode"].ToInt();
+  const int8_t mode = (int8_t)param["mode"].ToInt(0);
 
   switch(mode)
    {
@@ -222,7 +227,7 @@ public:
 void CMcpFuncCalcOrder::Run(CJsonNode &param, string &res)
  {
 //---
-  const int8_t mode = (int8_t)param["mode"].ToInt();
+  const int8_t mode = (int8_t)param["mode"].ToInt(0);
   const ENUM_ORDER_TYPE type = CEnumReg::GetValueNoRef<ENUM_ORDER_TYPE>(param["order_type"].ToString(""), ORDER_TYPE_CLOSE_BY); // ORDER_TYPE_CLOSE_BY=wrong_value
 
   m_get_lote.SetSymbol(param["symbol"].ToString(""));
@@ -237,8 +242,8 @@ void CMcpFuncCalcOrder::Run(CJsonNode &param, string &res)
                  param["risk_per_operation"].ToDouble(0.0),
                  param["entry_price"].ToDouble(0.0),
                  param["lot_size"].ToDouble(0.0),
-                 (ulong)param["deviation"].ToInt(),
-                 (ulong)param["stop_limit"].ToInt()
+                 (ulong)param["deviation"].ToInt(0),
+                 (ulong)param["stop_limit"].ToInt(0)
                );
 
       if(v <= 0)
@@ -261,8 +266,8 @@ void CMcpFuncCalcOrder::Run(CJsonNode &param, string &res)
                  param["risk_per_operation"].ToDouble(0.0),
                  param["entry_price"].ToDouble(0.0),
                  chosen_lot,
-                 (ulong)param["deviation"].ToInt(),
-                 (ulong)param["stop_limit"].ToInt()
+                 (ulong)param["deviation"].ToInt(0),
+                 (ulong)param["stop_limit"].ToInt(0)
                );
 
       if(v <= 0)
@@ -284,7 +289,7 @@ void CMcpFuncCalcOrder::Run(CJsonNode &param, string &res)
                    param["max_lot"].ToDouble(0.0),
                    param["risk_per_operation"].ToDouble(0.0),
                    new_risk,
-                   (long)param["sl"].ToInt()
+                   (long)param["sl"].ToInt(0)
                  );
 
       if(v <= 0.0)
@@ -303,8 +308,8 @@ void CMcpFuncCalcOrder::Run(CJsonNode &param, string &res)
       double v = m_get_lote.GetMaxLote(
                    type,
                    param["entry_price"].ToDouble(0.0),
-                   (ulong)param["deviation"].ToInt(),
-                   (ulong)param["stop_limit"].ToInt()
+                   (ulong)param["deviation"].ToInt(0),
+                   (ulong)param["stop_limit"].ToInt(0)
                  );
 
       if(v <= 0.0)
@@ -324,8 +329,8 @@ void CMcpFuncCalcOrder::Run(CJsonNode &param, string &res)
                    type,
                    param["risk_per_operation"].ToDouble(0.0),
                    param["entry_price"].ToDouble(0.0),
-                   (ulong)param["deviation"].ToInt(),
-                   (ulong)param["stop_limit"].ToInt()
+                   (ulong)param["deviation"].ToInt(0),
+                   (ulong)param["stop_limit"].ToInt(0)
                  );
 
       if(v <= 0.0)
@@ -344,4 +349,5 @@ void CMcpFuncCalcOrder::Run(CJsonNode &param, string &res)
    }
  }
 //+------------------------------------------------------------------+
+} // namespace TSN
 #endif // FULLMT5MCPBYLEO_SRC_TRADE_ORDERS_MQH

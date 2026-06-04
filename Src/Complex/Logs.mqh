@@ -18,6 +18,8 @@
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
+namespace TSN
+{
 class CMcpFunctionExpertLogs : public CMcpFunction
  {
 public:
@@ -30,19 +32,19 @@ public:
 void CMcpFunctionExpertLogs::Run(CJsonNode &param, string &res)
  {
   string log_lines = "";
-  if(ExtractLastLogLines(
+  if(!ExtractLastLogLines(
        StringToTime(param["start_date"].ToString(TimeToString(TimeCurrent()))),
        int(param["logs_lines"].ToInt(10)),
        log_lines
      ))
    {
-
-    res = "\"ok\":false,\"error\":\"Error obtaining logs from the mt5 terminal\"}";
+    res = "{\"ok\":false,\"error\":\"Error obtaining logs from the mt5 terminal\"}";
    }
   else
    {
-    res = "\"ok\":true,\"result\":\"" + log_lines + "\"}";
+    res = "{\"ok\":true,\"result\":\"" + log_lines + "\"}";
    }
  }
 //+------------------------------------------------------------------+
+} // namespace TSN
 #endif // FULLMT5MCPBYLEO_SRC_COMPLEX_LOGS_MQH

@@ -16,6 +16,11 @@
 #include "..\\Def\\Def.mqh"
 
 //+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
+namespace TSN
+{
+//+------------------------------------------------------------------+
 //| history_deal_get_total                                           |
 //+------------------------------------------------------------------+
 class CMcpFuncHistoryDealList : public CMcpFunction
@@ -84,7 +89,7 @@ void CMcpFuncHistoryDealGet::Run(CJsonNode& param, string& res)
    }
 
 //---
-  const int8_t mode = (int8_t)param["mode"].ToInt();
+  const int8_t mode = (int8_t)param["mode"].ToInt(0);
 
   switch(mode)
    {
@@ -145,4 +150,5 @@ void CMcpFuncHistoryDealGet::Run(CJsonNode& param, string& res)
 
 
 //+------------------------------------------------------------------+
+} // namespace TSN
 #endif // FULLMT5MCPBYLEO_SRC_TRADE_DEALS_MQH

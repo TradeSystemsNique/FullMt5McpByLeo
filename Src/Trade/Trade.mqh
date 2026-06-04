@@ -19,6 +19,8 @@
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
+namespace TSN
+{
 class CMcpFuncTradeTrade : public CMcpFunction
  {
 protected:
@@ -119,4 +121,5 @@ void CMcpFuncTradeOpenStop::Run(CJsonNode& param, string& res)
  }
 
 //+------------------------------------------------------------------+
+} // namespace TSN
 #endif // FULLMT5MCPBYLEO_SRC_TRADE_TRADE_MQH

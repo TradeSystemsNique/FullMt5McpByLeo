@@ -16,6 +16,11 @@
 #include "..\\Def\\Def.mqh"
 
 //+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
+namespace TSN
+{
+//+------------------------------------------------------------------+
 //| position_list                                                    |
 //+------------------------------------------------------------------+
 class CMcpFuncPositionList : public CMcpFunction
@@ -72,7 +77,7 @@ void CMcpFuncPositionGet::Run(CJsonNode& param, string& res)
    }
 
 //---
-  const int8_t mode = (int8_t)param["mode"].ToInt();
+  const int8_t mode = (int8_t)param["mode"].ToInt(0);
   switch(mode)
    {
 
@@ -246,4 +251,5 @@ void CMcpFuncPositionModify::Run(CJsonNode& param, string& res)
  }
 
 //+------------------------------------------------------------------+
+} // namespace TSN
 #endif // FULLMT5MCPBYLEO_SRC_TRADE_POSITIONS_MQH
