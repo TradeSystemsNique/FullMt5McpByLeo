@@ -55,13 +55,12 @@ object_string
 chart_list
 chart_open
 chart_close
-chart_integer
-chart_double
-chart_string
+chart_get_set (agrupa a los 3 internamente int\string\double con set\get versions..)
 chart_redraw
 chart_screenshot
 chart_get_symbol_or_period
-
+chart_indicator (agrupa varias funciones)
+chart_navigate
 
 # ============================================================================
 # GROUP 5: CODE + TERMINAL (4 funciones)
@@ -82,7 +81,11 @@ get_err_description
 account_info (agrupa a los 3 internamente)
 terminal_info (agrupa a los 3 internamente)
 
+# ============================================================================
+# GROUP 7: INDICATOR (1 Funcion)
+# ============================================================================
+indicator_manage (agrupa funciones internas)
 
 # ============================================================================
-# TOTAL: 44 FUNCIONES
+# TOTAL: 45 FUNCIONES
 # ============================================================================

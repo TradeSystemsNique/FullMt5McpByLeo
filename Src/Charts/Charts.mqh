@@ -396,7 +396,7 @@ void CMcpFuncChartSrenshot::Run(CJsonNode &param, string &res)
   const string fn = param["file_name"].ToString();
   const long chart_id = param["chart_id"].ToInt(0);
   ::ResetLastError();
-  if(!ChartScreenShot(chart_id, fn, (int)param["with"].ToInt(ChartGetInteger(chart_id, CHART_WIDTH_IN_PIXELS)),
+  if(!ChartScreenShot(chart_id, fn, (int)param["width"].ToInt(ChartGetInteger(chart_id, CHART_WIDTH_IN_PIXELS)),
                       (int)param["height"].ToInt(ChartGetInteger(chart_id, CHART_HEIGHT_IN_PIXELS)), ALIGN_CENTER))
    {
     res = StringFormat("{\"ok\":false,\"error\":\"Failed call ChartScreenShot, last mt5 error = %d\"}", ::GetLastError());
@@ -405,20 +405,30 @@ void CMcpFuncChartSrenshot::Run(CJsonNode &param, string &res)
 
 
 //---
-  if(param["common_flag"].ToBool(true))
+  if(!param["as_image_file"].ToBool())
    {
-    if(!FileMove(fn, 0, fn, FILE_COMMON | FILE_REWRITE))
+    if(param["common_flag"].ToBool(true))
      {
-      res = StringFormat("{\"ok\":false,\"error\":\"Failed call FileMove, last mt5 error = %d\"}", ::GetLastError());
+      if(!FileMove(fn, 0, fn, FILE_COMMON | FILE_REWRITE))
+       {
+        res = StringFormat("{\"ok\":false,\"error\":\"Failed call FileMove, last mt5 error = %d\"}", ::GetLastError());
+        return;
+       }
+      res = StringFormat("{\"ok\":true,\"result\":{\"full_path\":\"%s\"}}", (TERMINAL_MT5_COMMON_PATH + "\\Files\\" + fn));
      }
     else
      {
-      res = StringFormat("{\"ok\":true,\"result\":{\"full_path\":\"%s\"}}", (TERMINAL_MT5_COMMON_PATH + "\\Files\\" + fn));
+      res = StringFormat("{\"ok\":true,\"result\":{\"full_path\":\"%s\"}}", (TERMINAL_MT5_ROOT + "Files\\" + fn));
      }
    }
   else
    {
-    res = StringFormat("{\"ok\":true,\"result\":{\"full_path\":\"%s\"}}", (TERMINAL_MT5_ROOT + "Files\\" + fn));
+    uchar bytes[];
+    FileLoad(fn, bytes);
+    uchar key[];
+    uchar b64[];
+    const int t = CryptEncode(CRYPT_BASE64, bytes, key, b64);
+    res = "{\"ok\":true,\"result\":\"" + CharArrayToString(b64, 0, t) + "\"}";
    }
  }
 }
