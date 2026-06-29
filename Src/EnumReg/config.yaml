@@ -1,0 +1,56 @@
+# Config incial
+max_attepms: 150000
+namespace: TSN
+file_name_out: C:\Users\USER\AppData\Roaming\MetaQuotes\Terminal\D0E8209F77C8CF37AD8BF550E51FF075\MQL5\Shared Projects\FullMt5McpByLeo\Src\EnumReg\Table.mqh
+table_prefix: g_fullmt5mcpbyleo_enum_reg
+copyright: Copyright 2026, Niquel Mendoza
+link: https://www.mql5.com/
+func_name: TempHashCustom
+def_name_table_size: FULLMTCPMCP_ENUMREG_TABLE_SIZE
+def_bucket_size_name: FULLMTCPMCP_ENUMREG_BUCKET_SIZE
+invalid_value: -1
+comment_funct: true 
+
+# En bin no guardaremos nada usaremos directo el MQH
+
+# Random 
+random:
+  type: PHASH_RANDOM_MATH_XOSHIRO256
+  config: 
+    seed: 0x145615123
+
+# Hash    
+hash:
+  type: TSN_PHASH_TYPE_FNV1A_64
+  config: 
+    basis: def
+    prime: def
+
+# Final hash
+final_hash: HASH_UL1_SPLITMIX
+
+# Algoritm
+perfect_hash:
+  elements_por_bucket: 3
+  load_factor: 0.81
+
+# Main
+map_use_value: true
+map: {
+  MCPFUNC_TIME_GMT: 0,
+  MCPFUNC_TIME_CURRENT: 1,
+  MCPFUNC_TIME_LOCAL: 2,
+  MCPFUNC_TIME_SERVER: 3,
+  MTTESTER_MODELADO_EVERY_TICK: 0,
+  MTTESTER_MODELADO_OCHLM1: 1,
+  MTTESTER_MODELADO_ONLY_OPEN: 2,
+  MTTESTER_MODELADO_REAL_TICK: 4,
+  MCPFUNC_COPY_DATA_CLOSE: 0,
+  MCPFUNC_COPY_DATA_OPEN: 1,
+  MCPFUNC_COPY_DATA_HIGH: 2,
+  MCPFUNC_COPY_DATA_LOW: 3,
+  MCPFUNC_COPY_DATA_TICK_VOLUME: 4,
+  MCPFUNC_COPY_DATA_REAL_VOLUME: 5,
+  MCPFUNC_COPY_DATA_TIME: 6,
+  MCPFUNC_COPY_DATA_SPREAD: 7
+}

@@ -47,7 +47,7 @@ CMcpFuncGetTime::CMcpFuncGetTime(void) : CMcpFunction(0, false, "get_time")
 void CMcpFuncGetTime::Run(CJsonNode& param, string& res)
  {
 //---
-  const int8_t type = int8_t(CEnumReg::GetValueNoRef<ENUM_MCPFUNC_TYPE_TIME>(param["type"].ToString(), WRONG_VALUE));
+  const int8_t type = int8_t(CEnumRegFullMt5Mcp::GetValNoRef<ENUM_MCPFUNC_TYPE_TIME>(param["type"].ToString(), WRONG_VALUE));
 
 //---
   datetime time = 0;
@@ -146,21 +146,21 @@ void CMcpFuncAccountInfo::Run(CJsonNode& param, string& res)
     //--- DOUBLE
     case 0:
      {
-      res = StringFormat("{\"ok\":true,\"result\":%.8f}", AccountInfoDouble(CEnumReg::GetValueNoRef<ENUM_ACCOUNT_INFO_DOUBLE>(param["property"].ToString(""), WRONG_VALUE)));
+      res = StringFormat("{\"ok\":true,\"result\":%.8f}", AccountInfoDouble(CEnumRegBasis::GetValNoRef<ENUM_ACCOUNT_INFO_DOUBLE>(param["property"].ToString(""), WRONG_VALUE)));
       return;
      }
 
     //--- INTEGER
     case 1:
      {
-      res = StringFormat("{\"ok\":true,\"result\":%I64d}", AccountInfoInteger(CEnumReg::GetValueNoRef<ENUM_ACCOUNT_INFO_INTEGER>(param["property"].ToString(""), WRONG_VALUE)));
+      res = StringFormat("{\"ok\":true,\"result\":%I64d}", AccountInfoInteger(CEnumRegBasis::GetValNoRef<ENUM_ACCOUNT_INFO_INTEGER>(param["property"].ToString(""), WRONG_VALUE)));
       return;
      }
 
     //--- STRING
     case 2:
      {
-      res = "{\"ok\":true,\"result\":\"" + AccountInfoString(CEnumReg::GetValueNoRef<ENUM_ACCOUNT_INFO_STRING>(param["property"].ToString(""), WRONG_VALUE)) + "\"}";
+      res = "{\"ok\":true,\"result\":\"" + AccountInfoString(CEnumRegBasis::GetValNoRef<ENUM_ACCOUNT_INFO_STRING>(param["property"].ToString(""), WRONG_VALUE)) + "\"}";
       return;
      }
 
@@ -192,21 +192,21 @@ void CMcpFuncTerminalInfo::Run(CJsonNode& param, string& res)
     //--- DOUBLE
     case 0:
      {
-      res = StringFormat("{\"ok\":true,\"result\":%.8f}", TerminalInfoDouble(CEnumReg::GetValueNoRef<ENUM_TERMINAL_INFO_DOUBLE>(param["property"].ToString(""), WRONG_VALUE)));
+      res = StringFormat("{\"ok\":true,\"result\":%.8f}", TerminalInfoDouble(CEnumRegBasis::GetValNoRef<ENUM_TERMINAL_INFO_DOUBLE>(param["property"].ToString(""), WRONG_VALUE)));
       return;
      }
 
     //--- INTEGER
     case 1:
      {
-      res = StringFormat("{\"ok\":true,\"result\":%I64d}", TerminalInfoInteger(CEnumReg::GetValueNoRef<ENUM_TERMINAL_INFO_INTEGER>(param["property"].ToString(""), WRONG_VALUE)));
+      res = StringFormat("{\"ok\":true,\"result\":%I64d}", TerminalInfoInteger(CEnumRegBasis::GetValNoRef<ENUM_TERMINAL_INFO_INTEGER>(param["property"].ToString(""), WRONG_VALUE)));
       return;
      }
 
     //--- STRING
     case 2:
      {
-      res = "{\"ok\":true,\"result\":\"" + TerminalInfoString(CEnumReg::GetValueNoRef<ENUM_TERMINAL_INFO_STRING>(param["property"].ToString(""), WRONG_VALUE)) + "\"}";
+      res = "{\"ok\":true,\"result\":\"" + TerminalInfoString(CEnumRegBasis::GetValNoRef<ENUM_TERMINAL_INFO_STRING>(param["property"].ToString(""), WRONG_VALUE)) + "\"}";
       return;
      }
 

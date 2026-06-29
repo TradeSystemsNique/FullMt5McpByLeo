@@ -42,10 +42,10 @@ void CMcpFunctionRunBacktest::Run(CJsonNode &param, string &res)
   task.chart_id_from = m_current_chart_id;
   task.start_date = StringToTime(param["start_date"].ToString("0"));
   task.end_date = StringToTime(param["end_date"].ToString("0"));
-  task.timeframe = CEnumReg::GetValueNoRef<ENUM_TIMEFRAMES>(param["timeframe"].ToString(), _Period);
+  task.timeframe = CEnumRegBasis::GetValNoRef<ENUM_TIMEFRAMES>(param["timeframe"].ToString(), _Period);
   task.leverage = (uint16_t)param["leverage"].ToInt(0);
   task.visual_mode = param["visual_mode"].ToBool(false);
-  task.modelado = int8_t(CEnumReg::GetValueNoRef<ENUM_MTTESTER_MODELADO_MODE>(param["modelado"].ToString(), WRONG_VALUE)); // usar el que viene por defecto
+  task.modelado = int8_t(CEnumRegFullMt5Mcp::GetValNoRef<ENUM_MTTESTER_MODELADO_MODE>(param["modelado"].ToString(), WRONG_VALUE)); // usar el que viene por defecto
 
 //---
   const bool common = param["file_in_common"].ToBool(true);
@@ -98,7 +98,7 @@ public:
 void CMcpFunctionRunEA::Run(CJsonNode &param, string &res)
  {
   ::ResetLastError();
-  const long chart_id = OpenChartAndDevoler(ChartID(), param["symbol"].ToString(_Symbol), CEnumReg::GetValueNoRef<ENUM_TIMEFRAMES>(param["timeframe"].ToString(), _Period), int(param["ms_espera"].ToInt(750)));
+  const long chart_id = OpenChartAndDevoler(ChartID(), param["symbol"].ToString(_Symbol), CEnumRegBasis::GetValNoRef<ENUM_TIMEFRAMES>(param["timeframe"].ToString(), _Period), int(param["ms_espera"].ToInt(750)));
   if(chart_id == -1)
    {
     res = StringFormat("{\"ok\":false,\"error\":\"Error open chart, last mt5 err = %d\"}", ::GetLastError());
@@ -120,7 +120,7 @@ void CMcpFunctionRunEA::Run(CJsonNode &param, string &res)
    {
     //---
     CJsonNode parametro = it.Val();
-    exp_param[k].type = CEnumReg::GetValueNoRef<ENUM_DATATYPE>(parametro["data_type"].ToString(), TYPE_STRING);
+    exp_param[k].type = CEnumRegBasis::GetValNoRef<ENUM_DATATYPE>(parametro["data_type"].ToString(), TYPE_STRING);
 
     //---
     switch(exp_param[k].type)

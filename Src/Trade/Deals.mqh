@@ -99,7 +99,7 @@ void CMcpFuncHistoryDealGet::Run(CJsonNode& param, string& res)
       double v;
       if(HistoryDealGetDouble(
            ticket,
-           CEnumReg::GetValueNoRef<ENUM_DEAL_PROPERTY_DOUBLE>(param["property"].ToString(""), WRONG_VALUE),
+           CEnumRegBasis::GetValNoRef<ENUM_DEAL_PROPERTY_DOUBLE>(param["property"].ToString(""), WRONG_VALUE),
            v))
        {
         res = StringFormat("{\"ok\":true,\"result\":%.8f}", v);
@@ -114,7 +114,7 @@ void CMcpFuncHistoryDealGet::Run(CJsonNode& param, string& res)
       long v;
       if(HistoryDealGetInteger(
            ticket,
-           CEnumReg::GetValueNoRef<ENUM_DEAL_PROPERTY_INTEGER>(param["property"].ToString(""), WRONG_VALUE),
+           CEnumRegBasis::GetValNoRef<ENUM_DEAL_PROPERTY_INTEGER>(param["property"].ToString(""), WRONG_VALUE),
            v))
        {
         res = StringFormat("{\"ok\":true,\"result\":%I64d}", v);
@@ -129,7 +129,7 @@ void CMcpFuncHistoryDealGet::Run(CJsonNode& param, string& res)
       string v;
       if(HistoryDealGetString(
            ticket,
-           CEnumReg::GetValueNoRef<ENUM_DEAL_PROPERTY_STRING>(param["property"].ToString(""), WRONG_VALUE),
+           CEnumRegBasis::GetValNoRef<ENUM_DEAL_PROPERTY_STRING>(param["property"].ToString(""), WRONG_VALUE),
            v))
        {
         res = "{\"ok\":true,\"result\":\"" + v + "\"}";

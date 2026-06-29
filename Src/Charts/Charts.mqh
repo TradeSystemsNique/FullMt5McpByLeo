@@ -77,7 +77,7 @@ void CMcpFuncChartOpen::Run(CJsonNode& param, string& res)
   ::ResetLastError();
 
 //---
-  const long chart_id = ::ChartOpen(param["symbol"].ToString(_Symbol), CEnumReg::GetValueNoRef<ENUM_TIMEFRAMES>(param["timeframe"].ToString(), _Period));
+  const long chart_id = ::ChartOpen(param["symbol"].ToString(_Symbol), CEnumRegBasis::GetValNoRef<ENUM_TIMEFRAMES>(param["timeframe"].ToString(), _Period));
 
 //---
   if(chart_id == 0)
@@ -140,7 +140,7 @@ void CMcpFuncChartInteger::Run(CJsonNode& param, string& res)
 //---
   if(param.HasKey("value"))
    {
-    if(ChartSetInteger(param["chart_id"].ToInt(0), CEnumReg::GetValueNoRef<ENUM_CHART_PROPERTY_INTEGER>(param["property"].ToString(""), WRONG_VALUE), param["value"].ToInt(0)))
+    if(ChartSetInteger(param["chart_id"].ToInt(0), CEnumRegBasis::GetValNoRef<ENUM_CHART_PROPERTY_INTEGER>(param["property"].ToString(""), WRONG_VALUE), param["value"].ToInt(0)))
      {
       res = "{\"ok\":true,\"result\":true}";
      }
@@ -152,7 +152,7 @@ void CMcpFuncChartInteger::Run(CJsonNode& param, string& res)
   else
    {
     long v = 0;
-    if(ChartGetInteger(param["chart_id"].ToInt(0), CEnumReg::GetValueNoRef<ENUM_CHART_PROPERTY_INTEGER>(param["property"].ToString(""), WRONG_VALUE), (int)param["sub_window"].ToInt(0), v))
+    if(ChartGetInteger(param["chart_id"].ToInt(0), CEnumRegBasis::GetValNoRef<ENUM_CHART_PROPERTY_INTEGER>(param["property"].ToString(""), WRONG_VALUE), (int)param["sub_window"].ToInt(0), v))
      {
       res = StringFormat("{\"ok\":true,\"result\":%I64d}", v);
      }
@@ -185,7 +185,7 @@ void CMcpFuncChartDouble::Run(CJsonNode& param, string& res)
 //---
   if(param.HasKey("value"))
    {
-    if(ChartSetDouble(param["chart_id"].ToInt(0), CEnumReg::GetValueNoRef<ENUM_CHART_PROPERTY_DOUBLE>(param["property"].ToString(""), WRONG_VALUE), param["value"].ToDouble(0.00)))
+    if(ChartSetDouble(param["chart_id"].ToInt(0), CEnumRegBasis::GetValNoRef<ENUM_CHART_PROPERTY_DOUBLE>(param["property"].ToString(""), WRONG_VALUE), param["value"].ToDouble(0.00)))
      {
       res = "{\"ok\":true,\"result\":true}";
      }
@@ -197,7 +197,7 @@ void CMcpFuncChartDouble::Run(CJsonNode& param, string& res)
   else
    {
     double v;
-    if(ChartGetDouble(param["chart_id"].ToInt(0), CEnumReg::GetValueNoRef<ENUM_CHART_PROPERTY_DOUBLE>(param["property"].ToString(""), WRONG_VALUE), (int)param["sub_window"].ToInt(0), v))
+    if(ChartGetDouble(param["chart_id"].ToInt(0), CEnumRegBasis::GetValNoRef<ENUM_CHART_PROPERTY_DOUBLE>(param["property"].ToString(""), WRONG_VALUE), (int)param["sub_window"].ToInt(0), v))
      {
       res = StringFormat("{\"ok\":true,\"result\":%.8f}", v);
      }
@@ -232,7 +232,7 @@ void CMcpFuncChartString::Run(CJsonNode& param, string& res)
 //---
   if(param.HasKey("value"))
    {
-    if(ChartSetString(param["chart_id"].ToInt(0), CEnumReg::GetValueNoRef<ENUM_CHART_PROPERTY_STRING>(param["property"].ToString(""), WRONG_VALUE), param["value"].ToString()))
+    if(ChartSetString(param["chart_id"].ToInt(0), CEnumRegBasis::GetValNoRef<ENUM_CHART_PROPERTY_STRING>(param["property"].ToString(""), WRONG_VALUE), param["value"].ToString()))
      {
       res = "{\"ok\":true,\"result\":true}";
      }
@@ -244,7 +244,7 @@ void CMcpFuncChartString::Run(CJsonNode& param, string& res)
   else
    {
     string v;
-    if(ChartGetString(param["chart_id"].ToInt(0), CEnumReg::GetValueNoRef<ENUM_CHART_PROPERTY_STRING>(param["property"].ToString(""), WRONG_VALUE), v))
+    if(ChartGetString(param["chart_id"].ToInt(0), CEnumRegBasis::GetValNoRef<ENUM_CHART_PROPERTY_STRING>(param["property"].ToString(""), WRONG_VALUE), v))
      {
       res = "{\"ok\":true,\"result\":\"" + v + "\"}";
      }

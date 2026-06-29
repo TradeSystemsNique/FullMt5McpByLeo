@@ -73,7 +73,7 @@ void               CMcpFuncTradeOpenLimit::Run(CJsonNode& param, string& res)
   ::ResetLastError();
   res = "";
   m_trade.SetExpertMagicNumber(ulong(param["magic"].ToInt(0)));
-  const ENUM_ORDER_TYPE_TIME type_time = CEnumReg::GetValueNoRef<ENUM_ORDER_TYPE_TIME>(param["type_time"].ToString(), ORDER_TIME_GTC);
+  const ENUM_ORDER_TYPE_TIME type_time = CEnumRegBasis::GetValNoRef<ENUM_ORDER_TYPE_TIME>(param["type_time"].ToString(), ORDER_TIME_GTC);
   const datetime expiration = StringToTime(param["time_expiration"].ToString("0"));
   const bool result = (param["type"].ToString("") == "buy")
                       ? m_trade.BuyLimit(param["lot_size"].ToDouble(0.00), param["price"].ToDouble(0.000), param["symbol"].ToString(NULL), param["sl"].ToDouble(0.000), param["tp"].ToDouble(0.0000), type_time, expiration, param["comment"].ToString(""))
@@ -109,7 +109,7 @@ void CMcpFuncTradeOpenStop::Run(CJsonNode& param, string& res)
   ::ResetLastError();
   res = "";
   m_trade.SetExpertMagicNumber(ulong(param["magic"].ToInt(0)));
-  const ENUM_ORDER_TYPE_TIME type_time = CEnumReg::GetValueNoRef<ENUM_ORDER_TYPE_TIME>(param["type_time"].ToString(), ORDER_TIME_GTC);
+  const ENUM_ORDER_TYPE_TIME type_time = CEnumRegBasis::GetValNoRef<ENUM_ORDER_TYPE_TIME>(param["type_time"].ToString(), ORDER_TIME_GTC);
   const datetime expiration = StringToTime(param["time_expiration"].ToString("0"));
   const bool result = (param["type"].ToString("") == "buy")
                       ? m_trade.BuyStop(param["lot_size"].ToDouble(0.00), param["price"].ToDouble(0.000), param["symbol"].ToString(NULL), param["sl"].ToDouble(0.000), param["tp"].ToDouble(0.0000), type_time, expiration, param["comment"].ToString(""))

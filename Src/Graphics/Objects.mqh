@@ -46,7 +46,7 @@ void CMcpFuncObjectCreate::Run(CJsonNode &param, string &res)
     case  0: // time1,price1,time2,price2,time3,price3 (chanel\elipse\triangle)
      {
       if(!ObjectCreate(param["chart_id"].ToInt(0), param["object_name"].ToString(""),
-                       CEnumReg::GetValueNoRef<ENUM_OBJECT>(param["object_type"].ToString(), WRONG_VALUE), int(param["sub_window"].ToInt(0)),
+                       CEnumRegBasis::GetValNoRef<ENUM_OBJECT>(param["object_type"].ToString(), WRONG_VALUE), int(param["sub_window"].ToInt(0)),
                        StringToTime(param["time1"].ToString("0")), param["price1"].ToDouble(0.00), StringToTime(param["time2"].ToString("0")), param["price2"].ToDouble(0.00),
                        StringToTime(param["time3"].ToString("0")), param["price3"].ToDouble(0.00)
                       ))
@@ -61,7 +61,7 @@ void CMcpFuncObjectCreate::Run(CJsonNode &param, string &res)
     case  1: // time1,price1,time2,price2 (rectangle|fibbo|)
      {
       if(!ObjectCreate(param["chart_id"].ToInt(0), param["object_name"].ToString(""),
-                       CEnumReg::GetValueNoRef<ENUM_OBJECT>(param["object_type"].ToString(), WRONG_VALUE), int(param["sub_window"].ToInt(0)),
+                       CEnumRegBasis::GetValNoRef<ENUM_OBJECT>(param["object_type"].ToString(), WRONG_VALUE), int(param["sub_window"].ToInt(0)),
                        StringToTime(param["time1"].ToString("0")), param["price1"].ToDouble(0.00), StringToTime(param["time2"].ToString("0")), param["price2"].ToDouble(0.00)))
        {
         res = StringFormat("{\"ok\":false,\"error\":\"object_create failed, last mt5 error = %d\"}", ::GetLastError());
@@ -74,7 +74,7 @@ void CMcpFuncObjectCreate::Run(CJsonNode &param, string &res)
     case 2: // time1,price1 (arrow\buttom|vline|hline)
      {
       if(!ObjectCreate(param["chart_id"].ToInt(0), param["object_name"].ToString(""),
-                       CEnumReg::GetValueNoRef<ENUM_OBJECT>(param["object_type"].ToString(), WRONG_VALUE), int(param["sub_window"].ToInt(0)),
+                       CEnumRegBasis::GetValNoRef<ENUM_OBJECT>(param["object_type"].ToString(), WRONG_VALUE), int(param["sub_window"].ToInt(0)),
                        StringToTime(param["time1"].ToString("0")), param["price1"].ToDouble(0.00)))
        {
         res = StringFormat("{\"ok\":false,\"error\":\"object_create failed, last mt5 error = %d\"}", ::GetLastError());
@@ -87,7 +87,7 @@ void CMcpFuncObjectCreate::Run(CJsonNode &param, string &res)
     case 3: // RectLabel\Buttom\Edit (va sin nada se setea con ObjectSetInteger.)
      {
       if(!ObjectCreate(param["chart_id"].ToInt(0), param["object_name"].ToString(""),
-                       CEnumReg::GetValueNoRef<ENUM_OBJECT>(param["object_type"].ToString(), WRONG_VALUE), int(param["sub_window"].ToInt(0)),
+                       CEnumRegBasis::GetValNoRef<ENUM_OBJECT>(param["object_type"].ToString(), WRONG_VALUE), int(param["sub_window"].ToInt(0)),
                        0, 0.00))
        {
         res = StringFormat("{\"ok\":false,\"error\":\"object_create failed, last mt5 error = %d\"}", ::GetLastError());
@@ -153,7 +153,7 @@ public:
 void CMcpFuncObjectInteger::Run(CJsonNode & param, string & res)
  {
   ::ResetLastError();
-  const ENUM_OBJECT_PROPERTY_INTEGER property = CEnumReg::GetValueNoRef<ENUM_OBJECT_PROPERTY_INTEGER>(param["property"].ToString(""), OBJPROP_COLOR);
+  const ENUM_OBJECT_PROPERTY_INTEGER property = CEnumRegBasis::GetValNoRef<ENUM_OBJECT_PROPERTY_INTEGER>(param["property"].ToString(""), OBJPROP_COLOR);
 
 //---
   if(param.HasKey("value"))
@@ -192,7 +192,7 @@ public:
 void CMcpFuncObjectDouble::Run(CJsonNode & param, string & res)
  {
   ::ResetLastError();
-  const ENUM_OBJECT_PROPERTY_DOUBLE property = CEnumReg::GetValueNoRef<ENUM_OBJECT_PROPERTY_DOUBLE>(param["property"].ToString(""), OBJPROP_PRICE);
+  const ENUM_OBJECT_PROPERTY_DOUBLE property = CEnumRegBasis::GetValNoRef<ENUM_OBJECT_PROPERTY_DOUBLE>(param["property"].ToString(""), OBJPROP_PRICE);
 
 //---
   if(param.HasKey("value"))
@@ -231,7 +231,7 @@ public:
 void CMcpFuncObjectString::Run(CJsonNode & param, string & res)
  {
   ::ResetLastError();
-  const ENUM_OBJECT_PROPERTY_STRING property = CEnumReg::GetValueNoRef<ENUM_OBJECT_PROPERTY_STRING>(param["property"].ToString(""), OBJPROP_NAME);
+  const ENUM_OBJECT_PROPERTY_STRING property = CEnumRegBasis::GetValNoRef<ENUM_OBJECT_PROPERTY_STRING>(param["property"].ToString(""), OBJPROP_NAME);
 
 //---
   if(param.HasKey("value"))
@@ -274,7 +274,7 @@ void CMcpFuncObjectList::Run(CJsonNode & param, string & res)
 //---
   const long chart_id = param["chart_id"].ToInt(0);
   const int sub_window = (int)param["sub_window"].ToInt(-1);
-  const int type = int(CEnumReg::GetValueNoRef<ENUM_OBJECT>(param["object_type"].ToString(), -1));
+  const int type = int(CEnumRegBasis::GetValNoRef<ENUM_OBJECT>(param["object_type"].ToString(), -1));
 
 //---
   const int total = ObjectsTotal(chart_id, sub_window, type);

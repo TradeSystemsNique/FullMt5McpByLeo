@@ -135,7 +135,7 @@ public:
 //+------------------------------------------------------------------+
 void CMcpFuncBarShift::Run(CJsonNode &param, string &res)
  {
-  res = StringFormat("{\"ok\":true,\"result\":%d}", iBarShift(param["symbol"].ToString(_Symbol), CEnumReg::GetValueNoRef<ENUM_TIMEFRAMES>(param["timeframe"].ToString(), _Period),
+  res = StringFormat("{\"ok\":true,\"result\":%d}", iBarShift(param["symbol"].ToString(_Symbol), CEnumRegBasis::GetValNoRef<ENUM_TIMEFRAMES>(param["timeframe"].ToString(), _Period),
                      StringToTime(param["time"].ToString("0")), param["exact"].ToBool(false)));
  }
  
@@ -195,7 +195,7 @@ void CMcpFuncCopyData::Run(CJsonNode& param, string& res)
   uint8_t t = 0;
   const int start = (int)param["start"].ToInt(0);
   const int count = (int)param["count"].ToInt(0);
-  const uint8_t mode  = uint8_t(CEnumReg::GetValueNoRef<ENUM_MCPFUNC_COPY_DATA>(param["mode"].ToString(), 0));
+  const uint8_t mode  = uint8_t(CEnumRegFullMt5Mcp::GetValNoRef<ENUM_MCPFUNC_COPY_DATA>(param["mode"].ToString(), 0));
   const string symbol = param["symbol"].ToString(_Symbol);
 
 // t = [0=double,1=long,2=datetime:string]
@@ -205,46 +205,46 @@ void CMcpFuncCopyData::Run(CJsonNode& param, string& res)
    {
     case  MCPFUNC_COPY_DATA_CLOSE:
      {
-      copied = CopyClose(symbol, CEnumReg::GetValueNoRef<ENUM_TIMEFRAMES>(param["timeframe"].ToString(), _Period), start, count, m_buffer_d);
+      copied = CopyClose(symbol, CEnumRegBasis::GetValNoRef<ENUM_TIMEFRAMES>(param["timeframe"].ToString(), _Period), start, count, m_buffer_d);
       break;
      }
     case  MCPFUNC_COPY_DATA_OPEN:
      {
-      copied = CopyOpen(symbol, CEnumReg::GetValueNoRef<ENUM_TIMEFRAMES>(param["timeframe"].ToString(), _Period), start, count, m_buffer_d);
+      copied = CopyOpen(symbol, CEnumRegBasis::GetValNoRef<ENUM_TIMEFRAMES>(param["timeframe"].ToString(), _Period), start, count, m_buffer_d);
       break;
      }
     case  MCPFUNC_COPY_DATA_HIGH:
      {
-      copied = CopyHigh(symbol, CEnumReg::GetValueNoRef<ENUM_TIMEFRAMES>(param["timeframe"].ToString(), _Period), start, count, m_buffer_d);
+      copied = CopyHigh(symbol, CEnumRegBasis::GetValNoRef<ENUM_TIMEFRAMES>(param["timeframe"].ToString(), _Period), start, count, m_buffer_d);
       break;
      }
     case  MCPFUNC_COPY_DATA_LOW:
      {
-      copied = CopyLow(symbol, CEnumReg::GetValueNoRef<ENUM_TIMEFRAMES>(param["timeframe"].ToString(), _Period), start, count, m_buffer_d);
+      copied = CopyLow(symbol, CEnumRegBasis::GetValNoRef<ENUM_TIMEFRAMES>(param["timeframe"].ToString(), _Period), start, count, m_buffer_d);
       break;
      }
     case  MCPFUNC_COPY_DATA_TICK_VOLUME:
      {
       t = 1;
-      copied = CopyTickVolume(symbol, CEnumReg::GetValueNoRef<ENUM_TIMEFRAMES>(param["timeframe"].ToString(), _Period), start, count, m_buffer_l);
+      copied = CopyTickVolume(symbol, CEnumRegBasis::GetValNoRef<ENUM_TIMEFRAMES>(param["timeframe"].ToString(), _Period), start, count, m_buffer_l);
       break;
      }
     case  MCPFUNC_COPY_DATA_REAL_VOLUME:
      {
       t = 1;
-      copied = CopyRealVolume(symbol, CEnumReg::GetValueNoRef<ENUM_TIMEFRAMES>(param["timeframe"].ToString(), _Period), start, count, m_buffer_l);
+      copied = CopyRealVolume(symbol, CEnumRegBasis::GetValNoRef<ENUM_TIMEFRAMES>(param["timeframe"].ToString(), _Period), start, count, m_buffer_l);
       break;
      }
     case MCPFUNC_COPY_DATA_TIME:
      {
       t = 2;
-      copied = CopyTime(symbol, CEnumReg::GetValueNoRef<ENUM_TIMEFRAMES>(param["timeframe"].ToString(), _Period), start, count, m_buffer_dt);
+      copied = CopyTime(symbol, CEnumRegBasis::GetValNoRef<ENUM_TIMEFRAMES>(param["timeframe"].ToString(), _Period), start, count, m_buffer_dt);
       break;
      }
     case MCPFUNC_COPY_DATA_SPREAD:
      {
       t = 3;
-      copied = CopySpread(symbol, CEnumReg::GetValueNoRef<ENUM_TIMEFRAMES>(param["timeframe"].ToString(), _Period), start, count, m_buffer_i);
+      copied = CopySpread(symbol, CEnumRegBasis::GetValNoRef<ENUM_TIMEFRAMES>(param["timeframe"].ToString(), _Period), start, count, m_buffer_i);
       break;
      }
 

@@ -111,7 +111,7 @@ void CMcpFuncOrderModify::Run(CJsonNode& param, string& res)
                           param["new_price"].ToDouble(OrderGetDouble(ORDER_PRICE_OPEN)),
                           param["new_sl"].ToDouble(OrderGetDouble(ORDER_SL)),
                           param["new_tp"].ToDouble(OrderGetDouble(ORDER_TP)),
-                          CEnumReg::GetValueNoRef<ENUM_ORDER_TYPE_TIME>(param["new_type_time"].ToString(), (ENUM_ORDER_TYPE_TIME)OrderGetInteger(ORDER_TYPE_TIME)),
+                          CEnumRegBasis::GetValNoRef<ENUM_ORDER_TYPE_TIME>(param["new_type_time"].ToString(), (ENUM_ORDER_TYPE_TIME)OrderGetInteger(ORDER_TYPE_TIME)),
                           StringToTime(param["new_expiration_time"].ToString(TimeToString(OrderGetInteger(ORDER_TIME_EXPIRATION))))
                          ))
    {
@@ -160,7 +160,7 @@ void CMcpFuncOrderGet::Run(CJsonNode& param, string& res)
      {
       double v;
       if(OrderGetDouble(
-           CEnumReg::GetValueNoRef<ENUM_ORDER_PROPERTY_DOUBLE>(param["property"].ToString(""), WRONG_VALUE),
+           CEnumRegBasis::GetValNoRef<ENUM_ORDER_PROPERTY_DOUBLE>(param["property"].ToString(""), WRONG_VALUE),
            v))
        {
         res = StringFormat("{\"ok\":true,\"result\":%.8f}", v);
@@ -174,7 +174,7 @@ void CMcpFuncOrderGet::Run(CJsonNode& param, string& res)
      {
       long v;
       if(OrderGetInteger(
-           CEnumReg::GetValueNoRef<ENUM_ORDER_PROPERTY_INTEGER>(param["property"].ToString(""), WRONG_VALUE),
+           CEnumRegBasis::GetValNoRef<ENUM_ORDER_PROPERTY_INTEGER>(param["property"].ToString(""), WRONG_VALUE),
            v))
        {
         res = StringFormat("{\"ok\":true,\"result\":%I64d}", v);
@@ -188,7 +188,7 @@ void CMcpFuncOrderGet::Run(CJsonNode& param, string& res)
      {
       string v;
       if(OrderGetString(
-           CEnumReg::GetValueNoRef<ENUM_ORDER_PROPERTY_STRING>(param["property"].ToString(""), WRONG_VALUE),
+           CEnumRegBasis::GetValNoRef<ENUM_ORDER_PROPERTY_STRING>(param["property"].ToString(""), WRONG_VALUE),
            v))
        {
         res = "{\"ok\":true,\"result\":\"" + v + "\"}";
@@ -228,7 +228,7 @@ void CMcpFuncCalcOrder::Run(CJsonNode &param, string &res)
  {
 //---
   const int8_t mode = (int8_t)param["mode"].ToInt(0);
-  const ENUM_ORDER_TYPE type = CEnumReg::GetValueNoRef<ENUM_ORDER_TYPE>(param["order_type"].ToString(""), ORDER_TYPE_CLOSE_BY); // ORDER_TYPE_CLOSE_BY=wrong_value
+  const ENUM_ORDER_TYPE type = CEnumRegBasis::GetValNoRef<ENUM_ORDER_TYPE>(param["order_type"].ToString(""), ORDER_TYPE_CLOSE_BY); // ORDER_TYPE_CLOSE_BY=wrong_value
 
   m_get_lote.SetSymbol(param["symbol"].ToString(""));
 

@@ -85,7 +85,7 @@ void CMcpFuncPositionGet::Run(CJsonNode& param, string& res)
     case 0:
      {
       double v;
-      if(PositionGetDouble(CEnumReg::GetValueNoRef<ENUM_POSITION_PROPERTY_DOUBLE>(param["property"].ToString(""), WRONG_VALUE), v))
+      if(PositionGetDouble(CEnumRegBasis::GetValNoRef<ENUM_POSITION_PROPERTY_DOUBLE>(param["property"].ToString(""), WRONG_VALUE), v))
        {
         res = StringFormat("{\"ok\":true,\"result\":%.8f}", v);
         return;
@@ -97,7 +97,7 @@ void CMcpFuncPositionGet::Run(CJsonNode& param, string& res)
     case 1:
      {
       long v;
-      if(PositionGetInteger(CEnumReg::GetValueNoRef<ENUM_POSITION_PROPERTY_INTEGER>(param["property"].ToString(""), WRONG_VALUE), v))
+      if(PositionGetInteger(CEnumRegBasis::GetValNoRef<ENUM_POSITION_PROPERTY_INTEGER>(param["property"].ToString(""), WRONG_VALUE), v))
        {
         res = StringFormat("{\"ok\":true,\"result\":%I64d}", v);
         return;
@@ -109,7 +109,7 @@ void CMcpFuncPositionGet::Run(CJsonNode& param, string& res)
     case 2:
      {
       string v;
-      if(PositionGetString(CEnumReg::GetValueNoRef<ENUM_POSITION_PROPERTY_STRING>(param["property"].ToString(""), WRONG_VALUE), v))
+      if(PositionGetString(CEnumRegBasis::GetValNoRef<ENUM_POSITION_PROPERTY_STRING>(param["property"].ToString(""), WRONG_VALUE), v))
        {
         res = "{\"ok\":true,\"result\":\"" + v + "\"}";
         return;
