@@ -15,7 +15,7 @@
 //+------------------------------------------------------------------+
 #include "..\\Def\\Def.mqh"
 
-namespace TSN 
+namespace TSN
 {
 //+------------------------------------------------------------------+
 //| chart_list                                                       |
@@ -119,141 +119,199 @@ void CMcpFuncChartClose::Run(CJsonNode& param, string& res)
  }
 
 //+------------------------------------------------------------------+
-//| chart_integer                                                    |
+//| chart_get_set                                                    |
 //+------------------------------------------------------------------+
-class CMcpFuncChartInteger : public CMcpFunction
+class CMcpFuncChartSetGet  : public CMcpFunction
  {
 public:
-                     CMcpFuncChartInteger() : CMcpFunction(0, false, "chart_integer") {}
-                    ~CMcpFuncChartInteger(void) {}
-
+                     CMcpFuncChartSetGet(void) : CMcpFunction(0, false, "chart_get_set") {}
+                    ~CMcpFuncChartSetGet(void) {}
   void               Run(CJsonNode& param, string& res) override final;
  };
 
 //+------------------------------------------------------------------+
-//|                                                                  |
-//+------------------------------------------------------------------+
-void CMcpFuncChartInteger::Run(CJsonNode& param, string& res)
+void CMcpFuncChartSetGet::Run(CJsonNode &param, string &res)
  {
-  ::ResetLastError();
-
-//---
-  if(param.HasKey("value"))
+  const int mode = (int)param["mode"].ToInt(-1);
+  const long chart_id = param["chart_id"].ToInt(0);
+  switch(mode)
    {
-    if(ChartSetInteger(param["chart_id"].ToInt(0), CEnumRegBasis::GetValNoRef<ENUM_CHART_PROPERTY_INTEGER>(param["property"].ToString(""), WRONG_VALUE), param["value"].ToInt(0)))
+    case MCPFUNC_SETGET_DOUBLE:
      {
-      res = "{\"ok\":true,\"result\":true}";
+      if(param.HasKey("value"))
+       {
+        if(ChartSetDouble(chart_id, CEnumRegBasis::GetValNoRef<ENUM_CHART_PROPERTY_DOUBLE>(param["property"].ToString(""), WRONG_VALUE), param["value"].ToDouble(0.00)))
+         {
+          res = "{\"ok\":true,\"result\":true}";
+         }
+        else
+         {
+          res = StringFormat("{\"ok\":false,\"error\":\"Error set chart double, last mt5 err = %d\"}", ::GetLastError());
+         }
+       }
+      else
+       {
+        double v;
+        if(ChartGetDouble(chart_id, CEnumRegBasis::GetValNoRef<ENUM_CHART_PROPERTY_DOUBLE>(param["property"].ToString(""), WRONG_VALUE), (int)param["sub_window"].ToInt(0), v))
+         {
+          res = StringFormat("{\"ok\":true,\"result\":%.8f}", v);
+         }
+        else
+         {
+          res = StringFormat("{\"ok\":false,\"error\":\"Error chart get double, last err = %d\"}", ::GetLastError());
+         }
+       }
+      break;
      }
-    else
+    case MCPFUNC_SETGET_INTEGER:
      {
-      res = StringFormat("{\"ok\":false,\"error\":\"Error set chart double, last mt5 err = %d\"}", ::GetLastError());
+      if(param.HasKey("value"))
+       {
+        if(ChartSetInteger(chart_id, CEnumRegBasis::GetValNoRef<ENUM_CHART_PROPERTY_INTEGER>(param["property"].ToString(""), WRONG_VALUE), param["value"].ToInt(0)))
+         {
+          res = "{\"ok\":true,\"result\":true}";
+         }
+        else
+         {
+          res = StringFormat("{\"ok\":false,\"error\":\"Error set chart double, last mt5 err = %d\"}", ::GetLastError());
+         }
+       }
+      else
+       {
+        long v = 0;
+        if(ChartGetInteger(chart_id, CEnumRegBasis::GetValNoRef<ENUM_CHART_PROPERTY_INTEGER>(param["property"].ToString(""), WRONG_VALUE), (int)param["sub_window"].ToInt(0), v))
+         {
+          res = StringFormat("{\"ok\":true,\"result\":%I64d}", v);
+         }
+        else
+         {
+          res = StringFormat("{\"ok\":false,\"error\":\"Error chart get integer, last err = %d\"}", ::GetLastError());
+         }
+       }
+      break;
      }
-   }
-  else
-   {
-    long v = 0;
-    if(ChartGetInteger(param["chart_id"].ToInt(0), CEnumRegBasis::GetValNoRef<ENUM_CHART_PROPERTY_INTEGER>(param["property"].ToString(""), WRONG_VALUE), (int)param["sub_window"].ToInt(0), v))
+    case MCPFUNC_SETGET_STRING:
      {
-      res = StringFormat("{\"ok\":true,\"result\":%I64d}", v);
+      if(param.HasKey("value"))
+       {
+        if(ChartSetString(chart_id, CEnumRegBasis::GetValNoRef<ENUM_CHART_PROPERTY_STRING>(param["property"].ToString(""), WRONG_VALUE), param["value"].ToString()))
+         {
+          res = "{\"ok\":true,\"result\":true}";
+         }
+        else
+         {
+          res = StringFormat("{\"ok\":false,\"error\":\"Error set chart string, last mt5 err = %d\"}", ::GetLastError());
+         }
+       }
+      else
+       {
+        string v;
+        if(ChartGetString(chart_id, CEnumRegBasis::GetValNoRef<ENUM_CHART_PROPERTY_STRING>(param["property"].ToString(""), WRONG_VALUE), v))
+         {
+          res = "{\"ok\":true,\"result\":\"" + v + "\"}";
+         }
+        else
+         {
+          res = StringFormat("{\"ok\":false,\"error\":\"Error chart get string, last err = %d\"}", ::GetLastError());
+         }
+       }
+      break;
      }
-    else
-     {
-      res = StringFormat("{\"ok\":false,\"error\":\"Error chart get integer, last err = %d\"}", ::GetLastError());
-     }
+    default:
+      res = "{\"ok\":false,\"error\":\"Error, invalid mode\"}";
+      break;
    }
  }
 
 //+------------------------------------------------------------------+
-//| chart_double                                                     |
+//| chart_navigate                                                   |
 //+------------------------------------------------------------------+
-class CMcpFuncChartDouble : public CMcpFunction
+class CMcpFuncChartNavigate  : public CMcpFunction
  {
 public:
-                     CMcpFuncChartDouble() : CMcpFunction(0, false, "chart_double") {}
-                    ~CMcpFuncChartDouble(void) {}
-
+                     CMcpFuncChartNavigate(void) : CMcpFunction(0, false, "chart_navigate") {}
+                    ~CMcpFuncChartNavigate(void) {}
   void               Run(CJsonNode& param, string& res) override final;
  };
 
+
 //+------------------------------------------------------------------+
-//|                                                                  |
-//+------------------------------------------------------------------+
-void CMcpFuncChartDouble::Run(CJsonNode& param, string& res)
+void CMcpFuncChartNavigate::Run(CJsonNode &param, string &res)
  {
   ::ResetLastError();
-
-//---
-  if(param.HasKey("value"))
+  if(ChartNavigate(param["chart_id"].ToInt(0),
+                   CEnumRegBasis::GetValNoRef<ENUM_CHART_POSITION>(param["loacation"].ToString(), WRONG_VALUE), int(param["bars_to_navigate"].ToInt(0))))
    {
-    if(ChartSetDouble(param["chart_id"].ToInt(0), CEnumRegBasis::GetValNoRef<ENUM_CHART_PROPERTY_DOUBLE>(param["property"].ToString(""), WRONG_VALUE), param["value"].ToDouble(0.00)))
-     {
-      res = "{\"ok\":true,\"result\":true}";
-     }
-    else
-     {
-      res = StringFormat("{\"ok\":false,\"error\":\"Error set chart double, last mt5 err = %d\"}", ::GetLastError());
-     }
+    res = "{\"ok\":true,\"result\":true}";
    }
   else
    {
-    double v;
-    if(ChartGetDouble(param["chart_id"].ToInt(0), CEnumRegBasis::GetValNoRef<ENUM_CHART_PROPERTY_DOUBLE>(param["property"].ToString(""), WRONG_VALUE), (int)param["sub_window"].ToInt(0), v))
-     {
-      res = StringFormat("{\"ok\":true,\"result\":%.8f}", v);
-     }
-    else
-     {
-      res = StringFormat("{\"ok\":false,\"error\":\"Error chart get double, last err = %d\"}", ::GetLastError());
-     }
+    res = StringFormat("{\"ok\":false,\"result\":\"Eror navigate chart, last MQL5 Error = %d\"", ::GetLastError());
    }
-//---
  }
 
-
 //+------------------------------------------------------------------+
-//| chart_string                                                     |
+//| chart_indicator                                                  |
 //+------------------------------------------------------------------+
-class CMcpFuncChartString : public CMcpFunction
+class CMcpFuncChartInd : public CMcpFunction
  {
 public:
-                     CMcpFuncChartString() : CMcpFunction(0, false, "chart_string") {}
-                    ~CMcpFuncChartString(void) {}
-
+                     CMcpFuncChartInd(void)  : CMcpFunction(0, false, "chart_indicator") {}
+                    ~CMcpFuncChartInd(void) {}
   void               Run(CJsonNode& param, string& res) override final;
  };
 
 //+------------------------------------------------------------------+
-//|                                                                  |
-//+------------------------------------------------------------------+
-void CMcpFuncChartString::Run(CJsonNode& param, string& res)
+void CMcpFuncChartInd::Run(CJsonNode &param, string &res)
  {
-  ::ResetLastError();
+//---
+  const ENUM_MCPFUNC_CHARTIND_DEF mode = CEnumRegFullMt5Mcp::GetValNoRef<ENUM_MCPFUNC_CHARTIND_DEF>(param["mode"].ToString(""), WRONG_VALUE);
+  const long chart_id = param["chart_id"].ToInt(0);
+  const int subwin = (int)param["sub_window"].ToInt(0);
 
 //---
-  if(param.HasKey("value"))
+  switch(mode)
    {
-    if(ChartSetString(param["chart_id"].ToInt(0), CEnumRegBasis::GetValNoRef<ENUM_CHART_PROPERTY_STRING>(param["property"].ToString(""), WRONG_VALUE), param["value"].ToString()))
+    case  MCPFUNC_CHARTIND_TOTAL:
      {
-      res = "{\"ok\":true,\"result\":true}";
+      res = "{\"ok\":true,\"result\":\"" + string(ChartIndicatorsTotal(chart_id, subwin)) + "\"}";
+      break;
      }
-    else
+    case  MCPFUNC_CHARTIND_SHORT_NAME:
      {
-      res = StringFormat("{\"ok\":false,\"error\":\"Error set chart string, last mt5 err = %d\"}", ::GetLastError());
+      res = "{\"ok\":true,\"result\":\"" + ChartIndicatorName(chart_id, subwin, (int)param["index"].ToInt(0)) + "\"}";
+      break;
      }
+    case  MCPFUNC_CHARTIND_ADD:
+     {
+      ::ResetLastError();
+      if(ChartIndicatorAdd(chart_id, subwin, (int)param["indicator_handle"].ToInt(0)))
+       {
+        res = "{\"ok\":true,\"result\":\"okey\"}";
+       }
+      else
+       {
+        res = StringFormat("{\"ok\":false,\"result\":\"Last MQL5 Error = %d\"}", ::GetLastError());
+       }
+      break;
+     }
+    case  MCPFUNC_CHARTIND_DELETE:
+     {
+      ::ResetLastError();
+      if(ChartIndicatorDelete(chart_id, subwin, param["indicator_shortname"].ToString("")))
+       {
+        res = "{\"ok\":true,\"result\":\"okey\"}";
+       }
+      else
+       {
+        res = StringFormat("{\"ok\":false,\"result\":\"Last MQL5 Error = %d\"}", ::GetLastError());
+       }
+      break;
+     }
+    default:
+      res = "{\"ok\":false,\"error\":\"Error, invalid mode mode.. \"}";
+      break;
    }
-  else
-   {
-    string v;
-    if(ChartGetString(param["chart_id"].ToInt(0), CEnumRegBasis::GetValNoRef<ENUM_CHART_PROPERTY_STRING>(param["property"].ToString(""), WRONG_VALUE), v))
-     {
-      res = "{\"ok\":true,\"result\":\"" + v + "\"}";
-     }
-    else
-     {
-      res = StringFormat("{\"ok\":false,\"error\":\"Error chart get string, last err = %d\"}", ::GetLastError());
-     }
-   }
-//---
  }
 
 //+------------------------------------------------------------------+
@@ -363,7 +421,7 @@ void CMcpFuncChartSrenshot::Run(CJsonNode &param, string &res)
     res = StringFormat("{\"ok\":true,\"result\":{\"full_path\":\"%s\"}}", (TERMINAL_MT5_ROOT + "Files\\" + fn));
    }
  }
-} 
+}
 
 
 //+------------------------------------------------------------------+
