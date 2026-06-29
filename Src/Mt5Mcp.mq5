@@ -42,7 +42,7 @@ int OnInit()
 #ifdef TSN_MCPSERVER_FUNC_CTS
   g_mcp_server = TSN_MCPSERVER_FUNC_CTS(THE_BOT_PLACE_USER_ID);
 #else
-  g_mcp_server = McpServerByLeo_Create(THE_BOT_PLACE_USER_ID); 
+  g_mcp_server = McpServerByLeo_Create(THE_BOT_PLACE_USER_ID);
 #endif // TSN_MCPSERVER_FUNC_CTS
 
 //---
@@ -61,12 +61,17 @@ int OnInit()
   g_mcp_server.AddItemFast(new TSN::CMcpFuncChartList());
   g_mcp_server.AddItemFast(new TSN::CMcpFuncChartOpen());
   g_mcp_server.AddItemFast(new TSN::CMcpFuncChartClose());
-  g_mcp_server.AddItemFast(new TSN::CMcpFuncChartInteger());
-  g_mcp_server.AddItemFast(new TSN::CMcpFuncChartDouble());
-  g_mcp_server.AddItemFast(new TSN::CMcpFuncChartString());
+  g_mcp_server.AddItemFast(new TSN::CMcpFuncChartSetGet());
+  g_mcp_server.AddItemFast(new TSN::CMcpFuncChartNavigate());
+  g_mcp_server.AddItemFast(new TSN::CMcpFuncChartInd());
+
   g_mcp_server.AddItemFast(new TSN::CMcpFuncChartRedraw());
   g_mcp_server.AddItemFast(new TSN::CMcpFuncChartSrenshot());
   g_mcp_server.AddItemFast(new TSN::CMcpFuncChartGetSymbolOrPeriod());
+
+//--- Indicators
+  g_mcp_server.AddItemFast(new TSN::CMcpFuncInd());
+
 
 //--- Data / Symbol
   g_mcp_server.AddItemFast(new TSN::CMcpFuncSymbolsTotal());
