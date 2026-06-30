@@ -268,6 +268,7 @@ void CMcpFuncChartInd::Run(CJsonNode &param, string &res)
   const ENUM_MCPFUNC_CHARTIND_DEF mode = CEnumRegFullMt5Mcp::GetValNoRef<ENUM_MCPFUNC_CHARTIND_DEF>(param["mode"].ToString(""), WRONG_VALUE);
   const long chart_id = param["chart_id"].ToInt(0);
   const int subwin = (int)param["sub_window"].ToInt(0);
+//Print(param.ComplexToString());
 
 //---
   switch(mode)
@@ -285,13 +286,14 @@ void CMcpFuncChartInd::Run(CJsonNode &param, string &res)
     case  MCPFUNC_CHARTIND_ADD:
      {
       ::ResetLastError();
-      if(ChartIndicatorAdd(chart_id, subwin, (int)param["indicator_handle"].ToInt(0)))
+      const int handle = (int)param["indicator_handle"].ToInt(-1);
+      if(ChartIndicatorAdd(chart_id, subwin, handle))
        {
         res = "{\"ok\":true,\"result\":\"okey\"}";
        }
       else
        {
-        res = StringFormat("{\"ok\":false,\"result\":\"Last MQL5 Error = %d\"}", ::GetLastError());
+        res = StringFormat("{\"ok\":false,\"result\":\"Last MQL5 Error = %d, Handle = %d\"}", ::GetLastError(), handle);
        }
       break;
      }
@@ -356,16 +358,36 @@ public:
 void CMcpFuncChartGetSymbolOrPeriod::Run(CJsonNode &param, string &res)
  {
   const int8_t mode = (int8_t)param["mode"].ToInt(-1);
+  const long chart_id = param["chart_id"].ToInt(0);
+  //Print(param.ComplexToString());
   switch(mode)
    {
     case 0:
-     {
-      res = "{\"ok\":true,\"result\":\"" + EnumToString(ChartPeriod(param["chart_id"].ToInt(0))) +  "\"}";
+     { 
+      ::ResetLastError();
+      const ENUM_TIMEFRAMES tf = ChartPeriod(chart_id);
+      if(tf == 0)
+       {
+        res = "{\"ok\":false,\"result\":\"Error in ChartPeriod, last mql5 error = " + string(::GetLastError()) +  "\"}";
+       }
+      else
+       {
+        res = "{\"ok\":true,\"result\":\"" + EnumToString(tf) +  "\"}";
+       }
       break;
      }
     case 1:
      {
-      res = "{\"ok\":true,\"result\":\"" + ChartSymbol(param["chart_id"].ToInt(0)) +  "\"}";
+      ::ResetLastError();
+      const string simbolo = ChartSymbol(chart_id);
+      if(simbolo == "")
+       {
+        res = "{\"ok\":false,\"result\":\"Error in ChartPeriod, last mql5 error = " + string(::GetLastError()) +  "\"}";
+       }
+      else
+       {
+        res = "{\"ok\":true,\"result\":\"" + simbolo +  "\"}";
+       }
       break;
      }
     default:

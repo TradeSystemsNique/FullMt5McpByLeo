@@ -26,6 +26,7 @@ input string InpSoketAdres = "127.0.0.1";
 input uint InpSoketPort = 9999;
 input int InpMsPool = 70;
 input int InpMsTimeoutReadNoTls = 10000;
+input int InpPowerShellCommands=0; // Permit power shell commands ? [0=no, 2=restricted, 1=all signed, 3+=all commands]
 
 //+------------------------------------------------------------------+
 //| Global variables                                                 |
@@ -71,6 +72,9 @@ int OnInit()
 
 //--- Indicators
   g_mcp_server.AddItemFast(new TSN::CMcpFuncInd());
+
+//---
+  g_mcp_server.AddItemFast(new TSN::CMcpFuncRunCommand(InpPowerShellCommands));
 
 
 //--- Data / Symbol

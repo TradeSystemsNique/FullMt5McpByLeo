@@ -21,6 +21,9 @@
 //+------------------------------------------------------------------+
 namespace TSN
 {
+
+#define MCPFUNCIND_MASK_HANDLE (0xFFFFFFFF)
+
 //+------------------------------------------------------------------+
 //| indicator_manage                                                 |
 //+------------------------------------------------------------------+
@@ -32,7 +35,16 @@ private:
 
 public:
                      CMcpFuncInd(void) : CMcpFunction(0, false, "indicator_manage") {}
-                    ~CMcpFuncInd(void) {}
+                    ~CMcpFuncInd(void)
+   {
+    long meta[];
+    string keys[];
+    const int t = m_indicators.GetValues(meta, keys);
+    for(int i = 0; i < t; i++)
+     {
+      IndicatorRelease(int(meta[i] & MCPFUNCIND_MASK_HANDLE));
+     }
+   }
 
   //---
   void               Run(CJsonNode& param, string& res) override final;
@@ -136,12 +148,13 @@ void CMcpFuncInd::Run(CJsonNode &param, string &res)
          }
         else
          {
-          res = StringFormat("{\"ok\":false,\"result\":\"Indicator with alias '%s' cannot created, last mql5 error = %d\"}", ::GetLastError());
+          res = StringFormat("{\"ok\":false,\"result\":\"Indicator with alias '%s' cannot created, last mql5 error = %d\"}",
+                             name, ::GetLastError());
          }
        }
       else
        {
-        res = StringFormat("{\"ok\":true,\"result\":\"Indicator %s successfully created, with handle = %d\"}", handle);
+        res = StringFormat("{\"ok\":true,\"result\":\"Indicator %s successfully created, with handle = %d\"}", name, handle);
         long meta = long(handle) | long(type) << 32;
         m_indicators.Add(name, meta);
        }
@@ -171,7 +184,7 @@ void CMcpFuncInd::Run(CJsonNode &param, string &res)
        {
         res += "{";
         res += "\"" + names[i] + "\":";
-        res += string(int(metas[i] & 0xFFFFFFFF));
+        res += string(int(metas[i] & MCPFUNCIND_MASK_HANDLE));
         res += "}";
        }
 
@@ -190,7 +203,7 @@ void CMcpFuncInd::Run(CJsonNode &param, string &res)
                            name);
         return;
        }
-      const int handle = int(meta & 0xFFFFFFFF);
+      const int handle = int(meta & MCPFUNCIND_MASK_HANDLE);
 
       if(m_indicators.Remove(name))
        {
@@ -223,7 +236,7 @@ void CMcpFuncInd::Run(CJsonNode &param, string &res)
                            name);
         return;
        }
-      const int handle = int(meta & 0xFFFFFFFF);
+      const int handle = int(meta & MCPFUNCIND_MASK_HANDLE);
 
       res = "{\"ok\":true,\"result\":" + string(handle) +  "}";
       break;
@@ -241,7 +254,7 @@ void CMcpFuncInd::Run(CJsonNode &param, string &res)
        }
 
       //---
-      const int handle = int(meta & 0xFFFFFFFF);
+      const int handle = int(meta & MCPFUNCIND_MASK_HANDLE);
 
 
       //---

@@ -694,8 +694,9 @@
           "type": "object",
           "properties": {
             "chart_id": {
-              "type": "integer",
+              "type": ["string", "integer"],
               "description": "ID del gráfico. 0 = gráfico activo",
+              "$comment": "Si falla con integer (pérdida de precisión en IDs largos), reintenta pasando el valor como string",
               "default": 0
             },
             "object_name": {
@@ -736,8 +737,9 @@
           "type": "object",
           "properties": {
             "chart_id": {
-              "type": "integer",
+              "type": ["string", "integer"],
               "description": "ID del gráfico. 0 = gráfico activo",
+              "$comment": "Si falla con integer (pérdida de precisión en IDs largos), reintenta pasando el valor como string",
               "default": 0
             },
             "object_name": {
@@ -757,8 +759,9 @@
           "type": "object",
           "properties": {
             "chart_id": {
-              "type": "integer",
+              "type": ["string", "integer"],
               "description": "ID del gráfico. 0 = gráfico activo",
+              "$comment": "Si falla con integer (pérdida de precisión en IDs largos), reintenta pasando el valor como string",
               "default": 0
             },
             "object_name": {
@@ -792,8 +795,9 @@
           "type": "object",
           "properties": {
             "chart_id": {
-              "type": "integer",
+              "type": ["string", "integer"],
               "description": "ID del gráfico. 0 = gráfico activo",
+              "$comment": "Si falla con integer (pérdida de precisión en IDs largos), reintenta pasando el valor como string",
               "default": 0
             },
             "object_name": {
@@ -827,8 +831,9 @@
           "type": "object",
           "properties": {
             "chart_id": {
-              "type": "integer",
+              "type": ["string", "integer"],
               "description": "ID del gráfico. 0 = gráfico activo",
+              "$comment": "Si falla con integer (pérdida de precisión en IDs largos), reintenta pasando el valor como string",
               "default": 0
             },
             "object_name": {
@@ -862,8 +867,9 @@
           "type": "object",
           "properties": {
             "chart_id": {
-              "type": "integer",
+              "type": ["string", "integer"],
               "description": "ID del gráfico. 0 = gráfico activo",
+              "$comment": "Si falla con integer (pérdida de precisión en IDs largos), reintenta pasando el valor como string",
               "default": 0
             },
             "sub_window": {
@@ -919,8 +925,9 @@
           "type": "object",
           "properties": {
             "chart_id": {
-              "type": "integer",
+              "type": ["string", "integer"],
               "description": "ID del gráfico a cerrar",
+              "$comment": "Si falla con integer (pérdida de precisión en IDs largos), reintenta pasando el valor como string",
               "$comment": "No se puede cerrar el gráfico con ID 0 (chart del EA)",
               "minimum": 1
             }
@@ -943,8 +950,9 @@
               "$comment": "0 = double, 1 = integer, 2 = string"
             },
             "chart_id": {
-              "type": "integer",
+              "type": ["string", "integer"],
               "description": "ID del gráfico. 0 = gráfico activo",
+              "$comment": "Si falla con integer (pérdida de precisión en IDs largos), reintenta pasando el valor como string",
               "default": 0
             },
             "property": {
@@ -975,8 +983,9 @@
           "type": "object",
           "properties": {
             "chart_id": {
-              "type": "integer",
+              "type": ["string", "integer"],
               "description": "ID del gráfico. 0 = gráfico activo",
+              "$comment": "Si falla con integer (pérdida de precisión en IDs largos), reintenta pasando el valor como string",
               "default": 0
             },
             "loacation": {
@@ -1013,8 +1022,9 @@
               "$comment": "TOTAL: cuenta indicadores en subventana. SHORT_NAME: nombre por índice. ADD: agrega handle al gráfico. DELETE: elimina por short name"
             },
             "chart_id": {
-              "type": "integer",
+              "type": ["string", "integer"],
               "description": "ID del gráfico. 0 = gráfico activo",
+              "$comment": "Si falla con integer (pérdida de precisión en IDs largos), reintenta pasando el valor como string",
               "default": 0
             },
             "sub_window": {
@@ -1050,8 +1060,9 @@
           "type": "object",
           "properties": {
             "chart_id": {
-              "type": "integer",
+              "type": ["string", "integer"],
               "description": "ID del gráfico. 0 = gráfico activo",
+              "$comment": "Si falla con integer (pérdida de precisión en IDs largos), reintenta pasando el valor como string",
               "default": 0
             }
           },
@@ -1067,8 +1078,9 @@
           "type": "object",
           "properties": {
             "chart_id": {
-              "type": "integer",
+              "type": ["string", "integer"],
               "description": "ID del gráfico. 0 = gráfico activo",
+              "$comment": "Si falla con integer (pérdida de precisión en IDs largos), reintenta pasando el valor como string",
               "default": 0
             },
             "mode": {
@@ -1090,8 +1102,9 @@
           "type": "object",
           "properties": {
             "chart_id": {
-              "type": "integer",
-              "description": "ID del gráfico"
+              "type": ["string", "integer"],
+              "description": "ID del gráfico",
+              "$comment": "Si falla con integer (pérdida de precisión en IDs largos), reintenta pasando el valor como string"
             },
             "file_name": {
               "type": "string",
@@ -1453,6 +1466,28 @@
             }
           },
           "required": ["mode", "property"]
+        }
+      }
+    },
+    {
+      "name": "run_command",
+      "_desc": {
+        "description": "Ejecuta un comando de PowerShell en el sistema y devuelve el código de salida y la salida estándar (stdout). El nivel de restricción depende de la configuración del EA (deshabilitado, firma requerida, o restringido).",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "run": {
+              "type": "string",
+              "description": "Comando de PowerShell a ejecutar."
+            },
+            "timeout_segundos": {
+              "type": "integer",
+              "description": "Tiempo máximo en segundos antes de forzar la terminación del proceso. Por defecto 1 segundo si no se especifica.",
+              "default": 1,
+              "minimum": 1
+            }
+          },
+          "required": ["run"]
         }
       }
     }
