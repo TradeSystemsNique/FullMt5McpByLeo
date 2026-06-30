@@ -65,7 +65,7 @@ chart_navigate
 # ============================================================================
 
 compile_mql5
-execute_backtest
+run_mt5_tester
 run_ea
 get_expert_logs
 tester_reports
