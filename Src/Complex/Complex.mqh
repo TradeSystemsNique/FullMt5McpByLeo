@@ -27,13 +27,22 @@ private:
   long               m_chart_id_runner;
   const long         m_current_chart_id;
 public:
-                     CMcpFunctionRunBacktest(void) : CMcpFunction(0, false, "execute_backtest"), m_current_chart_id(ChartID()) { m_chart_id_runner = DEFMTTesterGetChartId(); }
+                     CMcpFunctionRunBacktest(void) : CMcpFunction(0, false, "execute_backtest"), m_current_chart_id(ChartID()), m_chart_id_runner(0)
+   {
+    m_chart_id_runner = DEFMTTesterGetChartId();
+   }
                     ~CMcpFunctionRunBacktest(void) {}
   void               Run(CJsonNode& param, string& res) override final;
  };
 //+------------------------------------------------------------------+
 void CMcpFunctionRunBacktest::Run(CJsonNode &param, string &res)
  {
+//---
+  if(m_chart_id_runner == 0)
+   {
+    m_chart_id_runner = DEFMTTesterGetChartId();
+   }
+
 //---
   static MTTesterTask task;
   task.symbol = param["symbol"].ToString("");
@@ -49,7 +58,7 @@ void CMcpFunctionRunBacktest::Run(CJsonNode &param, string &res)
 
 //---
   const bool common = param["file_in_common"].ToBool(true);
-  const string fn = param["data_file_name"].ToString("tester_logs.csv");
+  const string fn = param["data_file_name"].ToString("tester_instruction.csv");
   ::ResetLastError();
   const int fh = FileOpen(fn, FILE_WRITE | FILE_CSV | (common ? FILE_COMMON : 0));
   if(fh == INVALID_HANDLE)
@@ -66,7 +75,8 @@ void CMcpFunctionRunBacktest::Run(CJsonNode &param, string &res)
   ::ResetLastError();
   if(!::EventChartCustom(m_chart_id_runner, DEFMTTESTER_E_ON_TASK, m_current_chart_id, DEFMTTESTER_TO_DBL_ON_TASK(true), fn))
    {
-    res = StringFormat("{\"ok\":false,\"error\":\"Error to send event to run backtest, last err = %d\"}", ::GetLastError());
+    res = StringFormat("{\"ok\":false,\"error\":\"Error to send event to run backtest, last err = %d, Ask the user if they have the Runner.ex5 bot running in their terminal, since this bot launches the tester itself; it only gives the command\"}",
+                       ::GetLastError());
    }
   else
    {
@@ -236,7 +246,7 @@ public:
 void CMcpFuncTesterRep::Run(CJsonNode& param, string& res)
  {
   uchar data[];
-  if(MTTESTER::GetLastTstCache(data))
+  if(!MTTESTER::GetLastTstCache(data))
    {
     res = "{\"ok\":false,\"error\":\"Error getting last tester cache\"}";
     return;
@@ -252,7 +262,7 @@ void CMcpFuncTesterRep::Run(CJsonNode& param, string& res)
   m_builder.Key("ok").Val(true);
   m_builder.Key("result").Obj();
 
-  // --- ExpTradeSummarySingle ---
+// --- ExpTradeSummarySingle ---
   m_builder.Key("bars").Val(m_tst.Summary.bars);
   m_builder.Key("ticks").Val(m_tst.Summary.ticks);
   m_builder.Key("symbol").ValSNoRef(m_tst.Summary.symbol[]);
@@ -298,7 +308,7 @@ void CMcpFuncTesterRep::Run(CJsonNode& param, string& res)
   m_builder.Key("avgconwinners").Val(m_tst.Summary.avgconwinners);
   m_builder.Key("avgconloosers").Val(m_tst.Summary.avgconloosers);
 
-  // --- ExpTradeSummaryExt ---
+// --- ExpTradeSummaryExt ---
   m_builder.Key("ghpr").Val(m_tst.Summary.ghpr);
   m_builder.Key("ghprpercent").Val(m_tst.Summary.ghprpercent);
   m_builder.Key("ahpr").Val(m_tst.Summary.ahpr);
@@ -320,7 +330,7 @@ void CMcpFuncTesterRep::Run(CJsonNode& param, string& res)
   m_builder.Key("holding_time_avr").Val((long)m_tst.Summary.holding_time_avr);
   m_builder.Key("in_commission").Val(m_tst.Summary.in_commission);
 
-  // --- Arrays de distribucion ---
+// --- Arrays de distribucion ---
   m_builder.Key("in_per_hours").Arr();
   for(int i = 0; i < 24; i++)
     m_builder.Val((int)m_tst.Summary.in_per_hours[i]);

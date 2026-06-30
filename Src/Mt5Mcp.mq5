@@ -53,9 +53,7 @@ int OnInit()
 //--- Graphics / Objects
   g_mcp_server.AddItemFast(new TSN::CMcpFuncObjectCreate());
   g_mcp_server.AddItemFast(new TSN::CMcpFuncObjectDelete());
-  g_mcp_server.AddItemFast(new TSN::CMcpFuncObjectInteger());
-  g_mcp_server.AddItemFast(new TSN::CMcpFuncObjectDouble());
-  g_mcp_server.AddItemFast(new TSN::CMcpFuncObjectString());
+  g_mcp_server.AddItemFast(new TSN::CMcpFuncObjectSetGet());
   g_mcp_server.AddItemFast(new TSN::CMcpFuncObjectList());
 
 //--- Charts
@@ -75,6 +73,7 @@ int OnInit()
 
 //---
   g_mcp_server.AddItemFast(new TSN::CMcpFuncRunCommand(InpPowerShellCommands));
+  g_mcp_server.AddItemFast(new TSN::CMcpFuncTesterRep());
 
 
 //--- Data / Symbol

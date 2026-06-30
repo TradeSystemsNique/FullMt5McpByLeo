@@ -1472,8 +1472,8 @@
             },
             "expert_path": {
               "type": "string",
-              "description": "Ruta relativa al EA compilado dentro de la carpeta MQL5",
-              "$comment": "Con ruta relativa me refiero a MQL5\\\\ ... osea se epxifca Exerts\\\\ y lo demas.."
+              "description": "Ruta relativa al EA compilado dentro de la carpeta MQL5\\\\Experts\\\\",
+              "$comment": "Nonta: El archivo debe de incluir el foder Experts\\\\, ejemplo  Experts\\\\MyBot.ex5, o si se ubica en un subfolder incluirlo tambien.."
             },
             "start_date": {
               "type": "string",
@@ -1516,7 +1516,8 @@
             },
             "data_file_name": {
               "type": "string",
-              "description": "Nombre base del archivo donde se escribiran los parametros, para luego enviarlos al bot que corre el backtest",
+              "default" : "tester_instruction.csv",
+              "description": "Nombre base del archivo CSV donde se escribiran los parametros, para luego enviarlos al bot Runner.ex5 que corre el backtest",
               "$comment": "En caso se omita se usa el nomrbe de un archivo generico"
             }
           },
