@@ -269,6 +269,7 @@ void CMcpFuncInd::Run(CJsonNode &param, string &res)
        }
 
       //---
+      m_builder.Clear();
       m_builder.Obj();
       m_builder.Key("ok");
       m_builder.Val(true);

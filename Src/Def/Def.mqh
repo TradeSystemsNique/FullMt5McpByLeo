@@ -13,9 +13,13 @@
 //+------------------------------------------------------------------+
 //| Include                                                          |
 //+------------------------------------------------------------------+
-#include <TSN\\ExtraCodes\\RunnerProtDef.mqh>
+#include <TSN\\ExtraCodes\\MTTester.mqh>
+#include <TSN\\ExtraCodes\\TST.mqh>
+
 #include <TSN\\MQLArticles\\Utils\\EnumReg.mqh>
 #include <TSN\\MQLArticles\\Utils\\ErrDescription.mqh>
+
+#include <TSN\\ExtraCodes\\RunnerProtDef.mqh>
 
 //---
 #include <TSN\\Mcp\\Main.mqh>

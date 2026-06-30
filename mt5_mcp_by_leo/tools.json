@@ -10,7 +10,10 @@
             "type": {
               "type": "string",
               "description": "Tipo de operación",
-              "enum": ["buy", "sell"]
+              "enum": [
+                "buy",
+                "sell"
+              ]
             },
             "symbol": {
               "type": "string",
@@ -48,7 +51,12 @@
               "default": ""
             }
           },
-          "required": ["type", "symbol", "lot_size", "price"]
+          "required": [
+            "type",
+            "symbol",
+            "lot_size",
+            "price"
+          ]
         }
       }
     },
@@ -62,7 +70,10 @@
             "type": {
               "type": "string",
               "description": "Tipo de orden límite",
-              "enum": ["buy", "sell"]
+              "enum": [
+                "buy",
+                "sell"
+              ]
             },
             "symbol": {
               "type": "string",
@@ -108,11 +119,21 @@
             "type_time": {
               "type": "string",
               "description": "Tipo de vida de la orden. string::mt5::ENUM_ORDER_TYPE_TIME",
-              "enum": ["ORDER_TIME_GTC", "ORDER_TIME_DAY", "ORDER_TIME_SPECIFIED", "ORDER_TIME_SPECIFIED_DAY"],
+              "enum": [
+                "ORDER_TIME_GTC",
+                "ORDER_TIME_DAY",
+                "ORDER_TIME_SPECIFIED",
+                "ORDER_TIME_SPECIFIED_DAY"
+              ],
               "default": "ORDER_TIME_GTC"
             }
           },
-          "required": ["type", "symbol", "lot_size", "price"]
+          "required": [
+            "type",
+            "symbol",
+            "lot_size",
+            "price"
+          ]
         }
       }
     },
@@ -126,7 +147,10 @@
             "type": {
               "type": "string",
               "description": "Tipo de orden stop",
-              "enum": ["buy", "sell"]
+              "enum": [
+                "buy",
+                "sell"
+              ]
             },
             "symbol": {
               "type": "string",
@@ -172,11 +196,21 @@
             "type_time": {
               "type": "string",
               "description": "Tipo de vida de la orden. string::mt5::ENUM_ORDER_TYPE_TIME",
-              "enum": ["ORDER_TIME_GTC", "ORDER_TIME_DAY", "ORDER_TIME_SPECIFIED", "ORDER_TIME_SPECIFIED_DAY"],
+              "enum": [
+                "ORDER_TIME_GTC",
+                "ORDER_TIME_DAY",
+                "ORDER_TIME_SPECIFIED",
+                "ORDER_TIME_SPECIFIED_DAY"
+              ],
               "default": "ORDER_TIME_GTC"
             }
           },
-          "required": ["type", "symbol", "lot_size", "price"]
+          "required": [
+            "type",
+            "symbol",
+            "lot_size",
+            "price"
+          ]
         }
       }
     },
@@ -209,11 +243,19 @@
             "mode": {
               "type": "integer",
               "description": "Tipo de dato de la propiedad",
-              "enum": [0, 1, 2],
+              "enum": [
+                0,
+                1,
+                2
+              ],
               "$comment": "0 = double, 1 = integer, 2 = string"
             }
           },
-          "required": ["ticket", "property", "mode"]
+          "required": [
+            "ticket",
+            "property",
+            "mode"
+          ]
         }
       }
     },
@@ -227,10 +269,16 @@
             "type": {
               "type": "string",
               "description": "Método de cierre",
-              "enum": ["by_symbol", "by_ticket"]
+              "enum": [
+                "by_symbol",
+                "by_ticket"
+              ]
             },
             "value": {
-              "type": ["string", "integer"],
+              "type": [
+                "string",
+                "integer"
+              ],
               "description": "Símbolo si type=by_symbol, ticket si type=by_ticket"
             },
             "volume": {
@@ -245,7 +293,10 @@
               "minimum": 0
             }
           },
-          "required": ["type", "value"]
+          "required": [
+            "type",
+            "value"
+          ]
         }
       }
     },
@@ -272,7 +323,9 @@
               "$comment": "Si se omite conserva el TP actual"
             }
           },
-          "required": ["ticket"]
+          "required": [
+            "ticket"
+          ]
         }
       }
     },
@@ -299,7 +352,9 @@
               "minimum": 0
             }
           },
-          "required": ["ticket"]
+          "required": [
+            "ticket"
+          ]
         }
       }
     },
@@ -333,7 +388,12 @@
             "new_type_time": {
               "type": "string",
               "description": "Nuevo tipo de expiración. string::mt5::ENUM_ORDER_TYPE_TIME",
-              "enum": ["ORDER_TIME_GTC", "ORDER_TIME_DAY", "ORDER_TIME_SPECIFIED", "ORDER_TIME_SPECIFIED_DAY"],
+              "enum": [
+                "ORDER_TIME_GTC",
+                "ORDER_TIME_DAY",
+                "ORDER_TIME_SPECIFIED",
+                "ORDER_TIME_SPECIFIED_DAY"
+              ],
               "$comment": "Si se omite conserva el tipo actual"
             },
             "new_expiration_time": {
@@ -342,7 +402,9 @@
               "$comment": "Formato: 'YYYY-MM-DD HH:MM:SS'. Solo aplica si new_type_time = ORDER_TIME_SPECIFIED"
             }
           },
-          "required": ["ticket"]
+          "required": [
+            "ticket"
+          ]
         }
       }
     },
@@ -365,11 +427,19 @@
             "mode": {
               "type": "integer",
               "description": "Tipo de dato de la propiedad",
-              "enum": [0, 1, 2],
+              "enum": [
+                0,
+                1,
+                2
+              ],
               "$comment": "0 = double, 1 = integer, 2 = string"
             }
           },
-          "required": ["ticket", "property", "mode"]
+          "required": [
+            "ticket",
+            "property",
+            "mode"
+          ]
         }
       }
     },
@@ -383,7 +453,13 @@
             "mode": {
               "type": "integer",
               "description": "Índice del método de cálculo",
-              "enum": [0, 1, 2, 3, 4],
+              "enum": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ],
               "$comment": "0=SL en dinero dado un lote, 1=dinero a puntos, 2=lote óptimo dado SL en puntos, 3=máximo lote posible, 4=lote por % de riesgo"
             },
             "symbol": {
@@ -434,7 +510,10 @@
               "minimum": 0
             }
           },
-          "required": ["mode", "symbol"]
+          "required": [
+            "mode",
+            "symbol"
+          ]
         }
       }
     },
@@ -456,7 +535,10 @@
               "$comment": "Formato datetime MT5: 'YYYY.MM.DD HH:MM:SS'"
             }
           },
-          "required": ["start_date_select", "end_date_select"]
+          "required": [
+            "start_date_select",
+            "end_date_select"
+          ]
         }
       }
     },
@@ -479,11 +561,19 @@
             "mode": {
               "type": "integer",
               "description": "Tipo de dato de la propiedad",
-              "enum": [0, 1, 2],
+              "enum": [
+                0,
+                1,
+                2
+              ],
               "$comment": "0 = double, 1 = integer, 2 = string"
             }
           },
-          "required": ["ticket", "property", "mode"]
+          "required": [
+            "ticket",
+            "property",
+            "mode"
+          ]
         }
       }
     },
@@ -527,7 +617,13 @@
               ]
             }
           },
-          "required": ["symbol", "timeframe", "start", "count", "mode"]
+          "required": [
+            "symbol",
+            "timeframe",
+            "start",
+            "count",
+            "mode"
+          ]
         }
       }
     },
@@ -558,7 +654,10 @@
               "$comment": "3 = ALL, 1 = INFO (bid/ask), 2 = TRADE (last/volume). Opcional"
             }
           },
-          "required": ["symbol", "count"]
+          "required": [
+            "symbol",
+            "count"
+          ]
         }
       }
     },
@@ -588,7 +687,11 @@
               "default": false
             }
           },
-          "required": ["symbol", "timeframe", "time"]
+          "required": [
+            "symbol",
+            "timeframe",
+            "time"
+          ]
         }
       }
     },
@@ -610,11 +713,19 @@
             "mode": {
               "type": "integer",
               "description": "Tipo de dato de la propiedad",
-              "enum": [0, 1, 2],
+              "enum": [
+                0,
+                1,
+                2
+              ],
               "$comment": "0 = double, 1 = integer, 2 = string"
             }
           },
-          "required": ["symbol", "property", "mode"]
+          "required": [
+            "symbol",
+            "property",
+            "mode"
+          ]
         }
       }
     },
@@ -632,7 +743,15 @@
             "day_of_week": {
               "type": "string",
               "description": "Día de la semana. string::mt5::ENUM_DAY_OF_WEEK",
-              "enum": ["SUNDAY", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY"]
+              "enum": [
+                "SUNDAY",
+                "MONDAY",
+                "TUESDAY",
+                "WEDNESDAY",
+                "THURSDAY",
+                "FRIDAY",
+                "SATURDAY"
+              ]
             },
             "session_index": {
               "type": "integer",
@@ -642,11 +761,19 @@
             "mode": {
               "type": "integer",
               "description": "Tipo de sesión",
-              "enum": [0, 1],
+              "enum": [
+                0,
+                1
+              ],
               "$comment": "0 = trading session, 1 = quote session"
             }
           },
-          "required": ["symbol", "day_of_week", "session_index", "mode"]
+          "required": [
+            "symbol",
+            "day_of_week",
+            "session_index",
+            "mode"
+          ]
         }
       }
     },
@@ -666,7 +793,10 @@
               "description": "true = agregar al Market Watch, false = remover"
             }
           },
-          "required": ["symbol", "select"]
+          "required": [
+            "symbol",
+            "select"
+          ]
         }
       }
     },
@@ -694,7 +824,10 @@
           "type": "object",
           "properties": {
             "chart_id": {
-              "type": ["string", "integer"],
+              "type": [
+                "string",
+                "integer"
+              ],
               "description": "ID del gráfico. 0 = gráfico activo",
               "$comment": "Si falla con integer (pérdida de precisión en IDs largos), reintenta pasando el valor como string",
               "default": 0
@@ -715,17 +848,50 @@
             "mode": {
               "type": "integer",
               "description": "Número de puntos de coordenadas que requiere el objeto",
-              "enum": [0, 1, 2, 3],
+              "enum": [
+                0,
+                1,
+                2,
+                3
+              ],
               "$comment": "0 = 3 puntos (time+price x3), 1 = 2 puntos, 2 = 1 punto, 3 = sin coordenadas"
             },
-            "time1": { "type": "string", "description": "Datetime del punto 1. Formato MT5: 'YYYY.MM.DD HH:MM'", "default": "" },
-            "price1": { "type": "number", "description": "Precio del punto 1", "default": 0 },
-            "time2": { "type": "string", "description": "Datetime del punto 2", "default": "" },
-            "price2": { "type": "number", "description": "Precio del punto 2", "default": 0 },
-            "time3": { "type": "string", "description": "Datetime del punto 3", "default": "" },
-            "price3": { "type": "number", "description": "Precio del punto 3", "default": 0 }
+            "time1": {
+              "type": "string",
+              "description": "Datetime del punto 1. Formato MT5: 'YYYY.MM.DD HH:MM'",
+              "default": ""
+            },
+            "price1": {
+              "type": "number",
+              "description": "Precio del punto 1",
+              "default": 0
+            },
+            "time2": {
+              "type": "string",
+              "description": "Datetime del punto 2",
+              "default": ""
+            },
+            "price2": {
+              "type": "number",
+              "description": "Precio del punto 2",
+              "default": 0
+            },
+            "time3": {
+              "type": "string",
+              "description": "Datetime del punto 3",
+              "default": ""
+            },
+            "price3": {
+              "type": "number",
+              "description": "Precio del punto 3",
+              "default": 0
+            }
           },
-          "required": ["object_name", "object_type", "mode"]
+          "required": [
+            "object_name",
+            "object_type",
+            "mode"
+          ]
         }
       }
     },
@@ -737,7 +903,10 @@
           "type": "object",
           "properties": {
             "chart_id": {
-              "type": ["string", "integer"],
+              "type": [
+                "string",
+                "integer"
+              ],
               "description": "ID del gráfico. 0 = gráfico activo",
               "$comment": "Si falla con integer (pérdida de precisión en IDs largos), reintenta pasando el valor como string",
               "default": 0
@@ -747,19 +916,33 @@
               "description": "Nombre del objeto a eliminar"
             }
           },
-          "required": ["object_name"]
+          "required": [
+            "object_name"
+          ]
         }
       }
     },
     {
-      "name": "object_integer",
+      "name": "object_set_get",
       "_desc": {
-        "description": "GET u SET de una propiedad entera de un objeto gráfico. GET si se omite value, SET si se incluye",
+        "description": "GET u SET de una propiedad (entera|double|string) de un objeto gráfico. GET si se omite value, SET si se incluye",
         "inputSchema": {
           "type": "object",
           "properties": {
+            "mode": {
+              "description": "Modo para GET o SET de propiedades de un objeto, 0=Double|1=Integer|2=String",
+              "type": "integer",
+              "enum": [
+                0,
+                1,
+                2
+              ]
+            },
             "chart_id": {
-              "type": ["string", "integer"],
+              "type": [
+                "string",
+                "integer"
+              ],
               "description": "ID del gráfico. 0 = gráfico activo",
               "$comment": "Si falla con integer (pérdida de precisión en IDs largos), reintenta pasando el valor como string",
               "default": 0
@@ -770,92 +953,28 @@
             },
             "property": {
               "type": "string",
-              "description": "Propiedad a leer/escribir. string::mt5::ENUM_OBJECT_PROPERTY_INTEGER"
+              "description": "Propiedad a leer/escribir. string::mt5::ENUM_OBJECT_PROPERTY_*",
+              "$comment": "* Hace referencia a INTEGER|DOUBLE|STRING.. "
             },
             "prop_modifier": {
               "type": "integer",
-              "description": "Modificador de propiedad (índice del punto âncora: 0, 1 o 2)",
+              "description": "Modificador de propiedad (Dependiendo de la propiedad sera puntos de anclaje, niveles, etc..)",
               "default": 0
             },
             "value": {
-              "type": "integer",
+              "type": [
+                "string",
+                "number"
+              ],
               "description": "Valor a establecer (solo para SET)",
               "$comment": "Si se omite la función opera en modo GET"
             }
           },
-          "required": ["object_name", "property"]
-        }
-      }
-    },
-    {
-      "name": "object_double",
-      "_desc": {
-        "description": "GET u SET de una propiedad double de un objeto gráfico. GET si se omite value, SET si se incluye",
-        "inputSchema": {
-          "type": "object",
-          "properties": {
-            "chart_id": {
-              "type": ["string", "integer"],
-              "description": "ID del gráfico. 0 = gráfico activo",
-              "$comment": "Si falla con integer (pérdida de precisión en IDs largos), reintenta pasando el valor como string",
-              "default": 0
-            },
-            "object_name": {
-              "type": "string",
-              "description": "Nombre del objeto"
-            },
-            "property": {
-              "type": "string",
-              "description": "Propiedad a leer/escribir. string::mt5::ENUM_OBJECT_PROPERTY_DOUBLE"
-            },
-            "prop_modifier": {
-              "type": "integer",
-              "description": "Modificador de propiedad (índice del punto âncora: 0, 1 o 2)",
-              "default": 0
-            },
-            "value": {
-              "type": "number",
-              "description": "Valor a establecer (solo para SET)",
-              "$comment": "Si se omite la función opera en modo GET"
-            }
-          },
-          "required": ["object_name", "property"]
-        }
-      }
-    },
-    {
-      "name": "object_string",
-      "_desc": {
-        "description": "GET u SET de una propiedad string de un objeto gráfico. GET si se omite value, SET si se incluye",
-        "inputSchema": {
-          "type": "object",
-          "properties": {
-            "chart_id": {
-              "type": ["string", "integer"],
-              "description": "ID del gráfico. 0 = gráfico activo",
-              "$comment": "Si falla con integer (pérdida de precisión en IDs largos), reintenta pasando el valor como string",
-              "default": 0
-            },
-            "object_name": {
-              "type": "string",
-              "description": "Nombre del objeto"
-            },
-            "property": {
-              "type": "string",
-              "description": "Propiedad a leer/escribir. string::mt5::ENUM_OBJECT_PROPERTY_STRING"
-            },
-            "prop_modifier": {
-              "type": "integer",
-              "description": "Modificador de propiedad",
-              "default": 0
-            },
-            "value": {
-              "type": "string",
-              "description": "Valor a establecer (solo para SET)",
-              "$comment": "Si se omite la función opera en modo GET"
-            }
-          },
-          "required": ["object_name", "property"]
+          "required": [
+            "mode",
+            "object_name",
+            "property"
+          ]
         }
       }
     },
@@ -867,7 +986,10 @@
           "type": "object",
           "properties": {
             "chart_id": {
-              "type": ["string", "integer"],
+              "type": [
+                "string",
+                "integer"
+              ],
               "description": "ID del gráfico. 0 = gráfico activo",
               "$comment": "Si falla con integer (pérdida de precisión en IDs largos), reintenta pasando el valor como string",
               "default": 0
@@ -913,7 +1035,10 @@
               "description": "Timeframe del gráfico. string::mt5::ENUM_TIMEFRAMES"
             }
           },
-          "required": ["symbol", "timeframe"]
+          "required": [
+            "symbol",
+            "timeframe"
+          ]
         }
       }
     },
@@ -925,14 +1050,18 @@
           "type": "object",
           "properties": {
             "chart_id": {
-              "type": ["string", "integer"],
+              "type": [
+                "string",
+                "integer"
+              ],
               "description": "ID del gráfico a cerrar",
-              "$comment": "Si falla con integer (pérdida de precisión en IDs largos), reintenta pasando el valor como string",
               "$comment": "No se puede cerrar el gráfico con ID 0 (chart del EA)",
               "minimum": 1
             }
           },
-          "required": ["chart_id"]
+          "required": [
+            "chart_id"
+          ]
         }
       }
     },
@@ -946,11 +1075,18 @@
             "mode": {
               "type": "integer",
               "description": "Tipo de dato de la propiedad",
-              "enum": [0, 1, 2],
+              "enum": [
+                0,
+                1,
+                2
+              ],
               "$comment": "0 = double, 1 = integer, 2 = string"
             },
             "chart_id": {
-              "type": ["string", "integer"],
+              "type": [
+                "string",
+                "integer"
+              ],
               "description": "ID del gráfico. 0 = gráfico activo",
               "$comment": "Si falla con integer (pérdida de precisión en IDs largos), reintenta pasando el valor como string",
               "default": 0
@@ -966,12 +1102,19 @@
               "minimum": 0
             },
             "value": {
-              "type": ["number", "string"],
+              "type": [
+                "number",
+                "string"
+              ],
               "description": "Valor a establecer (solo para SET)",
               "$comment": "Si se omite la función opera en modo GET"
             }
           },
-          "required": ["chart_id", "property", "mode"]
+          "required": [
+            "chart_id",
+            "property",
+            "mode"
+          ]
         }
       }
     },
@@ -983,7 +1126,10 @@
           "type": "object",
           "properties": {
             "chart_id": {
-              "type": ["string", "integer"],
+              "type": [
+                "string",
+                "integer"
+              ],
               "description": "ID del gráfico. 0 = gráfico activo",
               "$comment": "Si falla con integer (pérdida de precisión en IDs largos), reintenta pasando el valor como string",
               "default": 0
@@ -991,7 +1137,11 @@
             "loacation": {
               "type": "string",
               "description": "Posición de referencia para la navegación. string::mt5::ENUM_CHART_POSITION",
-              "enum": ["CHART_BEGIN", "CHART_CURRENT_POS", "CHART_END"]
+              "enum": [
+                "CHART_BEGIN",
+                "CHART_CURRENT_POS",
+                "CHART_END"
+              ]
             },
             "bars_to_navigate": {
               "type": "integer",
@@ -999,7 +1149,10 @@
               "default": 0
             }
           },
-          "required": ["chart_id", "loacation"]
+          "required": [
+            "chart_id",
+            "loacation"
+          ]
         }
       }
     },
@@ -1022,7 +1175,10 @@
               "$comment": "TOTAL: cuenta indicadores en subventana. SHORT_NAME: nombre por índice. ADD: agrega handle al gráfico. DELETE: elimina por short name"
             },
             "chart_id": {
-              "type": ["string", "integer"],
+              "type": [
+                "string",
+                "integer"
+              ],
               "description": "ID del gráfico. 0 = gráfico activo",
               "$comment": "Si falla con integer (pérdida de precisión en IDs largos), reintenta pasando el valor como string",
               "default": 0
@@ -1048,7 +1204,11 @@
               "$comment": "Requerido para MCPFUNC_CHARTIND_SHORT_NAME"
             }
           },
-          "required": ["mode", "sub_window", "chart_id"]
+          "required": [
+            "mode",
+            "sub_window",
+            "chart_id"
+          ]
         }
       }
     },
@@ -1060,7 +1220,10 @@
           "type": "object",
           "properties": {
             "chart_id": {
-              "type": ["string", "integer"],
+              "type": [
+                "string",
+                "integer"
+              ],
               "description": "ID del gráfico. 0 = gráfico activo",
               "$comment": "Si falla con integer (pérdida de precisión en IDs largos), reintenta pasando el valor como string",
               "default": 0
@@ -1078,7 +1241,10 @@
           "type": "object",
           "properties": {
             "chart_id": {
-              "type": ["string", "integer"],
+              "type": [
+                "string",
+                "integer"
+              ],
               "description": "ID del gráfico. 0 = gráfico activo",
               "$comment": "Si falla con integer (pérdida de precisión en IDs largos), reintenta pasando el valor como string",
               "default": 0
@@ -1086,11 +1252,17 @@
             "mode": {
               "type": "integer",
               "description": "Dato a obtener",
-              "enum": [0, 1],
+              "enum": [
+                0,
+                1
+              ],
               "$comment": "0 = timeframe (retorna string ENUM_TIMEFRAMES), 1 = símbolo (retorna string)"
             }
           },
-          "required": ["chart_id", "mode"]
+          "required": [
+            "chart_id",
+            "mode"
+          ]
         }
       }
     },
@@ -1102,7 +1274,10 @@
           "type": "object",
           "properties": {
             "chart_id": {
-              "type": ["string", "integer"],
+              "type": [
+                "string",
+                "integer"
+              ],
               "description": "ID del gráfico",
               "$comment": "Si falla con integer (pérdida de precisión en IDs largos), reintenta pasando el valor como string"
             },
@@ -1131,7 +1306,11 @@
               "$comment": "Solo aplica cuando as_image_file = false"
             }
           },
-          "required": ["chart_id", "file_name", "as_image_file"]
+          "required": [
+            "chart_id",
+            "file_name",
+            "as_image_file"
+          ]
         }
       }
     },
@@ -1186,14 +1365,35 @@
                   "data_type": {
                     "type": "string",
                     "description": "Tipo de dato del parámetro. string::mt5::ENUM_DATATYPE",
-                    "enum": ["TYPE_BOOL","TYPE_CHAR","TYPE_UCHAR","TYPE_SHORT","TYPE_USHORT","TYPE_COLOR","TYPE_INT","TYPE_UINT","TYPE_DATETIME","TYPE_LONG","TYPE_ULONG","TYPE_FLOAT","TYPE_DOUBLE","TYPE_STRING"]
+                    "enum": [
+                      "TYPE_BOOL",
+                      "TYPE_CHAR",
+                      "TYPE_UCHAR",
+                      "TYPE_SHORT",
+                      "TYPE_USHORT",
+                      "TYPE_COLOR",
+                      "TYPE_INT",
+                      "TYPE_UINT",
+                      "TYPE_DATETIME",
+                      "TYPE_LONG",
+                      "TYPE_ULONG",
+                      "TYPE_FLOAT",
+                      "TYPE_DOUBLE",
+                      "TYPE_STRING"
+                    ]
                   },
                   "value": {
-                    "type": ["string", "number"],
+                    "type": [
+                      "string",
+                      "number"
+                    ],
                     "description": "Valor del parámetro"
                   }
                 },
-                "required": ["data_type", "value"]
+                "required": [
+                  "data_type",
+                  "value"
+                ]
               }
             },
             "indicator_handle": {
@@ -1208,7 +1408,9 @@
               "$comment": "Solo aplica en modo ADD"
             }
           },
-          "required": ["mode"]
+          "required": [
+            "mode"
+          ]
         }
       }
     },
@@ -1226,7 +1428,11 @@
             "instruction": {
               "type": "string",
               "description": "Set de instrucciones CPU para compilar",
-              "enum": ["avx", "avx2", "avx512"],
+              "enum": [
+                "avx",
+                "avx2",
+                "avx512"
+              ],
               "$comment": "Opcional. Si se omite usa x64 por defecto"
             },
             "optimize": {
@@ -1241,7 +1447,9 @@
               "minimum": 0
             }
           },
-          "required": ["full_path_code"]
+          "required": [
+            "full_path_code"
+          ]
         }
       }
     },
@@ -1260,12 +1468,12 @@
               "type": "string",
               "description": "Nombre del archivo .set con los parámetros del EA, aqui especificar ruta completa con C: incluido",
               "defualt": "",
-              "$comment" : "Por defecto no se usa ningun setfilename (si no los parametros default del bot)"
+              "$comment": "Por defecto no se usa ningun setfilename (si no los parametros default del bot)"
             },
             "expert_path": {
               "type": "string",
               "description": "Ruta relativa al EA compilado dentro de la carpeta MQL5",
-              "$comment" : "Con ruta relativa me refiero a MQL5\\\\ ... osea se epxifca Exerts\\\\ y lo demas.."
+              "$comment": "Con ruta relativa me refiero a MQL5\\\\ ... osea se epxifca Exerts\\\\ y lo demas.."
             },
             "start_date": {
               "type": "string",
@@ -1294,7 +1502,12 @@
             "modelado": {
               "type": "string",
               "description": "Modo de modelado de ticks",
-              "enum": ["MTTESTER_MODELADO_EVERY_TICK", "MTTESTER_MODELADO_OCHLM1", "MTTESTER_MODELADO_ONLY_OPEN", "MTTESTER_MODELADO_REAL_TICK"]
+              "enum": [
+                "MTTESTER_MODELADO_EVERY_TICK",
+                "MTTESTER_MODELADO_OCHLM1",
+                "MTTESTER_MODELADO_ONLY_OPEN",
+                "MTTESTER_MODELADO_REAL_TICK"
+              ]
             },
             "file_in_common": {
               "type": "boolean",
@@ -1307,7 +1520,17 @@
               "$comment": "En caso se omita se usa el nomrbe de un archivo generico"
             }
           },
-          "required": ["symbol", "set_file_name", "expert_path", "start_date", "end_date", "timeframe", "leverage", "visual_mode", "modelado"]
+          "required": [
+            "symbol",
+            "set_file_name",
+            "expert_path",
+            "start_date",
+            "end_date",
+            "timeframe",
+            "leverage",
+            "visual_mode",
+            "modelado"
+          ]
         }
       }
     },
@@ -1350,18 +1573,35 @@
                   "data_type": {
                     "type": "string",
                     "description": "Tipo de dato del parámetro. string::mt5::ENUM_DATATYPE",
-                    "enum": ["TYPE_INT","TYPE_DOUBLE","TYPE_STRING","TYPE_DATETIME","TYPE_COLOR"]
+                    "enum": [
+                      "TYPE_INT",
+                      "TYPE_DOUBLE",
+                      "TYPE_STRING",
+                      "TYPE_DATETIME",
+                      "TYPE_COLOR"
+                    ]
                   },
                   "value": {
-                    "type": ["string", "number"],
+                    "type": [
+                      "string",
+                      "number"
+                    ],
                     "description": "Valor del parámetro"
                   }
                 },
-                "required": ["data_type", "value"]
+                "required": [
+                  "data_type",
+                  "value"
+                ]
               }
             }
           },
-          "required": ["symbol", "timeframe", "ms_espera", "expert_path"]
+          "required": [
+            "symbol",
+            "timeframe",
+            "ms_espera",
+            "expert_path"
+          ]
         }
       }
     },
@@ -1384,7 +1624,9 @@
               "minimum": 1
             }
           },
-          "required": ["start_date"]
+          "required": [
+            "start_date"
+          ]
         }
       }
     },
@@ -1398,11 +1640,18 @@
             "type": {
               "type": "string",
               "description": "Contexto temporal a obtener. string::ENUM_MCPFUNC_TYPE_TIME",
-              "enum": ["GMT", "CURRENT", "LOCAL", "SERVER"],
+              "enum": [
+                "GMT",
+                "CURRENT",
+                "LOCAL",
+                "SERVER"
+              ],
               "$comment": "GMT = hora UTC, CURRENT = TimeCurrent del símbolo, LOCAL = hora local de la máquina, SERVER = hora del servidor del broker"
             }
           },
-          "required": ["type"]
+          "required": [
+            "type"
+          ]
         }
       }
     },
@@ -1424,7 +1673,9 @@
               "default": true
             }
           },
-          "required": ["error_code"]
+          "required": [
+            "error_code"
+          ]
         }
       }
     },
@@ -1438,7 +1689,11 @@
             "mode": {
               "type": "integer",
               "description": "Tipo de dato de la propiedad",
-              "enum": [0, 1, 2],
+              "enum": [
+                0,
+                1,
+                2
+              ],
               "$comment": "0 = double, 1 = integer, 2 = string"
             },
             "property": {
@@ -1446,7 +1701,10 @@
               "description": "Propiedad de la cuenta. string::mt5::ENUM_ACCOUNT_INFO_*"
             }
           },
-          "required": ["mode", "property"]
+          "required": [
+            "mode",
+            "property"
+          ]
         }
       }
     },
@@ -1460,7 +1718,11 @@
             "mode": {
               "type": "integer",
               "description": "Tipo de dato de la propiedad",
-              "enum": [0, 1, 2],
+              "enum": [
+                0,
+                1,
+                2
+              ],
               "$comment": "0 = double, 1 = integer, 2 = string"
             },
             "property": {
@@ -1468,7 +1730,10 @@
               "description": "Propiedad del terminal. string::mt5::ENUM_TERMINAL_INFO_*"
             }
           },
-          "required": ["mode", "property"]
+          "required": [
+            "mode",
+            "property"
+          ]
         }
       }
     },
@@ -1490,7 +1755,19 @@
               "minimum": 1
             }
           },
-          "required": ["run"]
+          "required": [
+            "run"
+          ]
+        }
+      }
+    },
+    {
+      "name": "tester_reports",
+      "_desc": {
+        "description": "Retorna el reporte completo del último backtest ejecutado como JSON. Incluye todas las estadísticas de ExpTradeSummarySingle y ExpTradeSummaryExt: balance, drawdown, profit factor, Sharpe ratio, distribuciones por hora/día/mes, tiempos de holding, correlaciones MFE/MAE, etc.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {}
         }
       }
     }
