@@ -1453,88 +1453,137 @@
         }
       }
     },
-    {
-      "name": "execute_backtest",
-      "_desc": {
-        "description": "Ejecuta un backtest histórico del Strategy Tester de MT5, Los reusltados del backtest los debera de obtener atravez del uso de logs..",
-        "inputSchema": {
-          "type": "object",
-          "properties": {
-            "symbol": {
-              "type": "string",
-              "description": "Símbolo de trading"
-            },
-            "set_file_name": {
-              "type": "string",
-              "description": "Nombre del archivo .set con los parámetros del EA, aqui especificar ruta completa con C: incluido",
-              "defualt": "",
-              "$comment": "Por defecto no se usa ningun setfilename (si no los parametros default del bot)"
-            },
-            "expert_path": {
-              "type": "string",
-              "description": "Ruta relativa al EA compilado dentro de la carpeta MQL5\\\\Experts\\\\",
-              "$comment": "Nonta: El archivo debe de incluir el foder Experts\\\\, ejemplo  Experts\\\\MyBot.ex5, o si se ubica en un subfolder incluirlo tambien.."
-            },
-            "start_date": {
-              "type": "string",
-              "description": "Fecha de inicio del backtest",
-              "$comment": "Formato datetime MT5: 'YYYY.MM.DD HH:MM:SS'"
-            },
-            "end_date": {
-              "type": "string",
-              "description": "Fecha de fin del backtest",
-              "$comment": "Formato datetime MT5: 'YYYY.MM.DD HH:MM:SS'"
-            },
-            "timeframe": {
-              "type": "string",
-              "description": "Timeframe del backtest. string::mt5::ENUM_TIMEFRAMES"
-            },
-            "leverage": {
-              "type": "integer",
-              "description": "Apalancamiento",
-              "minimum": 1
-            },
-            "visual_mode": {
-              "type": "boolean",
-              "description": "Mostrar animación visual del backtest",
-              "default": false
-            },
-            "modelado": {
-              "type": "string",
-              "description": "Modo de modelado de ticks",
-              "enum": [
-                "MTTESTER_MODELADO_EVERY_TICK",
-                "MTTESTER_MODELADO_OCHLM1",
-                "MTTESTER_MODELADO_ONLY_OPEN",
-                "MTTESTER_MODELADO_REAL_TICK"
-              ]
-            },
-            "file_in_common": {
-              "type": "boolean",
-              "description": "Guardar resultados en la carpeta Common del terminal",
-              "default": false
-            },
-            "data_file_name": {
-              "type": "string",
-              "default" : "tester_instruction.csv",
-              "description": "Nombre base del archivo CSV donde se escribiran los parametros, para luego enviarlos al bot Runner.ex5 que corre el backtest",
-              "$comment": "En caso se omita se usa el nomrbe de un archivo generico"
-            }
-          },
-          "required": [
-            "symbol",
-            "set_file_name",
-            "expert_path",
-            "start_date",
-            "end_date",
-            "timeframe",
-            "leverage",
-            "visual_mode",
-            "modelado"
+{
+  "name": "run_mt5_tester",
+  "_desc": {
+    "description": "Ejecuta un backtest histórico del Strategy Tester de MT5. Los resultados del backtest se deben obtener a través del uso de logs.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "symbol": {
+          "type": "string",
+          "description": "Símbolo de trading"
+        },
+        "set_file_name": {
+          "type": "string",
+          "description": "Nombre del archivo .set con los parámetros del EA, aquí especificar ruta completa con C: incluido",
+          "default": "",
+          "$comment": "Por defecto no se usa ningún setfilename (se usan los parámetros default del bot). Si se quiere optimizar, este .set debe contener al menos un parámetro marcado con flag 'Y' y rango start||step||stop válido, o el Tester fallará con 'no optimized parameter selected'."
+        },
+        "expert_path": {
+          "type": "string",
+          "description": "Nombre o ruta relativa del EA compilado, SIN incluir el prefijo de carpeta 'Experts\\\\'. La ruta es relativa al contenido de MQL5\\\\Experts\\\\, pero ese prefijo no debe escribirse.",
+          "$comment": "IMPORTANTE: NO incluir 'Experts\\\\' al inicio. Ejemplo correcto: 'RSI_Test_EA.ex5'. Si el EA está en un subfolder dentro de Experts, incluir solo el subfolder sin el prefijo Experts\\\\, ejemplo: 'Advisors\\\\MyBot.ex5'. Incluir 'Experts\\\\' al inicio causa que el Tester ignore el parámetro y use la última configuración manual del panel en lugar del EA solicitado."
+        },
+        "start_date": {
+          "type": "string",
+          "description": "Fecha de inicio del backtest",
+          "$comment": "Formato datetime MT5: 'YYYY.MM.DD HH:MM:SS'"
+        },
+        "end_date": {
+          "type": "string",
+          "description": "Fecha de fin del backtest",
+          "$comment": "Formato datetime MT5: 'YYYY.MM.DD HH:MM:SS'"
+        },
+        "timeframe": {
+          "type": "string",
+          "description": "Timeframe del backtest. string::mt5::ENUM_TIMEFRAMES"
+        },
+        "leverage": {
+          "type": "integer",
+          "description": "Apalancamiento",
+          "default": 0,
+          "minimum": 0
+        },
+        "visual_mode": {
+          "type": "boolean",
+          "description": "Mostrar animación visual del backtest",
+          "default": false
+        },
+        "modelado": {
+          "type": "string",
+          "description": "Modo de modelado de ticks",
+          "enum": [
+            "MTTESTER_MODELADO_EVERY_TICK",
+            "MTTESTER_MODELADO_OCHLM1",
+            "MTTESTER_MODELADO_ONLY_OPEN",
+            "MTTESTER_MODELADO_REAL_TICK"
           ]
+        },
+        "file_in_common": {
+          "type": "boolean",
+          "description": "Guardar resultados en la carpeta Common del terminal",
+          "default": false
+        },
+        "data_file_name": {
+          "type": "string",
+          "default": "tester_instruction.bin",
+          "description": "Nombre base del archivo BIN donde se escribirán los parámetros, para luego enviarlos al bot Runner.ex5 que corre el backtest",
+          "$comment": "En caso se omita se usa el nombre de un archivo genérico"
+        },
+        "opt_mode": {
+          "type": "string",
+          "default": "MTTESTER_OPTMIZATION_NONE",
+          "description": "Modo de optimización del strategy tester",
+          "enum": [
+            "MTTESTER_OPTMIZATION_NONE",
+            "MTTESTER_OPTIMIZAITON_SLOW",
+            "MTTESTER_OPTIMIZACION_AG_FAST",
+            "MTTESTER_OPTIMIZAION_ALL_MARKET_WATH"
+          ],
+          "$comment": "Si se usa un valor distinto de MTTESTER_OPTMIZATION_NONE, se requiere set_file_name con al menos un parámetro marcado para optimizar (flag 'Y'), o fallará con 'no optimized parameter selected'."
+        },
+        "optimization_criterion": {
+          "type": "string",
+          "default": "MTTESTER_OPTCRIT_BALANCE_MAX",
+          "description": "En caso MT5 optimice, con qué criterio lo hace",
+          "enum": [
+            "MTTESTER_OPTCRIT_BALANCE_MAX",
+            "MTTESTER_OPTCRIT_PROFIT_FACTOR_MAX",
+            "MTTESTER_OPTCRIT_EXPECTED_PAYOFF_MAX",
+            "MTTESTER_OPTCRIT_DRAWDOWN_MIN",
+            "MTTESTER_OPTCRIT_RECOVERY_FACTOR_MAX",
+            "MTTESTER_OPTCRIT_SHARPE_RATIO_MAX",
+            "MTTESTER_OPTCRIT_CUSTOM_MAX",
+            "MTTESTER_OPTCRIT_COMPLEX_CRITERION_MAX"
+          ],
+          "$comment": "Solo aplica cuando opt_mode no es MTTESTER_OPTMIZATION_NONE."
+        },
+        "forward_mode": {
+          "type": "string",
+          "default": "MTTESTER_FORWARD_NONE",
+          "description": "Modo de forward testing (separa el rango en sección in-sample / out-of-sample)",
+          "enum": [
+            "MTTESTER_FORWARD_NONE",
+            "MTTESTER_FORWARD_HALF",
+            "MTTESTER_FORWARD_THIRD",
+            "MTTESTER_FORWARD_QUARTER",
+            "MTTESTER_FORWARD_CUSTOM"
+          ],
+          "$comment": "Si se usa MTTESTER_FORWARD_CUSTOM, debe especificarse también 'forward_date' con la fecha exacta de corte."
+        },
+        "forward_date": {
+          "type": "string",
+          "description": "Fecha exacta donde el test cambia a modo out-of-sample (forward). Solo se usa si forward_mode = MTTESTER_FORWARD_CUSTOM.",
+          "$comment": "Formato datetime MT5: 'YYYY.MM.DD HH:MM:SS'. Ignorado si forward_mode no es MTTESTER_FORWARD_CUSTOM."
+        },
+        "delay_ms": {
+          "type": "integer",
+          "default": -2,
+          "minimum": -2,
+          "description": "Delay en ms del tester. -2 = usar delay del mt5 tester | 0 = sin delay | -1 = delay aleatorio | valor > 0 = delay fijo en ms"
         }
-      }
-    },
+      },
+      "required": [
+        "symbol",
+        "expert_path",
+        "start_date",
+        "end_date",
+        "timeframe"
+      ]
+    }
+   }
+  },
     {
       "name": "run_ea",
       "_desc": {
@@ -1576,6 +1625,7 @@
                     "description": "Tipo de dato del parámetro. string::mt5::ENUM_DATATYPE",
                     "enum": [
                       "TYPE_INT",
+                      "TYPE_LONG",
                       "TYPE_DOUBLE",
                       "TYPE_STRING",
                       "TYPE_DATETIME",
@@ -1765,10 +1815,53 @@
     {
       "name": "tester_reports",
       "_desc": {
-        "description": "Retorna el reporte completo del último backtest ejecutado como JSON. Incluye todas las estadísticas de ExpTradeSummarySingle y ExpTradeSummaryExt: balance, drawdown, profit factor, Sharpe ratio, distribuciones por hora/día/mes, tiempos de holding, correlaciones MFE/MAE, etc.",
+        "description": "Retorna datos del último backtest ejecutado. Usa 'mode' para elegir qué información obtener: resumen estadístico completo, historial de balance, historial de equity, o historial de deals. El cache se mantiene en memoria entre llamadas; usa forze_reload=true para forzar recarga.",
         "inputSchema": {
           "type": "object",
-          "properties": {}
+          "properties": {
+            "mode": {
+              "type": "string",
+              "description": "Tipo de reporte a obtener",
+              "enum": [
+                "MCPFUNC_TESTER_GET_SUMMARY",
+                "MCPFUNC_TESTER_GET_BALANCE_HISTORY",
+                "MCPFUNC_TESTER_GET_EQUITY_HISTORY",
+                "MCPFUNC_TESTER_GET_DEALS_HISTORY"
+              ]
+            },
+            "forze_reload": {
+              "type": "boolean",
+              "description": "Fuerza la recarga del cache del tester aunque ya esté cargado",
+              "default": false
+            },
+            "date_start": {
+              "type": ["integer","string"],
+              "description": "Timestamp Unix|mt5::string de inicio para filtrar por fecha. Solo aplica a BALANCE_HISTORY y EQUITY_HISTORY. 0 = sin filtro",
+              "default": 0
+            },
+            "date_end": {
+              "type": ["integer","string"],
+              "description": "Timestamp Unix|mt5::string de fin para filtrar por fecha. Solo aplica a BALANCE_HISTORY y EQUITY_HISTORY. 0 = sin filtro",
+              "default": 0
+            },
+            "incluyed_deposit": {
+              "type": "boolean",
+              "description": "Si es fase, descuenta el depósito inicial del balance/equity retornado. Solo aplica a BALANCE_HISTORY y EQUITY_HISTORY",
+              "default": true
+            },
+            "start": {
+              "type": "integer",
+              "description": "Índice de inicio para paginación. Solo aplica a BALANCE_HISTORY, EQUITY_HISTORY y DEALS_HISTORY",
+              "default": 0,
+              "minimum": 0
+            },
+            "count": {
+              "type": "integer",
+              "description": "Número máximo de elementos a retornar. Solo aplica a BALANCE_HISTORY, EQUITY_HISTORY y DEALS_HISTORY",
+              "default": 100,
+              "minimum": 1
+            }
+          }
         }
       }
     }
