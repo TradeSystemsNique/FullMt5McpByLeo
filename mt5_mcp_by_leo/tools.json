@@ -1692,10 +1692,10 @@
               "type": "string",
               "description": "Contexto temporal a obtener. string::ENUM_MCPFUNC_TYPE_TIME",
               "enum": [
-                "GMT",
-                "CURRENT",
-                "LOCAL",
-                "SERVER"
+                "MCPFUNC_TIME_GMT",
+                "MCPFUNC_TIME_CURRENT",
+                "MCPFUNC_TIME_LOCAL",
+                "MCPFUNC_TIME_SERVER"
               ],
               "$comment": "GMT = hora UTC, CURRENT = TimeCurrent del símbolo, LOCAL = hora local de la máquina, SERVER = hora del servidor del broker"
             }
