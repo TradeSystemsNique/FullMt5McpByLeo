@@ -135,120 +135,104 @@ void CMcpFuncObjectDelete::Run(CJsonNode & param, string & res)
   res = "{\"ok\":true,\"result\":true}";
  }
 
-//+------------------------------------------------------------------+
-//| object_integer - GET/SET combined (HasKey("value") to determine) |
-//+------------------------------------------------------------------+
-class CMcpFuncObjectInteger : public CMcpFunction
- {
-public:
-                     CMcpFuncObjectInteger() : CMcpFunction(0, false, "object_integer") {}
-                    ~CMcpFuncObjectInteger(void) {}
-
-  void               Run(CJsonNode& param, string& res) override final;
- };
 
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
-void CMcpFuncObjectInteger::Run(CJsonNode & param, string & res)
- {
-  ::ResetLastError();
-  const ENUM_OBJECT_PROPERTY_INTEGER property = CEnumRegBasis::GetValNoRef<ENUM_OBJECT_PROPERTY_INTEGER>(param["property"].ToString(""), OBJPROP_COLOR);
-
-//---
-  if(param.HasKey("value"))
-   {
-    // SET mode
-    const bool result = ObjectSetInteger(param["chart_id"].ToInt(0), param["object_name"].ToString(""), property, (int)param["prop_modifier"].ToInt(0), param["value"].ToInt(0));
-    if(!result)
-     {
-      res = StringFormat("{\"ok\":false,\"error\":\"object_set_integer failed, last mt5 error = %d\"}", ::GetLastError());
-      return;
-     }
-    res = "{\"ok\":true,\"result\":true}";
-   }
-  else
-   {
-    // GET mode
-    res = StringFormat("{\"ok\":true,\"result\":%I64d}", ObjectGetInteger(param["chart_id"].ToInt(0), param["object_name"].ToString(""), property, (int)param["prop_modifier"].ToInt(0)));
-   }
- }
-
-//+------------------------------------------------------------------+
-//| object_double - GET/SET combined (HasKey("value") to determine)  |
-//+------------------------------------------------------------------+
-class CMcpFuncObjectDouble : public CMcpFunction
+class CMcpFuncObjectSetGet : public CMcpFunction
  {
 public:
-                     CMcpFuncObjectDouble() : CMcpFunction(0, false, "object_double") {}
-                    ~CMcpFuncObjectDouble(void) {}
+                     CMcpFuncObjectSetGet(void) : CMcpFunction(0, false, "object_set_get") {}
+                    ~CMcpFuncObjectSetGet(void) {}
 
   void               Run(CJsonNode& param, string& res) override final;
  };
 
-//+------------------------------------------------------------------+
-//|                                                                  |
-//+------------------------------------------------------------------+
-void CMcpFuncObjectDouble::Run(CJsonNode & param, string & res)
- {
-  ::ResetLastError();
-  const ENUM_OBJECT_PROPERTY_DOUBLE property = CEnumRegBasis::GetValNoRef<ENUM_OBJECT_PROPERTY_DOUBLE>(param["property"].ToString(""), OBJPROP_PRICE);
 
-//---
-  if(param.HasKey("value"))
+//+------------------------------------------------------------------+
+void CMcpFuncObjectSetGet::Run(CJsonNode & param, string & res)
+ {
+  const int mode = (int)param["mode"].ToInt(-1);
+  switch(mode)
    {
-    // SET mode
-    const bool result = ObjectSetDouble(param["chart_id"].ToInt(0), param["object_name"].ToString(""), property, (int)param["prop_modifier"].ToInt(0), param["value"].ToDouble(0.0));
-    if(!result)
+    case MCPFUNC_SETGET_DOUBLE:
      {
-      res = StringFormat("{\"ok\":false,\"error\":\"object_set_double failed, last mt5 error = %d\"}", ::GetLastError());
-      return;
+      ::ResetLastError();
+      const ENUM_OBJECT_PROPERTY_DOUBLE property = CEnumRegBasis::GetValNoRef<ENUM_OBJECT_PROPERTY_DOUBLE>(param["property"].ToString(""), OBJPROP_PRICE);
+
+      //---
+      if(param.HasKey("value"))
+       {
+        // SET mode
+        ::ResetLastError();
+        const bool result = ObjectSetDouble(param["chart_id"].ToInt(0), param["object_name"].ToString(""), property, (int)param["prop_modifier"].ToInt(0), param["value"].ToDouble(0.0));
+        if(!result)
+         {
+          res = StringFormat("{\"ok\":false,\"error\":\"object_set_double failed, last mt5 error = %d\"}", ::GetLastError());
+          return;
+         }
+        res = "{\"ok\":true,\"result\":true}";
+       }
+      else
+       {
+        // GET mode
+        res = StringFormat("{\"ok\":true,\"result\":%.8f}", ObjectGetDouble(param["chart_id"].ToInt(0), param["object_name"].ToString(""), property, (int)param["prop_modifier"].ToInt(0)));
+       }
+      break;
      }
-    res = "{\"ok\":true,\"result\":true}";
-   }
-  else
-   {
-    // GET mode
-    res = StringFormat("{\"ok\":true,\"result\":%.8f}", ObjectGetDouble(param["chart_id"].ToInt(0), param["object_name"].ToString(""), property, (int)param["prop_modifier"].ToInt(0)));
-   }
- }
-
-//+------------------------------------------------------------------+
-//| object_string - GET/SET combined (HasKey("value") to determine)  |
-//+------------------------------------------------------------------+
-class CMcpFuncObjectString : public CMcpFunction
- {
-public:
-                     CMcpFuncObjectString() : CMcpFunction(0, false, "object_string") {}
-                    ~CMcpFuncObjectString(void) {}
-
-  void               Run(CJsonNode& param, string& res) override final;
- };
-
-//+------------------------------------------------------------------+
-//|                                                                  |
-//+------------------------------------------------------------------+
-void CMcpFuncObjectString::Run(CJsonNode & param, string & res)
- {
-  ::ResetLastError();
-  const ENUM_OBJECT_PROPERTY_STRING property = CEnumRegBasis::GetValNoRef<ENUM_OBJECT_PROPERTY_STRING>(param["property"].ToString(""), OBJPROP_NAME);
-
-//---
-  if(param.HasKey("value"))
-   {
-    // SET mode
-    const bool result = ObjectSetString(param["chart_id"].ToInt(0), param["object_name"].ToString(""), property, (int)param["prop_modifier"].ToInt(0), param["value"].ToString(""));
-    if(!result)
+    case MCPFUNC_SETGET_INTEGER:
      {
-      res = StringFormat("{\"ok\":false,\"error\":\"object_set_string failed, last mt5 error = %d\"}", ::GetLastError());
-      return;
+      ::ResetLastError();
+      const ENUM_OBJECT_PROPERTY_INTEGER property = CEnumRegBasis::GetValNoRef<ENUM_OBJECT_PROPERTY_INTEGER>(param["property"].ToString(""), OBJPROP_COLOR);
+
+      //---
+      if(param.HasKey("value"))
+       {
+        // SET mode
+        ::ResetLastError();
+        const bool result = ObjectSetInteger(param["chart_id"].ToInt(0), param["object_name"].ToString(""), property, (int)param["prop_modifier"].ToInt(0), param["value"].ToInt(0));
+        if(!result)
+         {
+          res = StringFormat("{\"ok\":false,\"error\":\"object_set_integer failed, last mt5 error = %d\"}", ::GetLastError());
+          return;
+         }
+        res = "{\"ok\":true,\"result\":true}";
+       }
+      else
+       {
+        // GET mode
+        res = StringFormat("{\"ok\":true,\"result\":%I64d}", ObjectGetInteger(param["chart_id"].ToInt(0), param["object_name"].ToString(""), property, (int)param["prop_modifier"].ToInt(0)));
+       }
+      break;
      }
-    res = "{\"ok\":true,\"result\":true}";
-   }
-  else
-   {
-    // GET mode
-    res = StringFormat("{\"ok\":true,\"result\":\"%s\"}", ObjectGetString(param["chart_id"].ToInt(0), param["object_name"].ToString(""), property, (int)param["prop_modifier"].ToInt(0)));
+    case MCPFUNC_SETGET_STRING:
+     {
+      ::ResetLastError();
+      const ENUM_OBJECT_PROPERTY_STRING property = CEnumRegBasis::GetValNoRef<ENUM_OBJECT_PROPERTY_STRING>(param["property"].ToString(""), OBJPROP_NAME);
+
+      //---
+      if(param.HasKey("value"))
+       {
+        // SET mode
+        ::ResetLastError();
+        const bool result = ObjectSetString(param["chart_id"].ToInt(0), param["object_name"].ToString(""), property, (int)param["prop_modifier"].ToInt(0), param["value"].ToString(""));
+        if(!result)
+         {
+          res = StringFormat("{\"ok\":false,\"error\":\"object_set_string failed, last mt5 error = %d\"}", ::GetLastError());
+          return;
+         }
+        res = "{\"ok\":true,\"result\":true}";
+       }
+      else
+       {
+        // GET mode
+        res = StringFormat("{\"ok\":true,\"result\":\"%s\"}", ObjectGetString(param["chart_id"].ToInt(0), param["object_name"].ToString(""), property, (int)param["prop_modifier"].ToInt(0)));
+       }
+      break;
+     }
+    default:
+      res = "{\"ok\":false,\"result\":\"Invalid mode\"}";
+      break;
    }
  }
 

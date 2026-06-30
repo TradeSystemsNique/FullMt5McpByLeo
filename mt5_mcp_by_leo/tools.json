@@ -1248,7 +1248,7 @@
     {
       "name": "execute_backtest",
       "_desc": {
-        "description": "Ejecuta un backtest histórico del Strategy Tester de MT5",
+        "description": "Ejecuta un backtest histórico del Strategy Tester de MT5, Los reusltados del backtest los debera de obtener atravez del uso de logs..",
         "inputSchema": {
           "type": "object",
           "properties": {
@@ -1258,11 +1258,14 @@
             },
             "set_file_name": {
               "type": "string",
-              "description": "Nombre del archivo .set con los parámetros del EA"
+              "description": "Nombre del archivo .set con los parámetros del EA, aqui especificar ruta completa con C: incluido",
+              "defualt": "",
+              "$comment" : "Por defecto no se usa ningun setfilename (si no los parametros default del bot)"
             },
             "expert_path": {
               "type": "string",
-              "description": "Ruta relativa al EA compilado dentro de la carpeta MQL5"
+              "description": "Ruta relativa al EA compilado dentro de la carpeta MQL5",
+              "$comment" : "Con ruta relativa me refiero a MQL5\\\\ ... osea se epxifca Exerts\\\\ y lo demas.."
             },
             "start_date": {
               "type": "string",
@@ -1291,7 +1294,7 @@
             "modelado": {
               "type": "string",
               "description": "Modo de modelado de ticks",
-              "enum": ["EVERY_TICK", "OCHLM1", "ONLY_OPEN", "REAL_TICK"]
+              "enum": ["MTTESTER_MODELADO_EVERY_TICK", "MTTESTER_MODELADO_OCHLM1", "MTTESTER_MODELADO_ONLY_OPEN", "MTTESTER_MODELADO_REAL_TICK"]
             },
             "file_in_common": {
               "type": "boolean",
@@ -1300,8 +1303,8 @@
             },
             "data_file_name": {
               "type": "string",
-              "description": "Nombre base del archivo de resultados",
-              "$comment": "Opcional. Si se omite no guarda archivo de resultados"
+              "description": "Nombre base del archivo donde se escribiran los parametros, para luego enviarlos al bot que corre el backtest",
+              "$comment": "En caso se omita se usa el nomrbe de un archivo generico"
             }
           },
           "required": ["symbol", "set_file_name", "expert_path", "start_date", "end_date", "timeframe", "leverage", "visual_mode", "modelado"]

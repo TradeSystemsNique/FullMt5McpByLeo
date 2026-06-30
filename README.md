@@ -43,6 +43,9 @@ Access real-time and historical data:
 - **Symbol Information:** Get symbol properties (digits, spreads, swaps, volumes)
 - **Market Watch:** Manage symbol selection and availability
 
+### Indicators 
+- **Indicator Manager: ** Get parameters, Add indicadors (ALL, Custom, MA, ETC..), Etc.. 
+
 ### Graphic Objects
 Create and modify chart visualizations:
 - **Draw Objects:** Create trend lines, rectangles, text labels, arrows
@@ -54,11 +57,14 @@ Control chart windows and redraw operations:
 - **Chart Operations:** Open, close, list active charts
 - **Chart Properties:** Read chart dimensions, colors, price ranges
 - **Visual Updates:** Force chart redraw for real-time updates
+- **Indicators:** Add\Delete\GetName\GetTotal of indicator of any chart\subwin 
+- **Navigate:** Navigate chart 
 
 ### Code & Terminal
 Compile and execute Expert Advisors:
 - **Compilation:** Compile MQL5 source to EX5 bytecode
-- **Backtesting:** Run historical tests with multiple tick modeling
+- **Backtesting:** Run historical tests with multiple tick modeling\leverage\visual mode.. etc
+and get report..
 - **EA Execution:** Run Expert Advisors in real-time
 - **Logging:** Retrieve EA logs for debugging and monitoring
 - **Terminal and Account:** Obtaing terminal and acount info_* (integer, string, double)

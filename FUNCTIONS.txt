@@ -37,15 +37,13 @@ symbols_total
 
 
 # ============================================================================
-# GROUP 3: GRAPHIC OBJECTS (6 funciones)
+# GROUP 3: GRAPHIC OBJECTS (4 funciones)
 # ============================================================================
 
 object_list
 object_create
 object_delete
-object_integer
-object_double
-object_string
+object_set_get
 
 
 # ============================================================================
@@ -87,5 +85,5 @@ terminal_info (agrupa a los 3 internamente)
 indicator_manage (agrupa funciones internas)
 
 # ============================================================================
-# TOTAL: 45 FUNCIONES
+# TOTAL: 43 FUNCIONES
 # ============================================================================

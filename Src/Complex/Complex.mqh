@@ -49,8 +49,15 @@ void CMcpFunctionRunBacktest::Run(CJsonNode &param, string &res)
 
 //---
   const bool common = param["file_in_common"].ToBool(true);
-  const string fn = param["data_file_name"].ToString();
-  const int fh = FileOpen(fn, FILE_WRITE | FILE_TXT | (common ? FILE_COMMON : 0));
+  const string fn = param["data_file_name"].ToString("tester_logs.csv");
+  ::ResetLastError();
+  const int fh = FileOpen(fn, FILE_WRITE | FILE_CSV | (common ? FILE_COMMON : 0));
+  if(fh == INVALID_HANDLE)
+   {
+    res = StringFormat("{\"ok\":false,\"error\":\"Error write data in file[%s], last mt5 error = %d\"}", fn, ::GetLastError());
+    return;
+   }
+
   FileWrite(fh, task.ToString());
   FileClose(fh);
 
