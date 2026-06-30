@@ -61,23 +61,24 @@ chart_indicator (agrupa varias funciones)
 chart_navigate
 
 # ============================================================================
-# GROUP 5: CODE + TERMINAL (4 funciones)
+# GROUP 5: CODE + TERMINAL + BACKTEST (5 funciones)
 # ============================================================================
 
 compile_mql5
 execute_backtest
 run_ea
 get_expert_logs
-
+tester_reports
 
 # ============================================================================
-# GROUP 6: UTILS (Time | Error | Info) (4 funciones)
+# GROUP 6: UTILS (Time | Error | Info) (5 funciones)
 # ============================================================================
 
 get_time 
 get_err_description
 account_info (agrupa a los 3 internamente)
-terminal_info (agrupa a los 3 internamente)
+terminal_info (agrupa a los 3 internamente)}
+run_command 
 
 # ============================================================================
 # GROUP 7: INDICATOR (1 Funcion)
@@ -85,5 +86,5 @@ terminal_info (agrupa a los 3 internamente)
 indicator_manage (agrupa funciones internas)
 
 # ============================================================================
-# TOTAL: 43 FUNCIONES
+# TOTAL: 45 FUNCIONES
 # ============================================================================

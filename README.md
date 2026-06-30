@@ -44,7 +44,7 @@ Access real-time and historical data:
 - **Market Watch:** Manage symbol selection and availability
 
 ### Indicators 
-- **Indicator Manager: ** Get parameters, Add indicadors (ALL, Custom, MA, ETC..), Etc.. 
+- **Indicator Manager:** Get parameters, Add indicadors (ALL, Custom, MA, ETC..), Etc.. 
 
 ### Graphic Objects
 Create and modify chart visualizations:
