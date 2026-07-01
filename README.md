@@ -41,16 +41,16 @@ Execute and manage trading positions and orders:
 Access real-time and historical data:
 - **OHLC Data:** Retrieve candlestick data (open, high, low, close, volume, spread, etc..)
 - **Tick data:** Retrieve Tick data (last, ask, bid, flags, etc..)
-- **Symbol Information:** Get symbol properties (digits, spreads, swaps, volumes)
+- **Symbol Information:** Get symbol properties (digits, spreads, swaps, volumes, etc.. full SYMBOL_INFO_*)
 - **Market Watch:** Manage symbol selection and availability
 
 ### Indicators 
-- **Indicator Manager:** Get parameters, Add indicadors (ALL, Custom, MA, ETC..), Etc.. 
+- **Indicator Manager:** Get parameters, Add indicadors (ALL, Custom, MA, ETC..), Remove, Get Buffers, etc..
 
 ### Graphic Objects
 Create and modify chart visualizations:
 - **Draw Objects:** Create trend lines, rectangles, text labels, arrows
-- **Object Properties:** Modify colors, styles, prices, text
+- **Object Properties:** Modify colors, styles, prices, text, full ENUM_OBJECT_PROPERTY_*
 - **Chart Annotations:** Add visual markers and indicators to charts
 
 ### Chart Management
@@ -64,14 +64,14 @@ Control chart windows and redraw operations:
 ### Code & Terminal
 Compile and execute Expert Advisors:
 - **Compilation:** Compile MQL5 source to EX5 bytecode
-- **Backtesting:** Run historical tests with multiple tick modeling\leverage\visual mode.. etc
-and get report..
+- **Backtesting and Optimization:** Run historical tests with multiple tick modeling\leverage\opt criterian\opt mode\forward\visual mode.. etc
+and get full report, deals, balance\equity curve.
 - **EA Execution:** Run Expert Advisors in real-time
 - **Logging:** Retrieve EA logs for debugging and monitoring
 - **Terminal and Account:** Obtaing terminal and acount info_* (integer, string, double)
 
->  Note: Python version package mt5_mcp_by_leo is deprecated. now replace by C++ exe server.
-
+> Note: Python version package mt5_mcp_by_leo is deprecated. now replace by C++ exe server.
+> Note: Unlike other MCPs that use .ini files to launch backtests, this MCP doesn't need that because it controls the entire MT5 tester from the same EA, without .ini files, without wasted terminals. In addition, the code compilation is more complete since its AI can choose whether or not to optimize the code, instructions, etc.
 ---
 
 ## Repository Structure
