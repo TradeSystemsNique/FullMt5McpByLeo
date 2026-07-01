@@ -1463,7 +1463,7 @@
         },
         "timeframe": {
           "type": "string",
-          "description": "Timeframe del backtest. string::mt5::ENUM_TIMEFRAMES"
+          "description": "Timeframe del backtest. string::mt5::ENUM_TIMEFRAMES, ejemplo PERIOD_M1, PERIOD_M2 ....... PERIOD_MN1 soporta todo el ENUM completo"
         },
         "leverage": {
           "type": "integer",

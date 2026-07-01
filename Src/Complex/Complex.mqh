@@ -292,6 +292,16 @@ void CMcpFuncTesterRep::Run(CJsonNode& param, string& res)
       m_builder.Key("ok").Val(true);
       m_builder.Key("result").Obj();
 
+      //--- Header
+      m_builder.Key("tst_file_name").ValSNoRef(m_tst.Header.name[]);
+      m_builder.Key("expert_name").ValSNoRef(m_tst.Header.expert_name[]);
+      m_builder.Key("expert_path").ValSNoRef(m_tst.Header.expert_path[]);
+      m_builder.Key("server").ValSNoRef(m_tst.Header.server[]);
+      m_builder.Key("version").Val((int)m_tst.Header.version);
+      m_builder.Key("copyright").ValSNoRef(m_tst.Header.copyright[]);
+      m_builder.Key("msc_execution_time").Val((int)m_tst.Header.msc_last);
+      m_builder.Key("symbol").ValSNoRef(m_tst.Header.symbol[]);
+
       // --- ExpTradeSummarySingle ---
       m_builder.Key("bars").Val(m_tst.Summary.bars);
       m_builder.Key("ticks").Val(m_tst.Summary.ticks);
@@ -359,6 +369,10 @@ void CMcpFuncTesterRep::Run(CJsonNode& param, string& res)
       m_builder.Key("holding_time_max").Val((long)m_tst.Summary.holding_time_max);
       m_builder.Key("holding_time_avr").Val((long)m_tst.Summary.holding_time_avr);
       m_builder.Key("in_commission").Val(m_tst.Summary.in_commission);
+
+      //--- Tiempo
+
+
 
       // --- Arrays de distribucion ---
       m_builder.Key("in_per_hours").Arr();
