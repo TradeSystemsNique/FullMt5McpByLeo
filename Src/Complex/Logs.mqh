@@ -22,6 +22,8 @@ namespace TSN
 {
 class CMcpFunctionExpertLogs : public CMcpFunction
  {
+private:
+  CJsonBuilder       m_json_builder;
 public:
                      CMcpFunctionExpertLogs(void) : CMcpFunction(0, false, "get_expert_logs") {}
                     ~CMcpFunctionExpertLogs(void) {}
@@ -31,18 +33,22 @@ public:
 //+------------------------------------------------------------------+
 void CMcpFunctionExpertLogs::Run(CJsonNode &param, string &res)
  {
-  string log_lines = "";
+  string str = "";
   if(!ExtractLastLogLines(
        StringToTime(param["start_date"].ToString(TimeToString(TimeCurrent()))),
-       int(param["logs_lines"].ToInt(10)),
-       log_lines
+       int(param["byte_start"].ToInt(0)),
+       int(param["byte_counts"].ToInt(100)),
+       str
      ))
    {
     res = "{\"ok\":false,\"error\":\"Error obtaining logs from the mt5 terminal\"}";
    }
   else
    {
-    res = "{\"ok\":true,\"result\":\"" + log_lines + "\"}";
+    m_json_builder.Obj();
+    m_json_builder.Key("ok").Val(true);
+    m_json_builder.Key("result").ValS(str);
+    m_json_builder.EndObj();
    }
  }
 //+------------------------------------------------------------------+

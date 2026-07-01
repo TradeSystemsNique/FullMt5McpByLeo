@@ -445,73 +445,75 @@
     },
     {
       "name": "calc_order",
-      "description": "Calculadora unificada MT5: sizing, riesgo, SL y márgenes. Elige un modo y solo pasa los campos de ESE modo.",
+      "_desc" : {
+      "description": "Calculadora unificada MT5: sizing, riesgo, SL y márgenes. Elige un 'mode' y pasa solo los campos relevantes a ese modo (ver detalle abajo). Modos disponibles:\n\n- MCPFUNC_CALCORDER_CALCULATE_SL_WITH_LOT: requiere symbol, entry_price, risk_per_operation, lot_size. Devuelve SL en puntos.\n- MCPFUNC_CALCORDER_MONEY_TO_POINTS: requiere symbol, order_type, entry_price, risk_per_operation. Convierte riesgo $ a puntos y sugiere lote.\n- MCPFUNC_CALCORDER_GET_LOTE_BY_RISK_MONEY_AND_SL_POINTS: requiere symbol, risk_per_operation, sl, max_lot. Devuelve lote óptimo.\n- MCPFUNC_CALCORDER_GET_MAX_LOTE_TO_TRADE: requiere symbol, order_type, entry_price. Devuelve lote máximo según margen.\n- MCPFUNC_CALCORDER_GET_LOTE_BY_ONLY_RISK_MONEY: requiere symbol, order_type, entry_price, risk_per_operation. Devuelve lote por riesgo $ sin SL.\n\nCampos opcionales comunes: deviation (default 0), stop_limit (default 0).",
       "inputSchema": {
-        "oneOf": [
-          {
-            "title": "CALCULATE_SL_WITH_LOT — dado lote fijo + riesgo $, devuelve SL en puntos",
-            "properties": {
-              "mode": { "const": "MCPFUNC_CALCORDER_CALCULATE_SL_WITH_LOT" },
-              "symbol": { "type": "string" },
-              "entry_price": { "type": "number" },
-              "risk_per_operation": { "type": "number" },
-              "lot_size": { "type": "number" },
-              "deviation": { "type": "integer", "default": 0 },
-              "stop_limit": { "type": "integer", "default": 0 }
-            },
-            "required": ["mode", "symbol", "entry_price", "risk_per_operation", "lot_size"]
+        "type": "object",
+        "properties": {
+          "mode": {
+            "type": "string",
+            "enum": [
+              "MCPFUNC_CALCORDER_CALCULATE_SL_WITH_LOT",
+              "MCPFUNC_CALCORDER_MONEY_TO_POINTS",
+              "MCPFUNC_CALCORDER_GET_LOTE_BY_RISK_MONEY_AND_SL_POINTS",
+              "MCPFUNC_CALCORDER_GET_MAX_LOTE_TO_TRADE",
+              "MCPFUNC_CALCORDER_GET_LOTE_BY_ONLY_RISK_MONEY"
+            ],
+            "description": "Selecciona el submodo de cálculo. Determina qué otros campos son requeridos."
           },
-          {
-            "title": "MONEY_TO_POINTS — convierte riesgo $ a puntos, sugiere lote",
-            "properties": {
-              "mode": { "const": "MCPFUNC_CALCORDER_MONEY_TO_POINTS" },
-              "symbol": { "type": "string" },
-              "order_type": { "type": "string" },
-              "entry_price": { "type": "number" },
-              "risk_per_operation": { "type": "number" },
-              "deviation": { "type": "integer", "default": 0 },
-              "stop_limit": { "type": "integer", "default": 0 }
-            },
-            "required": ["mode", "symbol", "order_type", "entry_price", "risk_per_operation"]
+          "symbol": {
+            "type": "string",
+            "description": "Símbolo del instrumento, ej. EURUSD. Requerido en todos los modos."
           },
-          {
-            "title": "GET_LOTE_BY_RISK_MONEY_AND_SL_POINTS — lote óptimo dado SL en puntos + riesgo $",
-            "properties": {
-              "mode": { "const": "MCPFUNC_CALCORDER_GET_LOTE_BY_RISK_MONEY_AND_SL_POINTS" },
-              "symbol": { "type": "string" },
-              "risk_per_operation": { "type": "number" },
-              "sl": { "type": "integer", "minimum": 0 },
-              "max_lot": { "type": "number" }
-            },
-            "required": ["mode", "symbol", "risk_per_operation", "sl", "max_lot"]
+          "order_type": {
+            "type": "string",
+            "description": "Tipo de orden string::ENUM_ORDER_TYPE Requerido en: MONEY_TO_POINTS, GET_MAX_LOTE_TO_TRADE, GET_LOTE_BY_ONLY_RISK_MONEY.",
+            "enum" : [
+             "ORDER_TYPE_BUY",
+             "ORDER_TYPE_SELL",
+             "ORDER_TYPE_BUY_LIMIT",
+             "ORDER_TYPE_SELL_LIMIT",
+             "ORDER_TYPE_BUY_STOP",
+             "ORDER_TYPE_SELL_STOP",
+             "ORDER_TYPE_BUY_STOP_LIMIT",
+             "ORDER_TYPE_SELL_STOP_LIMIT"
+            ]
           },
-          {
-            "title": "GET_MAX_LOTE_TO_TRADE — lote máximo posible según margen (sin riesgo/SL)",
-            "properties": {
-              "mode": { "const": "MCPFUNC_CALCORDER_GET_MAX_LOTE_TO_TRADE" },
-              "symbol": { "type": "string" },
-              "order_type": { "type": "string" },
-              "entry_price": { "type": "number" },
-              "deviation": { "type": "integer", "default": 0 },
-              "stop_limit": { "type": "integer", "default": 0 }
-            },
-            "required": ["mode", "symbol", "order_type", "entry_price"]
+          "entry_price": {
+            "type": "number",
+            "description": "Precio de entrada. Requerido en: CALCULATE_SL_WITH_LOT, MONEY_TO_POINTS, GET_MAX_LOTE_TO_TRADE, GET_LOTE_BY_ONLY_RISK_MONEY."
           },
-          {
-            "title": "GET_LOTE_BY_ONLY_RISK_MONEY — lote por riesgo $ sin SL en puntos",
-            "properties": {
-              "mode": { "const": "MCPFUNC_CALCORDER_GET_LOTE_BY_ONLY_RISK_MONEY" },
-              "symbol": { "type": "string" },
-              "order_type": { "type": "string" },
-              "entry_price": { "type": "number" },
-              "risk_per_operation": { "type": "number" },
-              "deviation": { "type": "integer", "default": 0 },
-              "stop_limit": { "type": "integer", "default": 0 }
-            },
-            "required": ["mode", "symbol", "order_type", "entry_price", "risk_per_operation"]
+          "risk_per_operation": {
+            "type": "number",
+            "description": "Riesgo en dinero ($). Requerido en: CALCULATE_SL_WITH_LOT, MONEY_TO_POINTS, GET_LOTE_BY_RISK_MONEY_AND_SL_POINTS, GET_LOTE_BY_ONLY_RISK_MONEY."
+          },
+          "lot_size": {
+            "type": "number",
+            "description": "Tamaño de lote fijo. Requerido solo en: CALCULATE_SL_WITH_LOT."
+          },
+          "sl": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Stop loss en puntos. Requerido solo en: GET_LOTE_BY_RISK_MONEY_AND_SL_POINTS."
+          },
+          "max_lot": {
+            "type": "number",
+            "description": "Lote máximo permitido. Requerido solo en: GET_LOTE_BY_RISK_MONEY_AND_SL_POINTS."
+          },
+          "deviation": {
+            "type": "integer",
+            "default": 0,
+            "description": "Desviación en puntos. Opcional, aplica a varios modos."
+          },
+          "stop_limit": {
+            "type": "integer",
+            "default": 0,
+            "description": "Stop limit. Opcional, aplica a varios modos."
           }
-        ]
+        },
+        "required": ["mode", "symbol"]
       }
+     } 
     },
     {
       "name": "history_deal_list",

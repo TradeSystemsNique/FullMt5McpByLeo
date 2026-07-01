@@ -227,7 +227,7 @@ public:
 void CMcpFuncCalcOrder::Run(CJsonNode &param, string &res)
  {
 //---
-  const int8_t mode = CEnumRegBasis::GetValNoRef<int8_t>(param["mode"].ToString(""), WRONG_VALUE);
+  const int8_t mode = CEnumRegFullMt5Mcp::GetValNoRef<int8_t>(param["mode"].ToString(""), WRONG_VALUE);
   const ENUM_ORDER_TYPE type = CEnumRegBasis::GetValNoRef<ENUM_ORDER_TYPE>(param["order_type"].ToString(""), ORDER_TYPE_CLOSE_BY);
 
 //---
