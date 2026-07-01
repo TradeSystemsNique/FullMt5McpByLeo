@@ -955,10 +955,7 @@
               "default": 0
             },
             "value": {
-              "type": [
-                "string",
-                "number"
-              ],
+              "type": "string",
               "description": "Valor a establecer (solo para SET)",
               "$comment": "Si se omite la función opera en modo GET"
             }
@@ -1086,10 +1083,7 @@
               "minimum": 0
             },
             "value": {
-              "type": [
-                "number",
-                "string"
-              ],
+              "type": "string",
               "description": "Valor a establecer (solo para SET)",
               "$comment": "Si se omite la función opera en modo GET"
             }
@@ -1217,12 +1211,9 @@
           "properties": {
             "chart_id": {
               "type": [
-                "string",
-                "integer"
+                "string"
               ],
-              "description": "ID del gráfico. 0 = gráfico activo",
-              "$comment": "Si falla con integer (pérdida de precisión en IDs largos), reintenta pasando el valor como string",
-              "default": 0
+              "description": "ID del gráfico. 0 = gráfico activo"
             },
             "mode": {
               "type": "integer",
