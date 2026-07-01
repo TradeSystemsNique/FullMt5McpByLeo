@@ -150,9 +150,9 @@ void CMcpFuncOrderGet::Run(CJsonNode& param, string& res)
     return;
    }
 
+
 //---
   const int8_t mode = (int8_t)param["mode"].ToInt(0);
-
   switch(mode)
    {
     //--- DOUBLE
@@ -205,7 +205,7 @@ void CMcpFuncOrderGet::Run(CJsonNode& param, string& res)
 //---
   res = StringFormat("{\"ok\":false,\"error\":\"Failed call OrderGet*, last err mt5 = %d\"}", ::GetLastError());
  }
- 
+
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
@@ -220,23 +220,24 @@ public:
 
   void               Run(CJsonNode& param, string& res) override final;
  };
- 
+
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
 void CMcpFuncCalcOrder::Run(CJsonNode &param, string &res)
  {
 //---
-  const int8_t mode = (int8_t)param["mode"].ToInt(0);
-  const ENUM_ORDER_TYPE type = CEnumRegBasis::GetValNoRef<ENUM_ORDER_TYPE>(param["order_type"].ToString(""), ORDER_TYPE_CLOSE_BY); // ORDER_TYPE_CLOSE_BY=wrong_value
+  const int8_t mode = CEnumRegBasis::GetValNoRef<int8_t>(param["mode"].ToString(""), WRONG_VALUE);
+  const ENUM_ORDER_TYPE type = CEnumRegBasis::GetValNoRef<ENUM_ORDER_TYPE>(param["order_type"].ToString(""), ORDER_TYPE_CLOSE_BY);
 
+//---
   m_get_lote.SetSymbol(param["symbol"].ToString(""));
 
 //---
   switch(mode)
    {
     //--- CalculateSLWithLot
-    case 0:
+    case MCPFUNC_CALCORDER_CALCULATE_SL_WITH_LOT:
      {
       long v = m_get_lote.CalculateSLWithLot(
                  param["risk_per_operation"].ToDouble(0.0),
@@ -257,9 +258,9 @@ void CMcpFuncCalcOrder::Run(CJsonNode &param, string &res)
      }
 
     //--- MoneyToPoints
-    case 1:
+    case MCPFUNC_CALCORDER_MONEY_TO_POINTS:
      {
-      double chosen_lot=0.00;
+      double chosen_lot = 0.00;
 
       long v = m_get_lote.MoneyToPoints(
                  type,
@@ -281,7 +282,7 @@ void CMcpFuncCalcOrder::Run(CJsonNode &param, string &res)
      }
 
     //--- GetLoteByRiskPerOperationAndSL
-    case 2:
+    case MCPFUNC_CALCORDER_GET_LOTE_BY_RISK_MONEY_AND_SL_POINTS:
      {
       double new_risk = 0.0;
 
@@ -303,7 +304,7 @@ void CMcpFuncCalcOrder::Run(CJsonNode &param, string &res)
      }
 
     //--- GetMaxLote
-    case 3:
+    case MCPFUNC_CALCORDER_GET_MAX_LOTE_TO_TRADE:
      {
       double v = m_get_lote.GetMaxLote(
                    type,
@@ -323,7 +324,7 @@ void CMcpFuncCalcOrder::Run(CJsonNode &param, string &res)
      }
 
     //--- GetLoteByRiskPerOperation
-    case 4:
+    case MCPFUNC_CALCORDER_GET_LOTE_BY_ONLY_RISK_MONEY:
      {
       double v = m_get_lote.GetLoteByRiskPerOperation(
                    type,

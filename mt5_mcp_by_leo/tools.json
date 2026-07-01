@@ -445,76 +445,72 @@
     },
     {
       "name": "calc_order",
-      "_desc": {
-        "description": "Calculadora unificada MT5: sizing, riesgo, SL y márgenes (5 modos)",
-        "inputSchema": {
-          "type": "object",
-          "properties": {
-            "mode": {
-              "type": "integer",
-              "description": "Índice del método de cálculo",
-              "enum": [
-                0,
-                1,
-                2,
-                3,
-                4
-              ],
-              "$comment": "0=SL en dinero dado un lote, 1=dinero a puntos, 2=lote óptimo dado SL en puntos, 3=máximo lote posible, 4=lote por % de riesgo"
+      "description": "Calculadora unificada MT5: sizing, riesgo, SL y márgenes. Elige un modo y solo pasa los campos de ESE modo.",
+      "inputSchema": {
+        "oneOf": [
+          {
+            "title": "CALCULATE_SL_WITH_LOT — dado lote fijo + riesgo $, devuelve SL en puntos",
+            "properties": {
+              "mode": { "const": "MCPFUNC_CALCORDER_CALCULATE_SL_WITH_LOT" },
+              "symbol": { "type": "string" },
+              "entry_price": { "type": "number" },
+              "risk_per_operation": { "type": "number" },
+              "lot_size": { "type": "number" },
+              "deviation": { "type": "integer", "default": 0 },
+              "stop_limit": { "type": "integer", "default": 0 }
             },
-            "symbol": {
-              "type": "string",
-              "description": "Símbolo de trading"
-            },
-            "order_type": {
-              "type": "string",
-              "description": "Tipo de orden MT5. string::mt5::ENUM_ORDER_TYPE",
-              "$comment": "Requerido en modos 1, 3, 4"
-            },
-            "entry_price": {
-              "type": "number",
-              "description": "Precio de entrada",
-              "$comment": "Requerido en modos 0, 1, 4"
-            },
-            "risk_per_operation": {
-              "type": "number",
-              "description": "Riesgo por operación en moneda de la cuenta",
-              "$comment": "Requerido en modos 0, 1, 2, 4"
-            },
-            "lot_size": {
-              "type": "number",
-              "description": "Tamaño de lote actual",
-              "$comment": "Requerido en modo 0"
-            },
-            "sl": {
-              "type": "integer",
-              "description": "Stop Loss en puntos",
-              "$comment": "Requerido en modo 2",
-              "minimum": 0
-            },
-            "max_lot": {
-              "type": "number",
-              "description": "Máximo lote permitido",
-              "$comment": "Requerido en modo 2"
-            },
-            "deviation": {
-              "type": "integer",
-              "description": "Desviación de precio en puntos",
-              "default": 0,
-              "minimum": 0
-            },
-            "stop_limit": {
-              "type": "integer",
-              "description": "Parámetro stop limit en puntos",
-              "default": 0,
-              "minimum": 0
-            }
+            "required": ["mode", "symbol", "entry_price", "risk_per_operation", "lot_size"]
           },
-          "required": [
-            "mode",
-            "symbol"
-          ]
-        }
+          {
+            "title": "MONEY_TO_POINTS — convierte riesgo $ a puntos, sugiere lote",
+            "properties": {
+              "mode": { "const": "MCPFUNC_CALCORDER_MONEY_TO_POINTS" },
+              "symbol": { "type": "string" },
+              "order_type": { "type": "string" },
+              "entry_price": { "type": "number" },
+              "risk_per_operation": { "type": "number" },
+              "deviation": { "type": "integer", "default": 0 },
+              "stop_limit": { "type": "integer", "default": 0 }
+            },
+            "required": ["mode", "symbol", "order_type", "entry_price", "risk_per_operation"]
+          },
+          {
+            "title": "GET_LOTE_BY_RISK_MONEY_AND_SL_POINTS — lote óptimo dado SL en puntos + riesgo $",
+            "properties": {
+              "mode": { "const": "MCPFUNC_CALCORDER_GET_LOTE_BY_RISK_MONEY_AND_SL_POINTS" },
+              "symbol": { "type": "string" },
+              "risk_per_operation": { "type": "number" },
+              "sl": { "type": "integer", "minimum": 0 },
+              "max_lot": { "type": "number" }
+            },
+            "required": ["mode", "symbol", "risk_per_operation", "sl", "max_lot"]
+          },
+          {
+            "title": "GET_MAX_LOTE_TO_TRADE — lote máximo posible según margen (sin riesgo/SL)",
+            "properties": {
+              "mode": { "const": "MCPFUNC_CALCORDER_GET_MAX_LOTE_TO_TRADE" },
+              "symbol": { "type": "string" },
+              "order_type": { "type": "string" },
+              "entry_price": { "type": "number" },
+              "deviation": { "type": "integer", "default": 0 },
+              "stop_limit": { "type": "integer", "default": 0 }
+            },
+            "required": ["mode", "symbol", "order_type", "entry_price"]
+          },
+          {
+            "title": "GET_LOTE_BY_ONLY_RISK_MONEY — lote por riesgo $ sin SL en puntos",
+            "properties": {
+              "mode": { "const": "MCPFUNC_CALCORDER_GET_LOTE_BY_ONLY_RISK_MONEY" },
+              "symbol": { "type": "string" },
+              "order_type": { "type": "string" },
+              "entry_price": { "type": "number" },
+              "risk_per_operation": { "type": "number" },
+              "deviation": { "type": "integer", "default": 0 },
+              "stop_limit": { "type": "integer", "default": 0 }
+            },
+            "required": ["mode", "symbol", "order_type", "entry_price", "risk_per_operation"]
+          }
+        ]
       }
     },
     {
