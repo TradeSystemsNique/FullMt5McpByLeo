@@ -71,6 +71,15 @@ MQLARTICLES_ENUMREC_REG(MCPFUNC_TESTER_GET_BALANCE_HISTORY)
 MQLARTICLES_ENUMREC_REG(MCPFUNC_TESTER_GET_EQUITY_HISTORY)
 MQLARTICLES_ENUMREC_REG(MCPFUNC_TESTER_GET_DEALS_HISTORY)
 
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
+MQLARTICLES_ENUMREC_REG(MCPFUNC_CALCORDER_CALCULATE_SL_WITH_LOT)
+MQLARTICLES_ENUMREC_REG(MCPFUNC_CALCORDER_MONEY_TO_POINTS)
+MQLARTICLES_ENUMREC_REG(MCPFUNC_CALCORDER_GET_LOTE_BY_RISK_MONEY_AND_SL_POINTS)
+MQLARTICLES_ENUMREC_REG(MCPFUNC_CALCORDER_GET_MAX_LOTE_TO_TRADE)
+MQLARTICLES_ENUMREC_REG(MCPFUNC_CALCORDER_GET_LOTE_BY_ONLY_RISK_MONEY)
+
 
 //+------------------------------------------------------------------+
 //|                                                                  |
