@@ -1432,7 +1432,7 @@
 {
   "name": "run_mt5_tester",
   "_desc": {
-    "description": "Ejecuta un backtest histórico del Strategy Tester de MT5. Los resultados del backtest se deben obtener a través del uso de logs.",
+    "description": "Lanza una instruccion al EA Runner.ex5 para que este ejecute el Strategy Tester de MT5 con los parametros pasados.. La funcion es asincrona, solo lanza el comando asi que una vez lanzado puede intentar obtener logs de Experts para ver que imprime el EA Runner, y cuando termine el backtest peude consultar tester reports para obtener resultados del ultimo single backtest",
     "inputSchema": {
       "type": "object",
       "properties": {
