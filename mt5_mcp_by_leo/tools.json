@@ -956,7 +956,7 @@
             },
             "value": {
               "type": "string",
-              "description": "Valor a establecer (solo para SET)",
+              "description": "Valor a establecer (solo para SET), solo se peude pasar numeros | strings | reales, si usas booleanos pase numeros",
               "$comment": "Si se omite la función opera en modo GET"
             }
           },
@@ -1074,7 +1074,8 @@
             },
             "property": {
               "type": "string",
-              "description": "Propiedad a leer/escribir. string::mt5::ENUM_CHART_PROPERTY_*"
+              "description": "Propiedad a leer/escribir. string::mt5::ENUM_CHART_PROPERTY_*",
+              "$comment" : "Solo se puede pasar numeros | strings | reales, si usas booleanos pase numeros 1 o 0"
             },
             "sub_window": {
               "type": "integer",
