@@ -32,9 +32,10 @@ class CMcpFuncInd : public CMcpFunction
 private:
   CDictSValue<long>  m_indicators;
   CJsonBuilder       m_builder;
+  double             m_buffer[];
 
 public:
-                     CMcpFuncInd(void) : CMcpFunction(0, false, "indicator_manage") {}
+                     CMcpFuncInd(void) : CMcpFunction(0, false, "indicator_manage") { ArraySetAsSeries(m_buffer, true); }
                     ~CMcpFuncInd(void)
    {
     long meta[];
@@ -368,6 +369,39 @@ void CMcpFuncInd::Run(CJsonNode &param, string &res)
       //---
       res = StringFormat("{\"ok\":true,\"result\":\"Indicator with alias = %s and handle = %d, added to dict\"}",
                          name, handle);
+      break;
+     }
+    case MCPFUNC_IND_ACTION_COPYBUFFER:
+     {
+      const string name = param["indicator_alias_name"].ToString("");
+      long meta;
+      if(!m_indicators.TryGet(name, meta))
+       {
+        res = StringFormat("{\"ok\":false,\"result\":\"Indicator with alias = %s, It does not exist in the dict\"}",
+                           name);
+        return;
+       }
+      const int handle = int(meta & MCPFUNCIND_MASK_HANDLE);
+
+      //---
+      ::ResetLastError();
+      const int t = CopyBuffer(handle, (int)param["buffer_num"].ToInt(0),
+                               (int)param["start_pos"].ToInt(0), (int)param["count"].ToInt(1), m_buffer);
+      if(t == -1)
+       {
+        res = StringFormat("{\"ok\":false,\"result\":\"Indicator with alias = %s, Failed in copy buffer, last mt5 err = %d\"}",
+                           name, ::GetLastError());
+        return;
+       }
+
+      //---
+      res = "{\"ok\":true,\"result\":[";
+      const int last = t - 1;
+      for(int i = 0; i < last; i++)
+       {
+        res += string(m_buffer[i]) + ",";
+       }
+      res += string(m_buffer[last]) + "]}";
       break;
      }
     default:

@@ -36,7 +36,7 @@ void CMcpFunctionExpertLogs::Run(CJsonNode &param, string &res)
   string str = "";
   if(!ExtractLastLogLines(
        StringToTime(param["start_date"].ToString(TimeToString(TimeCurrent()))),
-       int(param["byte_start"].ToInt(0)),
+       int(param["byte_start"].ToInt(3)),
        int(param["byte_counts"].ToInt(100)),
        str
      ))

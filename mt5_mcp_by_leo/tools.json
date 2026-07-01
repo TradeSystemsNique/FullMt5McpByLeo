@@ -955,7 +955,7 @@
             "value": {
               "type": "string",
               "description": "Valor a establecer (solo para SET), solo se peude pasar numeros | strings | reales, si usas booleanos pase numeros",
-              "$comment": "Si se omite la función opera en modo GET"
+              "$comment": "Si se omite la función opera en modo GET, time va en modo UNIX como integer"
             }
           },
           "required": [
@@ -1294,9 +1294,10 @@
                 "MCPFUNC_IND_ACTION_REMOVE",
                 "MCPFUNC_IND_ACTION_GET_HANDLE_BY_NAME",
                 "MCPFUNC_IND_ACTION_GET_PARAMETERS",
-                "MCPFUNC_IND_ACTION_ADD"
+                "MCPFUNC_IND_ACTION_ADD",
+                "MCPFUNC_IND_ACTION_COPYBUFFER"
               ],
-              "$comment": "CREATE: crea y registra. TOTAL: cantidad registrados. GET_HANDLES_NAMES: lista alias+handle. REMOVE: libera y elimina del dict. GET_HANDLE_BY_NAME: retorna handle. GET_PARAMETERS: retorna MqlParam[]. ADD: registra handle externo"
+              "$comment": "CREATE: crea y registra. TOTAL: cantidad registrados. GET_HANDLES_NAMES: lista alias+handle. REMOVE: libera y elimina del dict. GET_HANDLE_BY_NAME: retorna handle. GET_PARAMETERS: retorna MqlParam[]. ADD: registra handle externo, COPYBUFFER: Copia el buffer de un indicador en un rango start | count de un indicador almacenado, nota que al usar esta funcion el array que se le da esta en serie por lo que start=0 es el valor mas reciente"
             },
             "indicator_alias_name": {
               "type": "string",
@@ -1369,6 +1370,21 @@
               "description": "Si true sobreescribe el alias si ya existe en el diccionario",
               "default": false,
               "$comment": "Solo aplica en modo ADD"
+            },
+            "start_pos":{
+              "type" : "integer",
+              "description" : "Posicion de inicio para empezar a copiar datos del buffer",
+              "$comment" : "Solo aplica en modo COPY_BUFFER"
+            },
+            "buffer_num":{
+              "type" : "integer",
+              "description" : "Numero del buffer del indicador",
+              "$comment" : "Solo aplica en modo COPY_BUFFER"
+            },
+            "count":{
+              "type" : "integer",
+              "description" : "Numero a elementos a copiar del indicador",
+              "$comment" : "Solo aplica en modo COPY_BUFFER"
             }
           },
           "required": [
@@ -1631,10 +1647,16 @@
               "description": "Fecha/hora desde la cual filtrar los logs",
               "$comment": "Formato datetime MT5: 'YYYY.MM.DD HH:MM:SS' o 'YYYY.MM.DD'"
             },
-            "logs_lines": {
+            "byte_start": {
               "type": "integer",
-              "description": "Número máximo de líneas a retornar",
-              "default": 50,
+              "description": "Byte de incio del archivo de logs.",
+              "default": 3,
+              "minimum": 3
+            },
+            "byte_counts": {
+              "type": "integer",
+              "description": "Número  de bytes a tomar.",
+              "default": 100,
               "minimum": 1
             }
           },
