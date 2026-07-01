@@ -37,18 +37,21 @@ void CMcpFuncChartList::Run(CJsonNode& param, string& res)
 //---
   long currChart, prevChart = ChartFirst();
   int i = 0, limit = CHARTS_MAX;
+
 //---
   res = "{\"ok\":true,\"result\":[";
+
 //---
   if(prevChart >= 0)
    {
-    res += StringFormat("%I64d", prevChart);
+    res += string(prevChart);
     while(i < limit)
      {
       currChart = ChartNext(prevChart);
       if(currChart < 0)
         break;
-      res += StringFormat(",%I64d", currChart);
+      res += ",";
+      res += string(currChart);
       prevChart = currChart;
       i++;
      }
@@ -359,13 +362,14 @@ void CMcpFuncChartGetSymbolOrPeriod::Run(CJsonNode &param, string &res)
  {
   const int8_t mode = (int8_t)param["mode"].ToInt(-1);
   const long chart_id = param["chart_id"].ToInt(0);
-  //Print(param.ComplexToString());
+
   switch(mode)
    {
     case 0:
-     { 
+     {
       ::ResetLastError();
       const ENUM_TIMEFRAMES tf = ChartPeriod(chart_id);
+      Print(EnumToString(tf));
       if(tf == 0)
        {
         res = "{\"ok\":false,\"result\":\"Error in ChartPeriod, last mql5 error = " + string(::GetLastError()) +  "\"}";
