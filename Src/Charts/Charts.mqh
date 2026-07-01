@@ -369,7 +369,7 @@ void CMcpFuncChartGetSymbolOrPeriod::Run(CJsonNode &param, string &res)
      {
       ::ResetLastError();
       const ENUM_TIMEFRAMES tf = ChartPeriod(chart_id);
-      Print(EnumToString(tf));
+      //Print(EnumToString(tf));
       if(tf == 0)
        {
         res = "{\"ok\":false,\"result\":\"Error in ChartPeriod, last mql5 error = " + string(::GetLastError()) +  "\"}";
