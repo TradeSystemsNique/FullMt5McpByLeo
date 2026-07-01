@@ -128,6 +128,7 @@ void CMcpFunctionRunEA::Run(CJsonNode &param, string &res)
   if(chart_id == -1)
    {
     res = StringFormat("{\"ok\":false,\"error\":\"Error open chart, last mt5 err = %d\"}", ::GetLastError());
+    return;
    }
 
 //---
@@ -140,64 +141,67 @@ void CMcpFunctionRunEA::Run(CJsonNode &param, string &res)
   exp_param[0].string_value = param["expert_path"].ToString();
 
 //---
-  CJsonIteratorArray it = param["params"].BeginArr();
-  int k = 1;
-  while(it.IsValid())
+  if(t > 0)
    {
-    //---
-    CJsonNode parametro = it.Val();
-    exp_param[k].type = CEnumRegBasis::GetValNoRef<ENUM_DATATYPE>(parametro["data_type"].ToString(), TYPE_STRING);
-
-    //---
-    switch(exp_param[k].type)
+    CJsonIteratorArray it = param["params"].BeginArr();
+    int k = 1;
+    while(it.IsValid())
      {
-      case TYPE_BOOL:
-        exp_param[k].integer_value = parametro["value"].ToInt(0);
-        break;
-      case TYPE_CHAR:
-        exp_param[k].integer_value = parametro["value"].ToInt(0);
-        break;
-      case TYPE_UCHAR:
-        exp_param[k].integer_value = parametro["value"].ToInt(0);
-        break;
-      case TYPE_SHORT:
-        exp_param[k].integer_value = parametro["value"].ToInt(0);
-        break;
-      case TYPE_USHORT:
-        exp_param[k].integer_value = parametro["value"].ToInt(0);
-        break;
-      case TYPE_COLOR:
-        exp_param[k].integer_value = long(color(parametro["value"].ToString("")));
-        break;
-      case TYPE_INT:
-        exp_param[k].integer_value = parametro["value"].ToInt(0);
-        break;
-      case TYPE_UINT:
-        exp_param[k].integer_value = parametro["value"].ToInt(0);
-        break;
-      case TYPE_DATETIME:
-        exp_param[k].integer_value = long(datetime(parametro["value"].ToString("0")));
-        break;
-      case TYPE_LONG:
-      case TYPE_ULONG:
-        exp_param[k].integer_value = parametro["value"].ToInt(0);
-        break;
-      case TYPE_FLOAT:
-        exp_param[k].double_value = parametro["value"].ToDouble(0.00);
-        break;
-      case TYPE_DOUBLE:
-        exp_param[k].double_value = parametro["value"].ToDouble(0.00);
-        break;
-      case TYPE_STRING:
-        exp_param[k].string_value = parametro["value"].ToString("");
-        break;
-      default:
-        exp_param[k].string_value = parametro["value"].ToString("");
-        break;
+      //---
+      CJsonNode parametro = it.Val();
+      exp_param[k].type = CEnumRegBasis::GetValNoRef<ENUM_DATATYPE>(parametro["data_type"].ToString(), TYPE_STRING);
+
+      //---
+      switch(exp_param[k].type)
+       {
+        case TYPE_BOOL:
+          exp_param[k].integer_value = parametro["value"].ToInt(0);
+          break;
+        case TYPE_CHAR:
+          exp_param[k].integer_value = parametro["value"].ToInt(0);
+          break;
+        case TYPE_UCHAR:
+          exp_param[k].integer_value = parametro["value"].ToInt(0);
+          break;
+        case TYPE_SHORT:
+          exp_param[k].integer_value = parametro["value"].ToInt(0);
+          break;
+        case TYPE_USHORT:
+          exp_param[k].integer_value = parametro["value"].ToInt(0);
+          break;
+        case TYPE_COLOR:
+          exp_param[k].integer_value = long(color(parametro["value"].ToString("")));
+          break;
+        case TYPE_INT:
+          exp_param[k].integer_value = parametro["value"].ToInt(0);
+          break;
+        case TYPE_UINT:
+          exp_param[k].integer_value = parametro["value"].ToInt(0);
+          break;
+        case TYPE_DATETIME:
+          exp_param[k].integer_value = long(datetime(parametro["value"].ToString("0")));
+          break;
+        case TYPE_LONG:
+        case TYPE_ULONG:
+          exp_param[k].integer_value = parametro["value"].ToInt(0);
+          break;
+        case TYPE_FLOAT:
+          exp_param[k].double_value = parametro["value"].ToDouble(0.00);
+          break;
+        case TYPE_DOUBLE:
+          exp_param[k].double_value = parametro["value"].ToDouble(0.00);
+          break;
+        case TYPE_STRING:
+          exp_param[k].string_value = parametro["value"].ToString("");
+          break;
+        default:
+          exp_param[k].string_value = parametro["value"].ToString("");
+          break;
+       }
+      k++;
+      //---
+      it.Next();
      }
-    k++;
-    //---
-    it.Next();
    }
 
 //---

@@ -78,64 +78,69 @@ void CMcpFuncInd::Run(CJsonNode &param, string &res)
       CJsonNode parametros =  param["params"];
       const int t = parametros.Size();
       ArrayResize(params, t);
-      CJsonIteratorArray it = parametros.BeginArr();
-      int k = 0;
 
       //---
-      while(it.IsValid())
+      if(t > 0)
        {
-        CJsonNode parametro = it.Val();
-        params[k].type = CEnumRegBasis::GetValNoRef<ENUM_DATATYPE>(parametro["data_type"].ToString(), TYPE_STRING);
+        CJsonIteratorArray it = parametros.BeginArr();
+        int k = 0;
 
         //---
-        switch(params[k].type)
+        while(it.IsValid())
          {
-          case TYPE_BOOL:
-            params[k].integer_value = parametro["value"].ToInt(0);
-            break;
-          case TYPE_CHAR:
-            params[k].integer_value = parametro["value"].ToInt(0);
-            break;
-          case TYPE_UCHAR:
-            params[k].integer_value = parametro["value"].ToInt(0);
-            break;
-          case TYPE_SHORT:
-            params[k].integer_value = parametro["value"].ToInt(0);
-            break;
-          case TYPE_USHORT:
-            params[k].integer_value = parametro["value"].ToInt(0);
-            break;
-          case TYPE_COLOR:
-            params[k].integer_value = long(color(parametro["value"].ToString("")));
-            break;
-          case TYPE_INT:
-            params[k].integer_value = parametro["value"].ToInt(0);
-            break;
-          case TYPE_UINT:
-            params[k].integer_value = parametro["value"].ToInt(0);
-            break;
-          case TYPE_DATETIME:
-            params[k].integer_value = long(datetime(parametro["value"].ToString("0")));
-            break;
-          case TYPE_LONG:
-          case TYPE_ULONG:
-            params[k].integer_value = parametro["value"].ToInt(0);
-            break;
-          case TYPE_FLOAT:
-            params[k].double_value = parametro["value"].ToDouble(0.00);
-            break;
-          case TYPE_DOUBLE:
-            params[k].double_value = parametro["value"].ToDouble(0.00);
-            break;
-          case TYPE_STRING:
-            params[k].string_value = parametro["value"].ToString("");
-            break;
-          default:
-            params[k].string_value = parametro["value"].ToString("");
-            break;
+          CJsonNode parametro = it.Val();
+          params[k].type = CEnumRegBasis::GetValNoRef<ENUM_DATATYPE>(parametro["data_type"].ToString(), TYPE_STRING);
+
+          //---
+          switch(params[k].type)
+           {
+            case TYPE_BOOL:
+              params[k].integer_value = parametro["value"].ToInt(0);
+              break;
+            case TYPE_CHAR:
+              params[k].integer_value = parametro["value"].ToInt(0);
+              break;
+            case TYPE_UCHAR:
+              params[k].integer_value = parametro["value"].ToInt(0);
+              break;
+            case TYPE_SHORT:
+              params[k].integer_value = parametro["value"].ToInt(0);
+              break;
+            case TYPE_USHORT:
+              params[k].integer_value = parametro["value"].ToInt(0);
+              break;
+            case TYPE_COLOR:
+              params[k].integer_value = long(color(parametro["value"].ToString("")));
+              break;
+            case TYPE_INT:
+              params[k].integer_value = parametro["value"].ToInt(0);
+              break;
+            case TYPE_UINT:
+              params[k].integer_value = parametro["value"].ToInt(0);
+              break;
+            case TYPE_DATETIME:
+              params[k].integer_value = long(datetime(parametro["value"].ToString("0")));
+              break;
+            case TYPE_LONG:
+            case TYPE_ULONG:
+              params[k].integer_value = parametro["value"].ToInt(0);
+              break;
+            case TYPE_FLOAT:
+              params[k].double_value = parametro["value"].ToDouble(0.00);
+              break;
+            case TYPE_DOUBLE:
+              params[k].double_value = parametro["value"].ToDouble(0.00);
+              break;
+            case TYPE_STRING:
+              params[k].string_value = parametro["value"].ToString("");
+              break;
+            default:
+              params[k].string_value = parametro["value"].ToString("");
+              break;
+           }
+          k++;
+          it.Next();
          }
-        k++;
-        it.Next();
        }
 
       ::ResetLastError();
@@ -206,7 +211,7 @@ void CMcpFuncInd::Run(CJsonNode &param, string &res)
        }
       const int handle = int(meta & MCPFUNCIND_MASK_HANDLE);
 
-      if(m_indicators.Remove(name))
+      if(!m_indicators.Remove(name))
        {
         res = StringFormat("{\"ok\":false,\"result\":\"Indicator with alias = %s and handle = %d, failed to removed from dict\"}",
                            name, handle);

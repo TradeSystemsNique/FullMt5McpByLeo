@@ -33,22 +33,24 @@ public:
 //+------------------------------------------------------------------+
 void CMcpFunctionExpertLogs::Run(CJsonNode &param, string &res)
  {
-  string str = "";
+  uchar data[];
   if(!ExtractLastLogLines(
        StringToTime(param["start_date"].ToString(TimeToString(TimeCurrent()))),
        int(param["byte_start"].ToInt(3)),
        int(param["byte_counts"].ToInt(100)),
-       str
+       data
      ))
    {
     res = "{\"ok\":false,\"error\":\"Error obtaining logs from the mt5 terminal\"}";
    }
   else
    {
+    m_json_builder.Clear();
     m_json_builder.Obj();
     m_json_builder.Key("ok").Val(true);
-    m_json_builder.Key("result").ValS(str);
+    m_json_builder.Key("result").ValU(data);
     m_json_builder.EndObj();
+    res = m_json_builder.Build();
    }
  }
 //+------------------------------------------------------------------+

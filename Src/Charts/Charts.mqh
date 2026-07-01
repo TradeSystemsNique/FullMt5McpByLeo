@@ -431,7 +431,7 @@ void CMcpFuncChartSrenshot::Run(CJsonNode &param, string &res)
 
 
 //---
-  if(!param["as_image_file"].ToBool(false))
+  if(param["as_image_file"].ToBool(false))
    {
     if(param["common_flag"].ToBool(true))
      {
