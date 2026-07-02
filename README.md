@@ -194,7 +194,7 @@ Open a 0.01 lot BUY on EURUSD with SL at 1.0800 and TP at 1.0900
 ```
 
 Note:
-> You can also use HTTP Remote (McpServer.exe support HTTP with libs httplib) (see: https://forge.mql5.io/nique_372/McpServer/wiki/Running-HTTP)
+> You can also use HTTP Remote (McpServer.exe support HTTP with libs httplib + mcp-remote npm package) (see: https://forge.mql5.io/nique_372/McpServer/wiki/Running-HTTP)
 
 ---
 
