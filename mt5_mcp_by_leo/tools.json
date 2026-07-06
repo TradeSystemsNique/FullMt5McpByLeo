@@ -1632,7 +1632,7 @@
     {
       "name": "get_expert_logs",
       "_desc": {
-        "description": "Obtiene las líneas de log recientes del Expert Advisor",
+        "description": "Obtiene los 'byte_counts' bytes de un archivo log especifico del terminal por fecha.",
         "inputSchema": {
           "type": "object",
           "properties": {
