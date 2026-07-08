@@ -1,0 +1,22 @@
+{
+  "general": {
+    "type_reg": "stdio_stdin",
+    "$comment" : "Correct this hardcoded path with the actual path from tools.json",
+    "json_tools_fpath": "C:\\Users\\USER\\AppData\\Roaming\\MetaQuotes\\Terminal\\D0E8209F77C8CF37AD8BF550E51FF075\\MQL5\\Shared Projects\\FullMt5McpByLeo\\mt5_mcp_by_leo\\tools.json"
+  },
+  "mt5_conn": {
+    "host": "127.0.0.1",
+    "port": 9999
+  },
+  "http_lib": {
+    "name": "McpMt5Server",
+    "version": "1.0.0",
+    "host": "127.0.0.1",
+    "port": 8080,
+    "endpoint": "/"
+  },
+  "stdio_stdin": {
+    "name": "MT5 MCP Server",
+    "version": "1.0.0"
+  }
+}
