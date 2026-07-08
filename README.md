@@ -122,10 +122,14 @@ tsndep install "https://forge.mql5.io/nique_372/FullMt5McpByLeo.git"
 
 ## Quick Start (for final users)
 
-### 1. Downland
-Download the latest .exe and .ex5 files from the repo [releases](https://forge.mql5.io/nique_372/FullMt5McpByLeo/releases)
- 
-### 2. Create a config json 
+### 1. Download
+Download the latest .exe and .ex5 files from the repo [releases](https://forge.mql5.io/nique_372/FullMt5McpByLeo/releases).
+Place the .ex5 files in the MT5 terminal's Experts\ folder, and the .exe file in an easily accessible folder (for example, the MT5 terminal's Common\Files\ folder).
+
+### 2. Download tools.json
+Download the [tools.json](https://forge.mql5.io/nique_372/FullMt5McpByLeo/src/branch/main/mt5_mcp_by_leo/tools.json) file and place it in your terminal's Common\Files\ folder.
+
+### 3. Create a config json 
 
 Open Common\\Files
 And create a json file with this structure:
@@ -157,7 +161,7 @@ And create a json file with this structure:
 
 - JSON_TOOL_PATH: Path to the tools configuration json (you can download the json from the mt5_mcp_by_leo folder and place it in documents for example and put the path to said file here...) Or if you have the repository cloned, you can use the path to tools.json
 
-### 3. Configure in Claude Desktop
+### 4. Configure in Claude Desktop
 
 Add to your `claude_desktop_config.json`:
 
@@ -174,22 +178,22 @@ Add to your `claude_desktop_config.json`:
 ```
 > Full template in [Templates/claude_desktop_config.json](https://forge.mql5.io/nique_372/FullMt5McpByLeo/src/branch/main/Templates/claude_desktop_config.json)
 
-- PATH_TO_EXE: Path to exe McpServer file
+- PATH_TO_EXE: Path to exe McpServer.exe file
 - PATH_TO_FILE: Path to json config file
 - YOUR_TBP_ID: Your The Bot Place user ID
 - YOUR_MT5_ACCOUNT_LOGIN_ID: ACCOUNT_LOGGIN of your mt5 account where Mt5Mcp EA is running
 
-### 4. Configure MetaTrader 5
+### 5. Configure MetaTrader 5
 
 In MT5: **Tools** → **Options** → **Allowed URLs for WebRequest**
 - Add `127.0.0.1` or host you configured.
 - Click **Accept**
 - Enable AutoTrading and DLL imports
 
-### 5. Open claude desktop 
+### 6. Open claude desktop 
 Open Claude Desktop. At that moment, a Python script is running in the background until it establishes a connection with the EA McpServer.ex5.
 
-### 6. Compile & Attach EA 
+### 7. Compile & Attach EA 
 
 ```
 Run Runner.ex5 in any chart.. (dowland from releases)
@@ -198,7 +202,7 @@ MetaEditor: Open Src/Mt5Mcp.mq5 → Compile (F5) Or Dowland Mt5Mcp.ex5 of releas
 MT5: Drag Mt5Mcp.ex5 onto your chart and cofigure it, The parameters of the EA, such as port/host, must match the JSON of Claude Desktop
 ```
 
-### 7. Use in Claude
+### 8. Use in Claude
 
 ```
 Open a 0.01 lot BUY on EURUSD with SL at 1.0800 and TP at 1.0900
