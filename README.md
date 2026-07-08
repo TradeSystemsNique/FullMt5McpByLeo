@@ -86,17 +86,25 @@ FullMt5McpByLeo/
 
 ---
 
-## Requirements
+## ⚠️ License Activation (Required)
 
-- For repo code
+Your MCP server won't work without an active license from TheBotPlace.
+
+1. Purchase McpServerByLeo here: https://www.thebotplace.com/bot/mcpserverbyleo
+2. Get your **TBP ID** from your [TheBotPlace account - Your user ID](https://thebotplace.com/profile)
+3. Add it to the `args` array in your `claude_desktop_config.json` (see  Quick Start/step 3 below)
+
+---
+## Requirements (pre-instalation)
+
+- General (for all)
+> - EXE from releases (McpServer.exe)
+
+- For repo code (devs)
 > - Check: [dependencies.json](./dependencies.json)
 
 - For user use:
 > - EX5 of releases (Runner an McPServer).
-> - EXE from releases
-> - EX5 Library McpServerByLeo pucharse in: [TheBotPlace - McpServerByLeo](https://www.thebotplace.com/bot/mcpserverbyleo) When you purchase the library, you should already have an account on TheBotPlace. This account will have an ID, which you will put in the .json file of your MCP IA (YOUR_TBP_ID).
-
- 
 
 ---
 
@@ -106,6 +114,7 @@ FullMt5McpByLeo/
 cd "C:\Users\YOUR USER\AppData\Roaming\MetaQuotes\Terminal\YOUR ID\MQL5\Shared Projects"
 tsndep install "https://forge.mql5.io/nique_372/FullMt5McpByLeo.git"
 ```
+
 - For use tsndep command requerid tsndep pacakage (avaible in [pypi](https://pypi.org/project/tsndep)).. This command automatically downloads all dependencies and installs all requirements from the repositories.
 - If any part of the system is private, then it will fail... contact me so I can give you access (if it's a product, you can buy it; if you have any questions, don't hesitate to contact me).
 
@@ -114,7 +123,7 @@ tsndep install "https://forge.mql5.io/nique_372/FullMt5McpByLeo.git"
 ## Quick Start (for final users)
 
 ### 1. Downland
-Download the latest .exe and .ex5 files from the repo releases....
+Download the latest .exe and .ex5 files from the repo [releases](https://forge.mql5.io/nique_372/FullMt5McpByLeo/releases)
  
 ### 2. Create a config json 
 
@@ -144,10 +153,11 @@ And create a json file with this structure:
   }
 }
 ```
+> Full template in [Templates/config.json](https://forge.mql5.io/nique_372/FullMt5McpByLeo/src/branch/main/Templates/config.json)
 
 - JSON_TOOL_PATH: Path to the tools configuration json (you can download the json from the mt5_mcp_by_leo folder and place it in documents for example and put the path to said file here...) Or if you have the repository cloned, you can use the path to tools.json
 
-### 2. Configure in Claude Desktop
+### 3. Configure in Claude Desktop
 
 Add to your `claude_desktop_config.json`:
 
@@ -162,23 +172,24 @@ Add to your `claude_desktop_config.json`:
   }
 }
 ```
+> Full template in [Templates/claude_desktop_config.json](https://forge.mql5.io/nique_372/FullMt5McpByLeo/src/branch/main/Templates/claude_desktop_config.json)
 
 - PATH_TO_EXE: Path to exe McpServer file
 - PATH_TO_FILE: Path to json config file
 - YOUR_TBP_ID: Your The Bot Place user ID
 - YOUR_MT5_ACCOUNT_LOGIN_ID: ACCOUNT_LOGGIN of your mt5 account where Mt5Mcp EA is running
 
-### 3. Configure MetaTrader 5
+### 4. Configure MetaTrader 5
 
 In MT5: **Tools** → **Options** → **Allowed URLs for WebRequest**
 - Add `127.0.0.1` or host you configured.
 - Click **Accept**
 - Enable AutoTrading and DLL imports
 
-### 4. Open claude desktop 
+### 5. Open claude desktop 
 Open Claude Desktop. At that moment, a Python script is running in the background until it establishes a connection with the EA McpServer.ex5.
 
-### 5. Compile & Attach EA 
+### 6. Compile & Attach EA 
 
 ```
 Run Runner.ex5 in any chart.. (dowland from releases)
@@ -187,7 +198,7 @@ MetaEditor: Open Src/Mt5Mcp.mq5 → Compile (F5) Or Dowland Mt5Mcp.ex5 of releas
 MT5: Drag Mt5Mcp.ex5 onto your chart and cofigure it, The parameters of the EA, such as port/host, must match the JSON of Claude Desktop
 ```
 
-### 6. Use in Claude
+### 7. Use in Claude
 
 ```
 Open a 0.01 lot BUY on EURUSD with SL at 1.0800 and TP at 1.0900
