@@ -92,7 +92,7 @@ Your MCP server won't work without an active license from TheBotPlace.
 
 1. Purchase McpServerByLeo here: https://www.thebotplace.com/bot/mcpserverbyleo
 2. Get your **TBP ID** from your [TheBotPlace account - Your user ID](https://thebotplace.com/profile)
-3. Add it to the `args` array in your `claude_desktop_config.json` (see  Quick Start/step 3 below)
+3. Add it to the `args` array in your `claude_desktop_config.json` or the JSON that your AI platform uses (see  Quick Start/step 4 below)
 
 ---
 ## Requirements (pre-instalation)
