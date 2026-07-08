@@ -219,6 +219,9 @@ By downloading or using this repository, you accept the license terms.
 
 ## Documentation
 - Wiki: [https://forge.mql5.io/nique_372/FullMt5McpByLeo/wiki](https://forge.mql5.io/nique_372/FullMt5McpByLeo/wiki)
+- Testing MCP (Full testing in YT videos):
+> - https://www.youtube.com/watch?v=kco7aCOs-bM
+> - https://www.youtube.com/watch?v=xCscKpoCi3Y  
 
 ---
 
