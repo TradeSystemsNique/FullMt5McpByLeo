@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "mt5_mcp_by_leo": {
+      "command": "C:\\Users\\USER\\AppData\\Roaming\\MetaQuotes\\Terminal\\Common\\Files\\CMcpServer.exe",
+      "args": [
+        "C:\\Users\\USER\\AppData\\Roaming\\MetaQuotes\\Terminal\\Common\\Files\\FullMcp\\config.json",
+        "YOUR_TBP_ID",
+        "YOUR_MT5_ACCOUNT_LOGGIN_ID"
+      ]
+    }
+  }
+}
