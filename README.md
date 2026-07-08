@@ -104,7 +104,7 @@ Your MCP server won't work without an active license from TheBotPlace.
 > - Check: [dependencies.json](./dependencies.json)
 
 - For user use:
-> - EX5 of releases (Runner an McPServer).
+> - EX5 of releases (Runner an Mt5Mcp).
 
 ---
 
@@ -193,13 +193,11 @@ In MT5: **Tools** → **Options** → **Allowed URLs for WebRequest**
 ### 6. Open claude desktop 
 Open Claude Desktop. At that moment, a Python script is running in the background until it establishes a connection with the EA McpServer.ex5.
 
-### 7. Compile & Attach EA 
+### 7. Attach EA in MT5
 
 ```
-Run Runner.ex5 in any chart.. (dowland from releases)
-Then:
-MetaEditor: Open Src/Mt5Mcp.mq5 → Compile (F5) Or Dowland Mt5Mcp.ex5 of releases (last version).
-MT5: Drag Mt5Mcp.ex5 onto your chart and cofigure it, The parameters of the EA, such as port/host, must match the JSON of Claude Desktop
+1. Run Runner.ex5 in any chart.. (dowland from releases)
+2. Drag Mt5Mcp.ex5 onto your chart (any) and cofigure it, The parameters of the EA, such as port/host, must match the JSON of Claude Desktop
 ```
 
 ### 8. Use in Claude
