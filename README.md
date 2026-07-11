@@ -191,7 +191,7 @@ In MT5: **Tools** → **Options** → **Allowed URLs for WebRequest**
 - Enable AutoTrading and DLL imports
 
 ### 6. Open claude desktop 
-Open Claude Desktop. At that moment, a Python script is running in the background until it establishes a connection with the EA McpServer.ex5.
+Open Claude Desktop. At that moment, a CMcpServer.exe is running in the background until it establishes a connection with the EA Mt5Mcp.ex5.
 
 ### 7. Attach EA in MT5
 
