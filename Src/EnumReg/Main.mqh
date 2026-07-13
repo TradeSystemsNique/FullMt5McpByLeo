@@ -7,8 +7,8 @@
 #property link      "https://www.mql5.com/"
 #property strict
 
-#ifndef SIMPHASH_SRC_ENUM_REG_MAIN_MQH
-#define SIMPHASH_SRC_ENUM_REG_MAIN_MQH
+#ifndef FULLMT5MCPBYLEO_SRC_ENUMREG_MAIN_MQH
+#define FULLMT5MCPBYLEO_SRC_ENUMREG_MAIN_MQH
 
 //+------------------------------------------------------------------+
 //|                                                                  |
@@ -29,4 +29,4 @@ static bool CEnumRegFullMt5Mcp::RunDinyamics(void)
   return true;
  }
 }
-#endif // SIMPHASH_SRC_ENUM_REG_MAIN_MQH
+#endif // FULLMT5MCPBYLEO_SRC_ENUMREG_MAIN_MQH
