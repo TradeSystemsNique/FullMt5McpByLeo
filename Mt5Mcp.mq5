@@ -28,7 +28,7 @@ sinput group "--- FullMt5McpByLeoConfig ---"
 input string InpTbpUserId=THE_BOT_PLACE_USER_ID; // Enter your TBP account ID here:
 input string InpSoketAdres = "127.0.0.1"; // Socket adrres
 input uint InpSoketPort = 9999;  // Socket port
-input int InpMsPool = 50; // Pool ms
+input int InpMsPool = 70; // Pool ms
 input int InpMsTimeoutReadNoTls = 10000; // Timeout for read (No-TLS Connections)
 input int InpPowerShellCommands=0; // Permit power shell commands ? [0=no, 2=restricted, 1=all signed, 3+=all commands]
 
