@@ -82,7 +82,7 @@ void CMcpFuncCopyTicks::Run(CJsonNode& param, CJsonBuilderStr* &out)
   const uint count = (uint)param["count"].ToInt(10);
   const ulong from = (ulong)param["from"].ToInt((long(TimeCurrent()) * 1000) - (10 * 1000));
   const uint flags = uint(param["flags"].ToInt(COPY_TICKS_ALL));
-
+  const int precistion = (int)param["digits"].ToInt(5);
 //---
 // Validar que se copiaron los ticks correctamente
   const int copied = CopyTicks(symbol, m_ticks, flags, from, count);
@@ -110,13 +110,13 @@ void CMcpFuncCopyTicks::Run(CJsonNode& param, CJsonBuilderStr* &out)
     // Construir objeto MqlTick en JSON
     m_shared_builder.Obj();
     m_shared_builder.KeyWV("time").ValSWV(TimeToString(m_ticks[i].time, TIME_DATE | TIME_SECONDS | TIME_MINUTES));
-    m_shared_builder.KeyWV("bid").Val(m_ticks[i].bid);
-    m_shared_builder.KeyWV("ask").Val(m_ticks[i].ask);
-    m_shared_builder.KeyWV("last").Val(m_ticks[i].last);
+    m_shared_builder.KeyWV("bid").Val(m_ticks[i].bid, precistion);
+    m_shared_builder.KeyWV("ask").Val(m_ticks[i].ask, precistion);
+    m_shared_builder.KeyWV("last").Val(m_ticks[i].last, precistion);
     m_shared_builder.KeyWV("volume").Val((long)m_ticks[i].volume);
     m_shared_builder.KeyWV("time_msc").Val(m_ticks[i].time_msc);
     m_shared_builder.KeyWV("flags").Val((long)m_ticks[i].flags);
-    m_shared_builder.KeyWV("volume_real").Val(m_ticks[i].volume_real);
+    m_shared_builder.KeyWV("volume_real").Val(m_ticks[i].volume_real, precistion);
     m_shared_builder.EndObj();
    }
   m_shared_builder.EndArr();
@@ -211,6 +211,7 @@ void CMcpFuncCopyData::Run(CJsonNode& param, CJsonBuilderStr* &out)
   uint8_t t = 0;
   const int start = (int)param["start"].ToInt(0);
   const int count = (int)param["count"].ToInt(0);
+  const int precistion = (int)param["digits"].ToInt(5);
   const uint8_t mode  = uint8_t(CEnumRegFullMt5Mcp::GetValNoRef<ENUM_MCPFUNC_COPY_DATA>(param["mode"].ToString(), 0));
   const string symbol = param["symbol"].ToString(_Symbol);
 
@@ -299,7 +300,7 @@ void CMcpFuncCopyData::Run(CJsonNode& param, CJsonBuilderStr* &out)
      {
       for(int i = 0; i < copied; i++)
        {
-        m_shared_builder.Val(m_buffer_d[i]);
+        m_shared_builder.Val(m_buffer_d[i], precistion);
        }
       break;
      }
