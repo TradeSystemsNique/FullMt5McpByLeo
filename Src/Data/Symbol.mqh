@@ -29,16 +29,23 @@ public:
                      CMcpFuncSymbolsTotal() : CMcpFunction(0, false, "symbols_total") {}
                     ~CMcpFuncSymbolsTotal(void) {}
 
-  void               Run(CJsonNode& param, string& res) override final;
+  void               Run(CJsonNode& param, CJsonBuilderStr* &out) override final;
  };
 
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
-void CMcpFuncSymbolsTotal::Run(CJsonNode& param, string& res)
+void CMcpFuncSymbolsTotal::Run(CJsonNode& param, CJsonBuilderStr* &out)
  {
+//---
+  out = m_shared_builder;
   const int total = SymbolsTotal(param["only_selected_in_market_watch"].ToBool(false));
-  res = StringFormat("{\"ok\":true,\"result\":%d}", total);
+  m_shared_builder.PutChar('"');
+  m_shared_builder.Obj();
+  m_shared_builder.KeyWV("ok").Val(true);
+  m_shared_builder.KeyWV("result").Val(total);
+  m_shared_builder.EndObj();
+  m_shared_builder.PutChar('"');
  }
 
 //+------------------------------------------------------------------+
@@ -50,24 +57,36 @@ public:
                      CMcpFuncSymbolSelect() : CMcpFunction(0, false, "symbol_select") {}
                     ~CMcpFuncSymbolSelect(void) {}
 
-  void               Run(CJsonNode& param, string& res) override final;
+  void               Run(CJsonNode& param, CJsonBuilderStr* &out) override final;
  };
 
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
-void CMcpFuncSymbolSelect::Run(CJsonNode& param, string& res)
+void CMcpFuncSymbolSelect::Run(CJsonNode& param, CJsonBuilderStr* &out)
  {
+//---
+  out = m_shared_builder;
   ::ResetLastError();
   const bool result = SymbolSelect(param["symbol"].ToString(_Symbol), param["select"].ToBool(true) != 0);
 
 //---
   if(!result)
    {
-    res = StringFormat("{\"ok\":false,\"error\":\"symbol_select failed, last mt5 error = %d\"}", ::GetLastError());
+    m_shared_builder.PutChar('"');
+    m_shared_builder.Obj();
+    m_shared_builder.KeyWV("ok").Val(false);
+    m_shared_builder.KeyWV("error").ValSWV(StringFormat("symbol_select failed, last mt5 error = %d", ::GetLastError()));
+    m_shared_builder.EndObj();
+    m_shared_builder.PutChar('"');
     return;
    }
-  res = "{\"ok\":true,\"result\":true}";
+  m_shared_builder.PutChar('"');
+  m_shared_builder.Obj();
+  m_shared_builder.KeyWV("ok").Val(true);
+  m_shared_builder.KeyWV("result").Val(true);
+  m_shared_builder.EndObj();
+  m_shared_builder.PutChar('"');
  }
 
 //+------------------------------------------------------------------+
@@ -79,15 +98,16 @@ public:
                      CMcpFuncSymbolInfo() : CMcpFunction(0, false, "symbol_info") {}
                     ~CMcpFuncSymbolInfo(void) {}
 
-  void               Run(CJsonNode& param, string& res) override final;
+  void               Run(CJsonNode& param, CJsonBuilderStr* &out) override final;
  };
 
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
-void CMcpFuncSymbolInfo::Run(CJsonNode& param, string& res)
+void CMcpFuncSymbolInfo::Run(CJsonNode& param, CJsonBuilderStr* &out)
  {
 //---
+  out = m_shared_builder;
   const string symbol = param["symbol"].ToString(_Symbol);
   const int8_t mode = (int8_t)param["mode"].ToInt(0);
 
@@ -97,11 +117,21 @@ void CMcpFuncSymbolInfo::Run(CJsonNode& param, string& res)
     case  0: // DBL
      {
       double value;
-      const int dig = (int)SymbolInfoInteger(symbol, SYMBOL_DIGITS);
       //---
-      res = SymbolInfoDouble(symbol, CEnumRegBasis::GetValNoRef<ENUM_SYMBOL_INFO_DOUBLE>(param["property"].ToString(""), WRONG_VALUE), value)
-            ? StringFormat("{\"ok\":true,\"result\":%.*f}", dig, value)
-            : StringFormat("{\"ok\":false,\"error\":\"Error call SymbolInfoDouble, mt5 last err = %d\"}", ::GetLastError());
+      m_shared_builder.PutChar('"');
+      m_shared_builder.Obj();
+      if(SymbolInfoDouble(symbol, CEnumRegBasis::GetValNoRef<ENUM_SYMBOL_INFO_DOUBLE>(param["property"].ToString(""), WRONG_VALUE), value))
+       {
+        m_shared_builder.KeyWV("ok").Val(true);
+        m_shared_builder.KeyWV("result").Val(value);
+       }
+      else
+       {
+        m_shared_builder.KeyWV("ok").Val(false);
+        m_shared_builder.KeyWV("error").ValSWV(StringFormat("Error call SymbolInfoDouble, mt5 last err = %d", ::GetLastError()));
+       }
+      m_shared_builder.EndObj();
+      m_shared_builder.PutChar('"');
       break;
      }
 
@@ -109,21 +139,49 @@ void CMcpFuncSymbolInfo::Run(CJsonNode& param, string& res)
      {
       long value;
       //---
-      res = SymbolInfoInteger(symbol, CEnumRegBasis::GetValNoRef<ENUM_SYMBOL_INFO_INTEGER>(param["property"].ToString(""), WRONG_VALUE), value) ?
-            StringFormat("{\"ok\":true,\"result\":%I64d}", value) : StringFormat("{\"ok\":false,\"error\":\"Eror call symbolinfointeger, mt5 last err = %d\"}", ::GetLastError());
+      m_shared_builder.PutChar('"');
+      m_shared_builder.Obj();
+      if(SymbolInfoInteger(symbol, CEnumRegBasis::GetValNoRef<ENUM_SYMBOL_INFO_INTEGER>(param["property"].ToString(""), WRONG_VALUE), value))
+       {
+        m_shared_builder.KeyWV("ok").Val(true);
+        m_shared_builder.KeyWV("result").Val(value);
+       }
+      else
+       {
+        m_shared_builder.KeyWV("ok").Val(false);
+        m_shared_builder.KeyWV("error").ValSWV(StringFormat("Eror call symbolinfointeger, mt5 last err = %d", ::GetLastError()));
+       }
+      m_shared_builder.EndObj();
+      m_shared_builder.PutChar('"');
       break;
      }
     case 2: // STRING
      {
       string value;
       //---
-      res = SymbolInfoString(symbol, CEnumRegBasis::GetValNoRef<ENUM_SYMBOL_INFO_STRING>(param["property"].ToString(""), WRONG_VALUE),  value)
-            ? StringFormat("{\"ok\":true,\"result\":\"%s\"}", value)
-            : StringFormat("{\"ok\":false,\"error\":\"Error call SymbolInfoString, mt5 last err = %d\"}", ::GetLastError());
+      m_shared_builder.PutChar('"');
+      m_shared_builder.Obj();
+      if(SymbolInfoString(symbol, CEnumRegBasis::GetValNoRef<ENUM_SYMBOL_INFO_STRING>(param["property"].ToString(""), WRONG_VALUE),  value))
+       {
+        m_shared_builder.KeyWV("ok").Val(true);
+        m_shared_builder.KeyWV("result").ValS(value);
+       }
+      else
+       {
+        m_shared_builder.KeyWV("ok").Val(false);
+        m_shared_builder.KeyWV("error").ValSWV(StringFormat("Error call SymbolInfoString, mt5 last err = %d", ::GetLastError()));
+       }
+      m_shared_builder.EndObj();
+      m_shared_builder.PutChar('"');
       break;
      }
     default:
-      res = StringFormat("{\"ok\":false,\"error\":\"Invalid mode = %d\"}", mode);
+      m_shared_builder.PutChar('"');
+      m_shared_builder.Obj();
+      m_shared_builder.KeyWV("ok").Val(false);
+      m_shared_builder.KeyWV("error").ValSWV(StringFormat("Invalid mode = %d", mode));
+      m_shared_builder.EndObj();
+      m_shared_builder.PutChar('"');
       break;
    }
  }
@@ -136,14 +194,16 @@ class CMcpFuncSymbolInfoSession : public CMcpFunction
 public:
                      CMcpFuncSymbolInfoSession(void) : CMcpFunction(0, false, "symbol_info_session") {}
                     ~CMcpFuncSymbolInfoSession(void) {}
-  void               Run(CJsonNode& param, string& res) override final;
+  void               Run(CJsonNode& param, CJsonBuilderStr* &out) override final;
  };
 
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
-void CMcpFuncSymbolInfoSession::Run(CJsonNode &param, string &res)
+void CMcpFuncSymbolInfoSession::Run(CJsonNode &param, CJsonBuilderStr* &out)
  {
+//---
+  out = m_shared_builder;
   ::ResetLastError();
   const int8_t mode = (int8_t)param["mode"].ToInt(0);
   datetime to, from;
@@ -153,7 +213,12 @@ void CMcpFuncSymbolInfoSession::Run(CJsonNode &param, string &res)
      {
       if(!SymbolInfoSessionTrade(param["symbol"].ToString(), CEnumRegBasis::GetValNoRef<ENUM_DAY_OF_WEEK>(param["day_of_week"].ToString(""), WRONG_VALUE), uint(param["session_index"].ToInt(0)), from, to))
        {
-        res = StringFormat("{\"ok\":false,\"error\":\"Error call SymbolInfoSessionTrade, mt5 last err = %d\"}", ::GetLastError());
+        m_shared_builder.PutChar('"');
+        m_shared_builder.Obj();
+        m_shared_builder.KeyWV("ok").Val(false);
+        m_shared_builder.KeyWV("error").ValSWV(StringFormat("Error call SymbolInfoSessionTrade, mt5 last err = %d", ::GetLastError()));
+        m_shared_builder.EndObj();
+        m_shared_builder.PutChar('"');
         return;
        }
       break;
@@ -163,16 +228,34 @@ void CMcpFuncSymbolInfoSession::Run(CJsonNode &param, string &res)
      {
       if(!SymbolInfoSessionQuote(param["symbol"].ToString(), CEnumRegBasis::GetValNoRef<ENUM_DAY_OF_WEEK>(param["day_of_week"].ToString(""), WRONG_VALUE), uint(param["session_index"].ToInt(0)), from, to))
        {
-        res = StringFormat("{\"ok\":false,\"error\":\"Error call SymbolInfoSessionQuote, mt5 last err = %d\"}", ::GetLastError());
+        m_shared_builder.PutChar('"');
+        m_shared_builder.Obj();
+        m_shared_builder.KeyWV("ok").Val(false);
+        m_shared_builder.KeyWV("error").ValSWV(StringFormat("Error call SymbolInfoSessionQuote, mt5 last err = %d", ::GetLastError()));
+        m_shared_builder.EndObj();
+        m_shared_builder.PutChar('"');
         return;
        }
       break;
      }
     default:
-      res = StringFormat("{\"ok\":false,\"error\":\"Invalid mode = %d\"}", mode);
+      m_shared_builder.PutChar('"');
+      m_shared_builder.Obj();
+      m_shared_builder.KeyWV("ok").Val(false);
+      m_shared_builder.KeyWV("error").ValSWV(StringFormat("Invalid mode = %d", mode));
+      m_shared_builder.EndObj();
+      m_shared_builder.PutChar('"');
       return;
    }
-  res = StringFormat("{\"ok\":true,\"result\":{\"date_from\":\"%s\",\"date_to\":\"%s\"}}", TimeToString(from, TIME_DATE | TIME_MINUTES | TIME_SECONDS), TimeToString(to, TIME_DATE | TIME_MINUTES | TIME_SECONDS));
+  m_shared_builder.PutChar('"');
+  m_shared_builder.Obj();
+  m_shared_builder.KeyWV("ok").Val(true);
+  m_shared_builder.KeyWV("result").Obj();
+  m_shared_builder.KeyWV("date_from").ValSWV(TimeToString(from, TIME_DATE | TIME_MINUTES | TIME_SECONDS));
+  m_shared_builder.KeyWV("date_to").ValSWV(TimeToString(to, TIME_DATE | TIME_MINUTES | TIME_SECONDS));
+  m_shared_builder.EndObj();
+  m_shared_builder.EndObj();
+  m_shared_builder.PutChar('"');
  }
 
 

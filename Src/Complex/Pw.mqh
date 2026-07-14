@@ -24,30 +24,40 @@ class CMcpFuncRunCommand : public CMcpFunction
  {
 private:
   int                m_mode;
-  CJsonBuilder       m_builder;
 
 public:
                      CMcpFuncRunCommand(int mode)
     :                CMcpFunction(0, false, "run_command"), m_mode(mode) {}
                     ~CMcpFuncRunCommand(void) {}
-  void               Run(CJsonNode& param, string& res) override final;
+  void               Run(CJsonNode& param, CJsonBuilderStr* &out) override final;
  };
 
 //+------------------------------------------------------------------+
-void CMcpFuncRunCommand::Run(CJsonNode& param, string& res) override final
+void CMcpFuncRunCommand::Run(CJsonNode& param, CJsonBuilderStr* &out)
  {
 //---
+  out = m_shared_builder;
   const string command = param["run"].ToStringNoEscape("");
   const uint timeout = uint(param["timeout_segundos"].ToInt(1) * 1000);
 //---
   if(command == "")
    {
-    res = "{\"ok\":false,\"result\":\"Empty command\"}";
+    m_shared_builder.PutChar('"');
+    m_shared_builder.Obj();
+    m_shared_builder.KeyWV("ok").Val(false);
+    m_shared_builder.KeyWV("result").ValSWV("Empty command");
+    m_shared_builder.EndObj();
+    m_shared_builder.PutChar('"');
     return;
    }
   if(m_mode == 0)
    {
-    res = "{\"ok\":false,\"result\":\"The user has disabled the use of this tool in the EA settings.\"}";
+    m_shared_builder.PutChar('"');
+    m_shared_builder.Obj();
+    m_shared_builder.KeyWV("ok").Val(false);
+    m_shared_builder.KeyWV("result").ValSWV("The user has disabled the use of this tool in the EA settings.");
+    m_shared_builder.EndObj();
+    m_shared_builder.PutChar('"');
     return;
    }
 
@@ -90,7 +100,12 @@ void CMcpFuncRunCommand::Run(CJsonNode& param, string& res) override final
 
   if(created == 0)
    {
-    res = StringFormat("{\"ok\":false,\"result\":\"Failed call CreateProcessW, last error = %u\"}", GetLastError());
+    m_shared_builder.PutChar('"');
+    m_shared_builder.Obj();
+    m_shared_builder.KeyWV("ok").Val(false);
+    m_shared_builder.KeyWV("result").ValSWV(StringFormat("Failed call CreateProcessW, last error = %u", GetLastError()));
+    m_shared_builder.EndObj();
+    m_shared_builder.PutChar('"');
     return;
    }
 
@@ -113,15 +128,15 @@ void CMcpFuncRunCommand::Run(CJsonNode& param, string& res) override final
   FileDelete(rel_file, FILE_COMMON);
 
 //---
-  m_builder.Clear();
-  m_builder.Obj();
-  m_builder.Key("ok").Val(bool(exit_code == 0));
-  m_builder.Key("result").Obj();
-  m_builder.Key("exit_code").Val(int(exit_code));
-  m_builder.Key("stdout").ValU(data);
-  m_builder.EndObj();
-  m_builder.EndObj();
-  res = m_builder.Build();
+  m_shared_builder.PutChar('"');
+  m_shared_builder.Obj();
+  m_shared_builder.KeyWV("ok").Val(bool(exit_code == 0));
+  m_shared_builder.KeyWV("result").Obj();
+  m_shared_builder.KeyWV("exit_code").Val(int(exit_code));
+  m_shared_builder.KeyWV("stdout").ValU(data);
+  m_shared_builder.EndObj();
+  m_shared_builder.EndObj();
+  m_shared_builder.PutChar('"');
  }
 }
 //+------------------------------------------------------------------+

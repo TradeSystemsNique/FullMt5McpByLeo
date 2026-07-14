@@ -32,7 +32,7 @@ public:
                      CMcpFuncCopyTicks(void);
                     ~CMcpFuncCopyTicks(void);
 
-  void               Run(CJsonNode& param, string& res) override final;
+  void               Run(CJsonNode& param, CJsonBuilderStr* &out) override final;
  };
 
 
@@ -71,8 +71,10 @@ CMcpFuncCopyTicks::~CMcpFuncCopyTicks(void)
 //+------------------------------------------------------------------+
 //| Run - Copia ticks del símbolo especificado                       |
 //+------------------------------------------------------------------+
-void CMcpFuncCopyTicks::Run(CJsonNode& param, string& res)
+void CMcpFuncCopyTicks::Run(CJsonNode& param, CJsonBuilderStr* &out)
  {
+//---
+  out = m_shared_builder;
   ::ResetLastError();
 
 //---
@@ -86,34 +88,40 @@ void CMcpFuncCopyTicks::Run(CJsonNode& param, string& res)
   const int copied = CopyTicks(symbol, m_ticks, flags, from, count);
   if(copied != count)
    {
-    res = StringFormat("{\"ok\":false,\"error\":\"CopyTicks failed, last mt5 error = %d\"}", ::GetLastError());
+    m_shared_builder.PutChar('"');
+    m_shared_builder.Obj();
+    m_shared_builder.KeyWV("ok").Val(false);
+    m_shared_builder.KeyWV("error").ValSWV(StringFormat("CopyTicks failed, last mt5 error = %d", ::GetLastError()));
+    m_shared_builder.EndObj();
+    m_shared_builder.PutChar('"');
     return;
    }
 
 //---
-  res = "{\"ok\":true,\"result\":[";
+  m_shared_builder.PutChar('"');
+  m_shared_builder.Obj();
+  m_shared_builder.KeyWV("ok").Val(true);
+  m_shared_builder.KeyWV("result").Arr();
   const int digits = (int)SymbolInfoInteger(symbol, SYMBOL_DIGITS);
 
 //---
   for(int i = 0; i < copied; i++)
    {
-    if(i > 0)
-      res += ",";
-
     // Construir objeto MqlTick en JSON
-    res += StringFormat(
-             "{\"time\":\"%s\",\"bid\":%.*f,\"ask\":%.*f,\"last\":%.*f,\"volume\":%I64u,\"time_msc\":%I64d,\"flags\":%u,\"volume_real\":%.*f}",
-             TimeToString(m_ticks[i].time, TIME_DATE | TIME_SECONDS | TIME_MINUTES),
-             digits, m_ticks[i].bid,
-             digits, m_ticks[i].ask,
-             digits, m_ticks[i].last,
-             m_ticks[i].volume,
-             m_ticks[i].time_msc,
-             m_ticks[i].flags,
-             digits, m_ticks[i].volume_real
-           );
+    m_shared_builder.Obj();
+    m_shared_builder.KeyWV("time").ValSWV(TimeToString(m_ticks[i].time, TIME_DATE | TIME_SECONDS | TIME_MINUTES));
+    m_shared_builder.KeyWV("bid").Val(m_ticks[i].bid);
+    m_shared_builder.KeyWV("ask").Val(m_ticks[i].ask);
+    m_shared_builder.KeyWV("last").Val(m_ticks[i].last);
+    m_shared_builder.KeyWV("volume").Val((long)m_ticks[i].volume);
+    m_shared_builder.KeyWV("time_msc").Val(m_ticks[i].time_msc);
+    m_shared_builder.KeyWV("flags").Val((long)m_ticks[i].flags);
+    m_shared_builder.KeyWV("volume_real").Val(m_ticks[i].volume_real);
+    m_shared_builder.EndObj();
    }
-  res += "]}";
+  m_shared_builder.EndArr();
+  m_shared_builder.EndObj();
+  m_shared_builder.PutChar('"');
  }
 
 //+------------------------------------------------------------------+
@@ -127,16 +135,23 @@ class CMcpFuncBarShift : public CMcpFunction
 public:
                      CMcpFuncBarShift(void) : CMcpFunction(0, false, "i_bar_shift") {}
                     ~CMcpFuncBarShift(void) {}
-  void               Run(CJsonNode& param, string& res) override final;
+  void               Run(CJsonNode& param, CJsonBuilderStr* &out) override final;
  };
 
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
-void CMcpFuncBarShift::Run(CJsonNode &param, string &res)
+void CMcpFuncBarShift::Run(CJsonNode &param, CJsonBuilderStr* &out)
  {
-  res = StringFormat("{\"ok\":true,\"result\":%d}", iBarShift(param["symbol"].ToString(_Symbol), CEnumRegBasis::GetValNoRef<ENUM_TIMEFRAMES>(param["timeframe"].ToString(), _Period),
+//---
+  out = m_shared_builder;
+  m_shared_builder.PutChar('"');
+  m_shared_builder.Obj();
+  m_shared_builder.KeyWV("ok").Val(true);
+  m_shared_builder.KeyWV("result").Val(iBarShift(param["symbol"].ToString(_Symbol), CEnumRegBasis::GetValNoRef<ENUM_TIMEFRAMES>(param["timeframe"].ToString(), _Period),
                      StringToTime(param["time"].ToString("0")), param["exact"].ToBool(false)));
+  m_shared_builder.EndObj();
+  m_shared_builder.PutChar('"');
  }
  
 
@@ -162,7 +177,7 @@ public:
    }
                     ~CMcpFuncCopyData(void) {}
 
-  void               Run(CJsonNode& param, string& res) override final;
+  void               Run(CJsonNode& param, CJsonBuilderStr* &out) override final;
  };
 
 /*
@@ -188,9 +203,10 @@ public:
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
-void CMcpFuncCopyData::Run(CJsonNode& param, string& res)
+void CMcpFuncCopyData::Run(CJsonNode& param, CJsonBuilderStr* &out)
  {
 //---
+  out = m_shared_builder;
   ::ResetLastError();
   uint8_t t = 0;
   const int start = (int)param["start"].ToInt(0);
@@ -250,30 +266,40 @@ void CMcpFuncCopyData::Run(CJsonNode& param, string& res)
 
     //---
     default:
-      res = StringFormat("{\"ok\":false,\"error\":\"Invalid mode = %u\"}", mode);
+      m_shared_builder.PutChar('"');
+      m_shared_builder.Obj();
+      m_shared_builder.KeyWV("ok").Val(false);
+      m_shared_builder.KeyWV("error").ValSWV(StringFormat("Invalid mode = %u", mode));
+      m_shared_builder.EndObj();
+      m_shared_builder.PutChar('"');
       return;
    }
 
 //---
   if(copied != count)
    {
-    res = StringFormat("{\"ok\":false,\"error\":\"copy_data failed, last mt5 error = %d, [start = %d, count = %d]\"}", ::GetLastError(), start, count);
+    m_shared_builder.PutChar('"');
+    m_shared_builder.Obj();
+    m_shared_builder.KeyWV("ok").Val(false);
+    m_shared_builder.KeyWV("error").ValSWV(StringFormat("copy_data failed, last mt5 error = %d, [start = %d, count = %d]", ::GetLastError(), start, count));
+    m_shared_builder.EndObj();
+    m_shared_builder.PutChar('"');
     return;
    }
 
 //---
-  res = "{\"ok\":true,\"result\":[";
+  m_shared_builder.PutChar('"');
+  m_shared_builder.Obj();
+  m_shared_builder.KeyWV("ok").Val(true);
+  m_shared_builder.KeyWV("result").Arr();
   switch(t)
    {
     //---
     case 0: // dbl
      {
-      const int digits = (int)SymbolInfoInteger(symbol, SYMBOL_DIGITS);
       for(int i = 0; i < copied; i++)
        {
-        if(i > 0)
-          res += ",";
-        res += StringFormat("%.*f", digits, m_buffer_d[i]);
+        m_shared_builder.Val(m_buffer_d[i]);
        }
       break;
      }
@@ -283,9 +309,7 @@ void CMcpFuncCopyData::Run(CJsonNode& param, string& res)
      {
       for(int i = 0; i < copied; i++)
        {
-        if(i > 0)
-          res += ",";
-        res += string(m_buffer_l[i]);
+        m_shared_builder.Val(m_buffer_l[i]);
        }
       break;
      }
@@ -295,9 +319,7 @@ void CMcpFuncCopyData::Run(CJsonNode& param, string& res)
      {
       for(int i = 0; i < copied; i++)
        {
-        if(i > 0)
-          res += ",";
-        res += "\"" + TimeToString(m_buffer_dt[i]) + "\"";
+        m_shared_builder.ValSWV(TimeToString(m_buffer_dt[i]));
        }
       break;
      }
@@ -307,14 +329,14 @@ void CMcpFuncCopyData::Run(CJsonNode& param, string& res)
      {
       for(int i = 0; i < copied; i++)
        {
-        if(i > 0)
-          res += ",";
-        res += string(m_buffer_i[i]);
+        m_shared_builder.Val(m_buffer_i[i]);
        }
       break;
      }
    }
-  res += "]}";
+  m_shared_builder.EndArr();
+  m_shared_builder.EndObj();
+  m_shared_builder.PutChar('"');
  }
 
 //+------------------------------------------------------------------+

@@ -29,24 +29,28 @@ public:
                      CMcpFuncPositionList() : CMcpFunction(0, false, "position_list") {}
                     ~CMcpFuncPositionList(void) {}
 
-  void               Run(CJsonNode& param, string& res) override final;
+  void               Run(CJsonNode& param, CJsonBuilderStr* &out) override final;
  };
 
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
-void CMcpFuncPositionList::Run(CJsonNode& param, string& res)
+void CMcpFuncPositionList::Run(CJsonNode& param, CJsonBuilderStr* &out)
  {
-  res = "{\"ok\":true,\"result\":[";
+//---
+  out = m_shared_builder;
+  m_shared_builder.PutChar('"');
+  m_shared_builder.Obj();
+  m_shared_builder.KeyWV("ok").Val(true);
+  m_shared_builder.KeyWV("result").Arr();
   const int t = PositionsTotal();
   for(int i = 0; i < t; i++)
    {
-    if(i == t - 1)
-      res += string(PositionGetTicket(i));
-    else
-      res += string(PositionGetTicket(i)) + ",";
+    m_shared_builder.Val((long)PositionGetTicket(i));
    }
-  res += "]}";
+  m_shared_builder.EndArr();
+  m_shared_builder.EndObj();
+  m_shared_builder.PutChar('"');
  }
 
 //+------------------------------------------------------------------+
@@ -58,21 +62,28 @@ public:
                      CMcpFuncPositionGet() : CMcpFunction(0, false, "position_get") {}
                     ~CMcpFuncPositionGet(void) {}
 
-  void               Run(CJsonNode& param, string& res) override final;
+  void               Run(CJsonNode& param, CJsonBuilderStr* &out) override final;
  };
 
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
-void CMcpFuncPositionGet::Run(CJsonNode& param, string& res)
+void CMcpFuncPositionGet::Run(CJsonNode& param, CJsonBuilderStr* &out)
  {
+//---
+  out = m_shared_builder;
   ::ResetLastError();
   const ulong ticket = param["ticket"].ToInt(0);
 
 //---
   if(!PositionSelectByTicket(ticket))
    {
-    res = StringFormat("{\"ok\":false,\"error\":\"position_not_found, last mt5 error = %d\"}", ::GetLastError());
+    m_shared_builder.PutChar('"');
+    m_shared_builder.Obj();
+    m_shared_builder.KeyWV("ok").Val(false);
+    m_shared_builder.KeyWV("error").ValSWV(StringFormat("position_not_found, last mt5 error = %d", ::GetLastError()));
+    m_shared_builder.EndObj();
+    m_shared_builder.PutChar('"');
     return;
    }
 
@@ -87,7 +98,12 @@ void CMcpFuncPositionGet::Run(CJsonNode& param, string& res)
       double v;
       if(PositionGetDouble(CEnumRegBasis::GetValNoRef<ENUM_POSITION_PROPERTY_DOUBLE>(param["property"].ToString(""), WRONG_VALUE), v))
        {
-        res = StringFormat("{\"ok\":true,\"result\":%.8f}", v);
+        m_shared_builder.PutChar('"');
+        m_shared_builder.Obj();
+        m_shared_builder.KeyWV("ok").Val(true);
+        m_shared_builder.KeyWV("result").Val(v);
+        m_shared_builder.EndObj();
+        m_shared_builder.PutChar('"');
         return;
        }
       break;
@@ -99,7 +115,12 @@ void CMcpFuncPositionGet::Run(CJsonNode& param, string& res)
       long v;
       if(PositionGetInteger(CEnumRegBasis::GetValNoRef<ENUM_POSITION_PROPERTY_INTEGER>(param["property"].ToString(""), WRONG_VALUE), v))
        {
-        res = StringFormat("{\"ok\":true,\"result\":%I64d}", v);
+        m_shared_builder.PutChar('"');
+        m_shared_builder.Obj();
+        m_shared_builder.KeyWV("ok").Val(true);
+        m_shared_builder.KeyWV("result").Val(v);
+        m_shared_builder.EndObj();
+        m_shared_builder.PutChar('"');
         return;
        }
       break;
@@ -111,20 +132,35 @@ void CMcpFuncPositionGet::Run(CJsonNode& param, string& res)
       string v;
       if(PositionGetString(CEnumRegBasis::GetValNoRef<ENUM_POSITION_PROPERTY_STRING>(param["property"].ToString(""), WRONG_VALUE), v))
        {
-        res = "{\"ok\":true,\"result\":\"" + v + "\"}";
+        m_shared_builder.PutChar('"');
+        m_shared_builder.Obj();
+        m_shared_builder.KeyWV("ok").Val(true);
+        m_shared_builder.KeyWV("result").ValS(v);
+        m_shared_builder.EndObj();
+        m_shared_builder.PutChar('"');
         return;
        }
       break;
      }
 
     default:
-      res = StringFormat("{\"ok\":false,\"error\":\"Invalid mode = %d\"}", mode);
+      m_shared_builder.PutChar('"');
+      m_shared_builder.Obj();
+      m_shared_builder.KeyWV("ok").Val(false);
+      m_shared_builder.KeyWV("error").ValSWV(StringFormat("Invalid mode = %d", mode));
+      m_shared_builder.EndObj();
+      m_shared_builder.PutChar('"');
       return;
    }
 
 
 //---
-  res = StringFormat("{\"ok\":false,\"error\":\"Failed to call PositionGet*, last err mt5 = %d\"}", ::GetLastError());
+  m_shared_builder.PutChar('"');
+  m_shared_builder.Obj();
+  m_shared_builder.KeyWV("ok").Val(false);
+  m_shared_builder.KeyWV("error").ValSWV(StringFormat("Failed to call PositionGet*, last err mt5 = %d", ::GetLastError()));
+  m_shared_builder.EndObj();
+  m_shared_builder.PutChar('"');
  }
 
  
@@ -139,7 +175,7 @@ public:
                      CMcpFuncPositionClose(CTrade* tr) : CMcpFunction(0, false, "position_close"), m_trade(tr) {}
                     ~CMcpFuncPositionClose(void) {}
 
-  void               Run(CJsonNode& param, string& res) override final;
+  void               Run(CJsonNode& param, CJsonBuilderStr* &out) override final;
  };
 
 //---
@@ -155,8 +191,10 @@ public:
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
-void CMcpFuncPositionClose::Run(CJsonNode& param, string& res)
+void CMcpFuncPositionClose::Run(CJsonNode& param, CJsonBuilderStr* &out)
  {
+//---
+  out = m_shared_builder;
   ::ResetLastError();
   const string type = param["type"].ToString("by_ticket");
   const ulong deviation = (ulong)param["deviation"].ToInt(ULONG_MAX);
@@ -168,7 +206,12 @@ void CMcpFuncPositionClose::Run(CJsonNode& param, string& res)
      {
       if(!m_trade.PositionClosePartial(param["value"].ToString(""), param["volume"].ToDouble(0.00), deviation))
        {
-        res = StringFormat("{\"ok\":false,\"error\":\"position_close by_symbol failed (partial), last mt5 error = %d\"}", ::GetLastError());
+        m_shared_builder.PutChar('"');
+        m_shared_builder.Obj();
+        m_shared_builder.KeyWV("ok").Val(false);
+        m_shared_builder.KeyWV("error").ValSWV(StringFormat("position_close by_symbol failed (partial), last mt5 error = %d", ::GetLastError()));
+        m_shared_builder.EndObj();
+        m_shared_builder.PutChar('"');
         return;
        }
      }
@@ -176,7 +219,12 @@ void CMcpFuncPositionClose::Run(CJsonNode& param, string& res)
      {
       if(!m_trade.PositionClose(param["value"].ToString(""), deviation))
        {
-        res = StringFormat("{\"ok\":false,\"error\":\"position_close by_symbol failed, last mt5 error = %d\"}", ::GetLastError());
+        m_shared_builder.PutChar('"');
+        m_shared_builder.Obj();
+        m_shared_builder.KeyWV("ok").Val(false);
+        m_shared_builder.KeyWV("error").ValSWV(StringFormat("position_close by_symbol failed, last mt5 error = %d", ::GetLastError()));
+        m_shared_builder.EndObj();
+        m_shared_builder.PutChar('"');
         return;
        }
      }
@@ -188,7 +236,12 @@ void CMcpFuncPositionClose::Run(CJsonNode& param, string& res)
        {
         if(!m_trade.PositionClosePartial(ulong(param["value"].ToInt(0)), param["volume"].ToDouble(0.00), deviation))
          {
-          res = StringFormat("{\"ok\":false,\"error\":\"position_close by_ticket (partial) failed, last mt5 error = %d\"}", ::GetLastError());
+          m_shared_builder.PutChar('"');
+          m_shared_builder.Obj();
+          m_shared_builder.KeyWV("ok").Val(false);
+          m_shared_builder.KeyWV("error").ValSWV(StringFormat("position_close by_ticket (partial) failed, last mt5 error = %d", ::GetLastError()));
+          m_shared_builder.EndObj();
+          m_shared_builder.PutChar('"');
           return;
          }
        }
@@ -196,19 +249,34 @@ void CMcpFuncPositionClose::Run(CJsonNode& param, string& res)
        {
         if(!m_trade.PositionClose(ulong(param["value"].ToInt(0)), deviation))
          {
-          res = StringFormat("{\"ok\":false,\"error\":\"position_close by_ticket failed, last mt5 error = %d\"}", ::GetLastError());
+          m_shared_builder.PutChar('"');
+          m_shared_builder.Obj();
+          m_shared_builder.KeyWV("ok").Val(false);
+          m_shared_builder.KeyWV("error").ValSWV(StringFormat("position_close by_ticket failed, last mt5 error = %d", ::GetLastError()));
+          m_shared_builder.EndObj();
+          m_shared_builder.PutChar('"');
           return;
          }
        }
      }
     else
      {
-      res = "{\"ok\":false,\"error\":\"invalid type, use 'by_symbol' or 'by_ticket'\"}";
+      m_shared_builder.PutChar('"');
+      m_shared_builder.Obj();
+      m_shared_builder.KeyWV("ok").Val(false);
+      m_shared_builder.KeyWV("error").ValSWV("invalid type, use 'by_symbol' or 'by_ticket'");
+      m_shared_builder.EndObj();
+      m_shared_builder.PutChar('"');
       return;
      }
 
 //---
-  res = "{\"ok\":true,\"result\":\"success\"}";
+  m_shared_builder.PutChar('"');
+  m_shared_builder.Obj();
+  m_shared_builder.KeyWV("ok").Val(true);
+  m_shared_builder.KeyWV("result").ValSWV("success");
+  m_shared_builder.EndObj();
+  m_shared_builder.PutChar('"');
  }
 
 //+------------------------------------------------------------------+
@@ -222,32 +290,49 @@ public:
                      CMcpFuncPositionModify(CTrade* tr) : CMcpFunction(0, false, "position_modify"), m_trade(tr) {}
                     ~CMcpFuncPositionModify(void) {}
 
-  void               Run(CJsonNode& param, string& res) override final;
+  void               Run(CJsonNode& param, CJsonBuilderStr* &out) override final;
  };
 
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
-void CMcpFuncPositionModify::Run(CJsonNode& param, string& res)
+void CMcpFuncPositionModify::Run(CJsonNode& param, CJsonBuilderStr* &out)
  {
+//---
+  out = m_shared_builder;
   ::ResetLastError();
   const ulong ticket = (ulong)param["ticket"].ToInt(0);
 
 //---
   if(!PositionSelectByTicket(ticket))
    {
-    res = StringFormat("{\"ok\":false,\"result\":\"Error select ticket, last mt5 err = %d\"}", ::GetLastError());
+    m_shared_builder.PutChar('"');
+    m_shared_builder.Obj();
+    m_shared_builder.KeyWV("ok").Val(false);
+    m_shared_builder.KeyWV("result").ValSWV(StringFormat("Error select ticket, last mt5 err = %d", ::GetLastError()));
+    m_shared_builder.EndObj();
+    m_shared_builder.PutChar('"');
     return;
    }
 
 //---
   if(!m_trade.PositionModify(ticket, param["sl"].ToDouble(PositionGetDouble(POSITION_SL)), param["tp"].ToDouble(PositionGetDouble(POSITION_TP))))
    {
-    res = StringFormat("{\"ok\":false,\"error\":\"position_modify failed, last mt5 error = %d\"}", ::GetLastError());
+    m_shared_builder.PutChar('"');
+    m_shared_builder.Obj();
+    m_shared_builder.KeyWV("ok").Val(false);
+    m_shared_builder.KeyWV("error").ValSWV(StringFormat("position_modify failed, last mt5 error = %d", ::GetLastError()));
+    m_shared_builder.EndObj();
+    m_shared_builder.PutChar('"');
     return;
    }
 
-  res = "{\"ok\":true,\"result\":\"success\"}";
+  m_shared_builder.PutChar('"');
+  m_shared_builder.Obj();
+  m_shared_builder.KeyWV("ok").Val(true);
+  m_shared_builder.KeyWV("result").ValSWV("success");
+  m_shared_builder.EndObj();
+  m_shared_builder.PutChar('"');
  }
 
 //+------------------------------------------------------------------+

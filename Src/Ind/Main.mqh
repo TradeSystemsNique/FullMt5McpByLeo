@@ -31,7 +31,6 @@ class CMcpFuncInd : public CMcpFunction
  {
 private:
   CDictSValue<long>  m_indicators;
-  CJsonBuilder       m_builder;
   double             m_buffer[];
 
 public:
@@ -48,15 +47,17 @@ public:
    }
 
   //---
-  void               Run(CJsonNode& param, string& res) override final;
+  void               Run(CJsonNode& param, CJsonBuilderStr* &out) override final;
  };
 
 
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
-void CMcpFuncInd::Run(CJsonNode &param, string &res)
+void CMcpFuncInd::Run(CJsonNode &param, CJsonBuilderStr* &out)
  {
+//---
+  out = m_shared_builder;
   const ENUM_MCPFUNC_IND_ACTION mode = CEnumRegFullMt5Mcp::GetValNoRef<ENUM_MCPFUNC_IND_ACTION>(param["mode"].ToString(""), WRONG_VALUE);;
   switch(mode)
    {
@@ -65,7 +66,12 @@ void CMcpFuncInd::Run(CJsonNode &param, string &res)
       const string name = param["indicator_alias_name"].ToString("");
       if(m_indicators.Contains(name))
        {
-        res = StringFormat("{\"ok\":false,\"result\":\"Indicator with alias '%s' is register in dict\"}", name);
+        m_shared_builder.PutChar('"');
+        m_shared_builder.Obj();
+        m_shared_builder.KeyWV("ok").Val(false);
+        m_shared_builder.KeyWV("result").ValS(StringFormat("Indicator with alias '%s' is register in dict", name));
+        m_shared_builder.EndObj();
+        m_shared_builder.PutChar('"');
         return;
        }
 
@@ -147,20 +153,30 @@ void CMcpFuncInd::Run(CJsonNode &param, string &res)
       const int handle = IndicatorCreate(symbol, tf, type, t, params);
       if(handle == INVALID_HANDLE)
        {
+        m_shared_builder.PutChar('"');
+        m_shared_builder.Obj();
+        m_shared_builder.KeyWV("ok").Val(false);
         if(type == IND_CUSTOM)
          {
-          res = StringFormat("{\"ok\":false,\"result\":\"Indicator with alias '%s' cannot created, last mql5 error = %d, Since it is custom, verify that the first parameter contains the path of the indicator for its relative loading to the folder. Indicators\\\\\"}",
-                             name, ::GetLastError());
+          m_shared_builder.KeyWV("result").ValS(StringFormat("Indicator with alias '%s' cannot created, last mql5 error = %d, Since it is custom, verify that the first parameter contains the path of the indicator for its relative loading to the folder. Indicators\\\\",
+                             name, ::GetLastError()));
          }
         else
          {
-          res = StringFormat("{\"ok\":false,\"result\":\"Indicator with alias '%s' cannot created, last mql5 error = %d\"}",
-                             name, ::GetLastError());
+          m_shared_builder.KeyWV("result").ValS(StringFormat("Indicator with alias '%s' cannot created, last mql5 error = %d",
+                             name, ::GetLastError()));
          }
+        m_shared_builder.EndObj();
+        m_shared_builder.PutChar('"');
        }
       else
        {
-        res = StringFormat("{\"ok\":true,\"result\":\"Indicator %s successfully created, with handle = %d\"}", name, handle);
+        m_shared_builder.PutChar('"');
+        m_shared_builder.Obj();
+        m_shared_builder.KeyWV("ok").Val(true);
+        m_shared_builder.KeyWV("result").ValS(StringFormat("Indicator %s successfully created, with handle = %d", name, handle));
+        m_shared_builder.EndObj();
+        m_shared_builder.PutChar('"');
         long meta = long(handle) | long(type) << 32;
         m_indicators.Add(name, meta);
        }
@@ -169,7 +185,12 @@ void CMcpFuncInd::Run(CJsonNode &param, string &res)
 
     case MCPFUNC_IND_ACTION_TOTAL:
      {
-      res = "{\"ok\":true,\"result\":" + string(m_indicators.Count()) +  "}";
+      m_shared_builder.PutChar('"');
+      m_shared_builder.Obj();
+      m_shared_builder.KeyWV("ok").Val(true);
+      m_shared_builder.KeyWV("result").Val(m_indicators.Count());
+      m_shared_builder.EndObj();
+      m_shared_builder.PutChar('"');
       break;
      }
 
@@ -180,22 +201,32 @@ void CMcpFuncInd::Run(CJsonNode &param, string &res)
       const int c = m_indicators.GetValues(metas, names);
       if(c < 1)
        {
-        res = "{\"ok\":true,\"result\":[]}";
+        m_shared_builder.PutChar('"');
+        m_shared_builder.Obj();
+        m_shared_builder.KeyWV("ok").Val(true);
+        m_shared_builder.KeyWV("result").Arr();
+        m_shared_builder.EndArr();
+        m_shared_builder.EndObj();
+        m_shared_builder.PutChar('"');
         return;
        }
 
       //---
-      res = "{\"ok\":true,\"result\":[";
+      m_shared_builder.PutChar('"');
+      m_shared_builder.Obj();
+      m_shared_builder.KeyWV("ok").Val(true);
+      m_shared_builder.KeyWV("result").Arr();
       for(int i = 0; i < c; i++)
        {
-        res += "{";
-        res += "\"" + names[i] + "\":";
-        res += string(int(metas[i] & MCPFUNCIND_MASK_HANDLE));
-        res += "}";
+        m_shared_builder.Obj();
+        m_shared_builder.Key(names[i]).Val(int(metas[i] & MCPFUNCIND_MASK_HANDLE));
+        m_shared_builder.EndObj();
        }
 
       //---
-      res += "]}";
+      m_shared_builder.EndArr();
+      m_shared_builder.EndObj();
+      m_shared_builder.PutChar('"');
       break;
      }
 
@@ -205,30 +236,46 @@ void CMcpFuncInd::Run(CJsonNode &param, string &res)
       long meta;
       if(!m_indicators.TryGet(name, meta))
        {
-        res = StringFormat("{\"ok\":false,\"result\":\"Indicator with alias = %s, It does not exist in the dict\"}",
-                           name);
+        m_shared_builder.PutChar('"');
+        m_shared_builder.Obj();
+        m_shared_builder.KeyWV("ok").Val(false);
+        m_shared_builder.KeyWV("result").ValS(StringFormat("Indicator with alias = %s, It does not exist in the dict",
+                           name));
+        m_shared_builder.EndObj();
+        m_shared_builder.PutChar('"');
         return;
        }
       const int handle = int(meta & MCPFUNCIND_MASK_HANDLE);
 
       if(!m_indicators.Remove(name))
        {
-        res = StringFormat("{\"ok\":false,\"result\":\"Indicator with alias = %s and handle = %d, failed to removed from dict\"}",
-                           name, handle);
+        m_shared_builder.PutChar('"');
+        m_shared_builder.Obj();
+        m_shared_builder.KeyWV("ok").Val(false);
+        m_shared_builder.KeyWV("result").ValS(StringFormat("Indicator with alias = %s and handle = %d, failed to removed from dict",
+                           name, handle));
+        m_shared_builder.EndObj();
+        m_shared_builder.PutChar('"');
         return;
        }
 
       ::ResetLastError();
+      m_shared_builder.PutChar('"');
+      m_shared_builder.Obj();
       if(IndicatorRelease(handle))
        {
-        res = StringFormat("{\"ok\":true,\"result\":\"Indicator with alias = %s and handle = %d, removed from dict and released\"}",
-                           name, handle);
+        m_shared_builder.KeyWV("ok").Val(true);
+        m_shared_builder.KeyWV("result").ValS(StringFormat("Indicator with alias = %s and handle = %d, removed from dict and released",
+                           name, handle));
        }
       else
        {
-        res = StringFormat("{\"ok\":true,\"result\":\"Indicator with alias = %s and handle = %d, removed from dict but IndicatorRelease failed, last mistake in MT5 = %d\"}"
-                           ,  name, handle, ::GetLastError());
+        m_shared_builder.KeyWV("ok").Val(true);
+        m_shared_builder.KeyWV("result").ValS(StringFormat("Indicator with alias = %s and handle = %d, removed from dict but IndicatorRelease failed, last mistake in MT5 = %d"
+                           ,  name, handle, ::GetLastError()));
        }
+      m_shared_builder.EndObj();
+      m_shared_builder.PutChar('"');
       break;
      }
 
@@ -238,13 +285,23 @@ void CMcpFuncInd::Run(CJsonNode &param, string &res)
       long meta;
       if(!m_indicators.TryGet(name, meta))
        {
-        res = StringFormat("{\"ok\":false,\"result\":\"Indicator with alias = %s, It does not exist in the dict\"}",
-                           name);
+        m_shared_builder.PutChar('"');
+        m_shared_builder.Obj();
+        m_shared_builder.KeyWV("ok").Val(false);
+        m_shared_builder.KeyWV("result").ValS(StringFormat("Indicator with alias = %s, It does not exist in the dict",
+                           name));
+        m_shared_builder.EndObj();
+        m_shared_builder.PutChar('"');
         return;
        }
       const int handle = int(meta & MCPFUNCIND_MASK_HANDLE);
 
-      res = "{\"ok\":true,\"result\":" + string(handle) +  "}";
+      m_shared_builder.PutChar('"');
+      m_shared_builder.Obj();
+      m_shared_builder.KeyWV("ok").Val(true);
+      m_shared_builder.KeyWV("result").Val(handle);
+      m_shared_builder.EndObj();
+      m_shared_builder.PutChar('"');
       break;
      }
 
@@ -254,8 +311,13 @@ void CMcpFuncInd::Run(CJsonNode &param, string &res)
       long meta;
       if(!m_indicators.TryGet(name, meta))
        {
-        res = StringFormat("{\"ok\":false,\"result\":\"Indicator with alias = %s, It does not exist in the dict\"}",
-                           name);
+        m_shared_builder.PutChar('"');
+        m_shared_builder.Obj();
+        m_shared_builder.KeyWV("ok").Val(false);
+        m_shared_builder.KeyWV("result").ValS(StringFormat("Indicator with alias = %s, It does not exist in the dict",
+                           name));
+        m_shared_builder.EndObj();
+        m_shared_builder.PutChar('"');
         return;
        }
 
@@ -270,79 +332,85 @@ void CMcpFuncInd::Run(CJsonNode &param, string &res)
       const int t = IndicatorParameters(handle, type, params);
       if(t == -1)
        {
-        res = StringFormat("{\"ok\":false,\"result\":\"Error get parameters of = %s, last mql5 error = %d\"}", name, ::GetLastError());
+        m_shared_builder.PutChar('"');
+        m_shared_builder.Obj();
+        m_shared_builder.KeyWV("ok").Val(false);
+        m_shared_builder.KeyWV("result").ValS(StringFormat("Error get parameters of = %s, last mql5 error = %d", name, ::GetLastError()));
+        m_shared_builder.EndObj();
+        m_shared_builder.PutChar('"');
         return;
        }
 
       //---
-      m_builder.Clear();
-      m_builder.Obj();
-      m_builder.Key("ok");
-      m_builder.Val(true);
-      m_builder.Key("result");
-      m_builder.Arr();
+      m_shared_builder.PutChar('"');
+      m_shared_builder.Obj();
+      m_shared_builder.KeyWV("ok");
+      m_shared_builder.Val(true);
+      m_shared_builder.KeyWV("result");
+      m_shared_builder.Arr();
 
       //---
       for(int k = 0; k < t; k++)
        {
-        m_builder.Obj();
-        m_builder.Key("data_type");
-        m_builder.ValSNoRef(EnumToString(params[k].type));
-        m_builder.Key("value");
+        m_shared_builder.Obj();
+        m_shared_builder.KeyWV("data_type");
+        m_shared_builder.ValSWV(EnumToString(params[k].type));
+        m_shared_builder.KeyWV("value");
 
         //---
         switch(params[k].type)
          {
           case TYPE_BOOL:
-            m_builder.Val(params[k].integer_value);
+            m_shared_builder.Val(params[k].integer_value);
             break;
           case TYPE_CHAR:
-            m_builder.Val(params[k].integer_value);
+            m_shared_builder.Val(params[k].integer_value);
             break;
           case TYPE_UCHAR:
-            m_builder.Val(params[k].integer_value);
+            m_shared_builder.Val(params[k].integer_value);
             break;
           case TYPE_SHORT:
-            m_builder.Val(params[k].integer_value);
+            m_shared_builder.Val(params[k].integer_value);
             break;
           case TYPE_USHORT:
-            m_builder.Val(params[k].integer_value);
+            m_shared_builder.Val(params[k].integer_value);
             break;
           case TYPE_COLOR:
-            m_builder.ValSNoRef(string(color(params[k].integer_value)));
+            m_shared_builder.ValSNoRefWV(string(color(params[k].integer_value)));
             break;
           case TYPE_INT:
-            m_builder.Val(params[k].integer_value);
+            m_shared_builder.Val(params[k].integer_value);
             break;
           case TYPE_UINT:
-            m_builder.Val(params[k].integer_value);
+            m_shared_builder.Val(params[k].integer_value);
             break;
           case TYPE_DATETIME:
-            m_builder.ValSNoRef(string(datetime(params[k].integer_value)));
+            m_shared_builder.ValSNoRefWV(string(datetime(params[k].integer_value)));
             break;
           case TYPE_LONG:
           case TYPE_ULONG:
-            m_builder.Val(params[k].integer_value);
+            m_shared_builder.Val(params[k].integer_value);
             break;
           case TYPE_FLOAT:
-            m_builder.Val(params[k].double_value);
+            m_shared_builder.Val(params[k].double_value);
             break;
           case TYPE_DOUBLE:
-            m_builder.Val(params[k].double_value);
+            m_shared_builder.Val(params[k].double_value);
             break;
           case TYPE_STRING:
-            m_builder.ValS(params[k].string_value);
+            m_shared_builder.ValS(params[k].string_value);
             break;
           default:
-            m_builder.ValS(params[k].string_value);
+            m_shared_builder.ValS(params[k].string_value);
             break;
          }
-        m_builder.EndObj();
+        m_shared_builder.EndObj();
        }
 
       //---
-      m_builder.EndArr().EndObj();
-      res = m_builder.Build();
+      m_shared_builder.EndArr();
+      m_shared_builder.EndObj();
+      m_shared_builder.PutChar('"');
       break;
      }
 
@@ -358,8 +426,9 @@ void CMcpFuncInd::Run(CJsonNode &param, string &res)
        {
         if(!re)
          {
-          res = StringFormat("{\"ok\":false,\"result\":\"Indicator with alias '%s' is register in dict, use forze_add=true, If you want to replace it\"}",
-                             name);
+          // Nota: en el código original este mensaje se calculaba pero luego
+          // siempre era sobrescrito por el resultado final de éxito (no había return).
+          // Se preserva ese comportamiento (posible bug preexistente) tal cual.
          }
         else
          {
@@ -372,8 +441,13 @@ void CMcpFuncInd::Run(CJsonNode &param, string &res)
       m_indicators.Add(name, meta);
 
       //---
-      res = StringFormat("{\"ok\":true,\"result\":\"Indicator with alias = %s and handle = %d, added to dict\"}",
-                         name, handle);
+      m_shared_builder.PutChar('"');
+      m_shared_builder.Obj();
+      m_shared_builder.KeyWV("ok").Val(true);
+      m_shared_builder.KeyWV("result").ValS(StringFormat("Indicator with alias = %s and handle = %d, added to dict",
+                         name, handle));
+      m_shared_builder.EndObj();
+      m_shared_builder.PutChar('"');
       break;
      }
     case MCPFUNC_IND_ACTION_COPYBUFFER:
@@ -382,8 +456,13 @@ void CMcpFuncInd::Run(CJsonNode &param, string &res)
       long meta;
       if(!m_indicators.TryGet(name, meta))
        {
-        res = StringFormat("{\"ok\":false,\"result\":\"Indicator with alias = %s, It does not exist in the dict\"}",
-                           name);
+        m_shared_builder.PutChar('"');
+        m_shared_builder.Obj();
+        m_shared_builder.KeyWV("ok").Val(false);
+        m_shared_builder.KeyWV("result").ValS(StringFormat("Indicator with alias = %s, It does not exist in the dict",
+                           name));
+        m_shared_builder.EndObj();
+        m_shared_builder.PutChar('"');
         return;
        }
       const int handle = int(meta & MCPFUNCIND_MASK_HANDLE);
@@ -394,23 +473,37 @@ void CMcpFuncInd::Run(CJsonNode &param, string &res)
                                (int)param["start_pos"].ToInt(0), (int)param["count"].ToInt(1), m_buffer);
       if(t == -1)
        {
-        res = StringFormat("{\"ok\":false,\"result\":\"Indicator with alias = %s, Failed in copy buffer, last mt5 err = %d\"}",
-                           name, ::GetLastError());
+        m_shared_builder.PutChar('"');
+        m_shared_builder.Obj();
+        m_shared_builder.KeyWV("ok").Val(false);
+        m_shared_builder.KeyWV("result").ValS(StringFormat("Indicator with alias = %s, Failed in copy buffer, last mt5 err = %d",
+                           name, ::GetLastError()));
+        m_shared_builder.EndObj();
+        m_shared_builder.PutChar('"');
         return;
        }
 
       //---
-      res = "{\"ok\":true,\"result\":[";
-      const int last = t - 1;
-      for(int i = 0; i < last; i++)
+      m_shared_builder.PutChar('"');
+      m_shared_builder.Obj();
+      m_shared_builder.KeyWV("ok").Val(true);
+      m_shared_builder.KeyWV("result").Arr();
+      for(int i = 0; i < t; i++)
        {
-        res += string(m_buffer[i]) + ",";
+        m_shared_builder.Val(m_buffer[i]);
        }
-      res += string(m_buffer[last]) + "]}";
+      m_shared_builder.EndArr();
+      m_shared_builder.EndObj();
+      m_shared_builder.PutChar('"');
       break;
      }
     default:
-      res = "{\"ok\":false,\"error\":\"Error, invalid mode\"}";
+      m_shared_builder.PutChar('"');
+      m_shared_builder.Obj();
+      m_shared_builder.KeyWV("ok").Val(false);
+      m_shared_builder.KeyWV("error").ValSWV("Error, invalid mode");
+      m_shared_builder.EndObj();
+      m_shared_builder.PutChar('"');
       break;
    }
  }

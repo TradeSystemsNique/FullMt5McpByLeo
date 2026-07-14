@@ -22,17 +22,17 @@ namespace TSN
 {
 class CMcpFunctionExpertLogs : public CMcpFunction
  {
-private:
-  CJsonBuilder       m_json_builder;
 public:
                      CMcpFunctionExpertLogs(void) : CMcpFunction(0, false, "get_expert_logs") {}
                     ~CMcpFunctionExpertLogs(void) {}
 
-  void               Run(CJsonNode& param, string& res) override final;
+  void               Run(CJsonNode& param, CJsonBuilderStr* &out) override final;
  };
 //+------------------------------------------------------------------+
-void CMcpFunctionExpertLogs::Run(CJsonNode &param, string &res)
+void CMcpFunctionExpertLogs::Run(CJsonNode &param, CJsonBuilderStr* &out)
  {
+//---
+  out = m_shared_builder;
   uchar data[];
   if(!ExtractLastLogLines(
        StringToTime(param["start_date"].ToString(TimeToString(TimeCurrent()))),
@@ -41,16 +41,21 @@ void CMcpFunctionExpertLogs::Run(CJsonNode &param, string &res)
        data
      ))
    {
-    res = "{\"ok\":false,\"error\":\"Error obtaining logs from the mt5 terminal\"}";
+    m_shared_builder.PutChar('"');
+    m_shared_builder.Obj();
+    m_shared_builder.KeyWV("ok").Val(false);
+    m_shared_builder.KeyWV("error").ValSWV("Error obtaining logs from the mt5 terminal");
+    m_shared_builder.EndObj();
+    m_shared_builder.PutChar('"');
    }
   else
    {
-    m_json_builder.Clear();
-    m_json_builder.Obj();
-    m_json_builder.Key("ok").Val(true);
-    m_json_builder.Key("result").ValU(data);
-    m_json_builder.EndObj();
-    res = m_json_builder.Build();
+    m_shared_builder.PutChar('"');
+    m_shared_builder.Obj();
+    m_shared_builder.KeyWV("ok").Val(true);
+    m_shared_builder.KeyWV("result").ValU(data);
+    m_shared_builder.EndObj();
+    m_shared_builder.PutChar('"');
    }
  }
 //+------------------------------------------------------------------+

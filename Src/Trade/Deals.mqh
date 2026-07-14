@@ -29,35 +29,43 @@ public:
                      CMcpFuncHistoryDealList() : CMcpFunction(0, false, "history_deal_list") {}
                     ~CMcpFuncHistoryDealList(void) {}
 
-  void               Run(CJsonNode& param, string& res) override final;
+  void               Run(CJsonNode& param, CJsonBuilderStr* &out) override final;
  };
 
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
-void CMcpFuncHistoryDealList::Run(CJsonNode& param, string& res)
+void CMcpFuncHistoryDealList::Run(CJsonNode& param, CJsonBuilderStr* &out)
  {
 //---
+  out = m_shared_builder;
   if(!HistorySelect(
        StringToTime(param["start_date_select"].ToString("0")),
        StringToTime(param["end_date_select"].ToString(TimeToString(TimeCurrent(), TIME_DATE | TIME_MINUTES | TIME_SECONDS)))
      ))
    {
-    res = StringFormat("{\"ok\":true,\"error\":\"Erorr selected positions, last err = %d\"}", ::GetLastError());
+    m_shared_builder.PutChar('"');
+    m_shared_builder.Obj();
+    m_shared_builder.KeyWV("ok").Val(true);
+    m_shared_builder.KeyWV("error").ValSWV(StringFormat("Erorr selected positions, last err = %d", ::GetLastError()));
+    m_shared_builder.EndObj();
+    m_shared_builder.PutChar('"');
     return;
    }
 
 //---
-  res = "{\"ok\":true,\"result\":[";
+  m_shared_builder.PutChar('"');
+  m_shared_builder.Obj();
+  m_shared_builder.KeyWV("ok").Val(true);
+  m_shared_builder.KeyWV("result").Arr();
   const int t = HistoryDealsTotal();
   for(int i = 0; i < t; i++)
    {
-    if(i == t - 1)
-      res += string(HistoryDealGetTicket(i));
-    else
-      res += string(HistoryDealGetTicket(i)) + ",";
+    m_shared_builder.Val((long)HistoryDealGetTicket(i));
    }
-  res += "]}";
+  m_shared_builder.EndArr();
+  m_shared_builder.EndObj();
+  m_shared_builder.PutChar('"');
  }
 
 
@@ -70,21 +78,28 @@ public:
                      CMcpFuncHistoryDealGet() : CMcpFunction(0, false, "history_deal_get") {}
                     ~CMcpFuncHistoryDealGet(void) {}
 
-  void               Run(CJsonNode& param, string& res) override final;
+  void               Run(CJsonNode& param, CJsonBuilderStr* &out) override final;
  };
 
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
-void CMcpFuncHistoryDealGet::Run(CJsonNode& param, string& res)
+void CMcpFuncHistoryDealGet::Run(CJsonNode& param, CJsonBuilderStr* &out)
  {
+//---
+  out = m_shared_builder;
   ::ResetLastError();
   const ulong ticket = (ulong)param["ticket"].ToInt(0);
 
 //---
   if(!::HistoryDealSelect(ticket))
    {
-    res = StringFormat("{\"ok\":false,\"error\":\"deal_not_found, last mt5 error = %d\"}", ::GetLastError());
+    m_shared_builder.PutChar('"');
+    m_shared_builder.Obj();
+    m_shared_builder.KeyWV("ok").Val(false);
+    m_shared_builder.KeyWV("error").ValSWV(StringFormat("deal_not_found, last mt5 error = %d", ::GetLastError()));
+    m_shared_builder.EndObj();
+    m_shared_builder.PutChar('"');
     return;
    }
 
@@ -102,7 +117,12 @@ void CMcpFuncHistoryDealGet::Run(CJsonNode& param, string& res)
            CEnumRegBasis::GetValNoRef<ENUM_DEAL_PROPERTY_DOUBLE>(param["property"].ToString(""), WRONG_VALUE),
            v))
        {
-        res = StringFormat("{\"ok\":true,\"result\":%.8f}", v);
+        m_shared_builder.PutChar('"');
+        m_shared_builder.Obj();
+        m_shared_builder.KeyWV("ok").Val(true);
+        m_shared_builder.KeyWV("result").Val(v);
+        m_shared_builder.EndObj();
+        m_shared_builder.PutChar('"');
         return;
        }
       break;
@@ -117,7 +137,12 @@ void CMcpFuncHistoryDealGet::Run(CJsonNode& param, string& res)
            CEnumRegBasis::GetValNoRef<ENUM_DEAL_PROPERTY_INTEGER>(param["property"].ToString(""), WRONG_VALUE),
            v))
        {
-        res = StringFormat("{\"ok\":true,\"result\":%I64d}", v);
+        m_shared_builder.PutChar('"');
+        m_shared_builder.Obj();
+        m_shared_builder.KeyWV("ok").Val(true);
+        m_shared_builder.KeyWV("result").Val(v);
+        m_shared_builder.EndObj();
+        m_shared_builder.PutChar('"');
         return;
        }
       break;
@@ -132,19 +157,34 @@ void CMcpFuncHistoryDealGet::Run(CJsonNode& param, string& res)
            CEnumRegBasis::GetValNoRef<ENUM_DEAL_PROPERTY_STRING>(param["property"].ToString(""), WRONG_VALUE),
            v))
        {
-        res = "{\"ok\":true,\"result\":\"" + v + "\"}";
+        m_shared_builder.PutChar('"');
+        m_shared_builder.Obj();
+        m_shared_builder.KeyWV("ok").Val(true);
+        m_shared_builder.KeyWV("result").ValS(v);
+        m_shared_builder.EndObj();
+        m_shared_builder.PutChar('"');
         return;
        }
       break;
      }
 
     default:
-      res = StringFormat("{\"ok\":false,\"error\":\"Invalid mode = %d\"}", mode);
+      m_shared_builder.PutChar('"');
+      m_shared_builder.Obj();
+      m_shared_builder.KeyWV("ok").Val(false);
+      m_shared_builder.KeyWV("error").ValSWV(StringFormat("Invalid mode = %d", mode));
+      m_shared_builder.EndObj();
+      m_shared_builder.PutChar('"');
       return;
    }
 
 //---
-  res = StringFormat("{\"ok\":false,\"error\":\"Failed to call HistoryDealGet*, last mt5 err = %d\"}", ::GetLastError());
+  m_shared_builder.PutChar('"');
+  m_shared_builder.Obj();
+  m_shared_builder.KeyWV("ok").Val(false);
+  m_shared_builder.KeyWV("error").ValSWV(StringFormat("Failed to call HistoryDealGet*, last mt5 err = %d", ::GetLastError()));
+  m_shared_builder.EndObj();
+  m_shared_builder.PutChar('"');
  }
 
 

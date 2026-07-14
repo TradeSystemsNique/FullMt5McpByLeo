@@ -29,15 +29,16 @@ public:
                      CMcpFuncObjectCreate(void) : CMcpFunction(0, false, "object_create") {}
                     ~CMcpFuncObjectCreate(void) {}
   //---
-  void               Run(CJsonNode& param, string& res) override final;
+  void               Run(CJsonNode& param, CJsonBuilderStr* &out) override final;
  };
 
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
-void CMcpFuncObjectCreate::Run(CJsonNode &param, string &res)
+void CMcpFuncObjectCreate::Run(CJsonNode &param, CJsonBuilderStr* &out)
  {
 //---
+  out = m_shared_builder;
   ::ResetLastError();
   const uint8_t mode = (uint8_t)param["mode"].ToInt(0);
   switch(mode)
@@ -51,7 +52,12 @@ void CMcpFuncObjectCreate::Run(CJsonNode &param, string &res)
                        StringToTime(param["time3"].ToString("0")), param["price3"].ToDouble(0.00)
                       ))
        {
-        res = StringFormat("{\"ok\":false,\"error\":\"object_create failed, last mt5 error = %d\"}", ::GetLastError());
+        m_shared_builder.PutChar('"');
+        m_shared_builder.Obj();
+        m_shared_builder.KeyWV("ok").Val(false);
+        m_shared_builder.KeyWV("error").ValSWV(StringFormat("object_create failed, last mt5 error = %d", ::GetLastError()));
+        m_shared_builder.EndObj();
+        m_shared_builder.PutChar('"');
         return;
        }
       break;
@@ -64,7 +70,12 @@ void CMcpFuncObjectCreate::Run(CJsonNode &param, string &res)
                        CEnumRegBasis::GetValNoRef<ENUM_OBJECT>(param["object_type"].ToString(), WRONG_VALUE), int(param["sub_window"].ToInt(0)),
                        StringToTime(param["time1"].ToString("0")), param["price1"].ToDouble(0.00), StringToTime(param["time2"].ToString("0")), param["price2"].ToDouble(0.00)))
        {
-        res = StringFormat("{\"ok\":false,\"error\":\"object_create failed, last mt5 error = %d\"}", ::GetLastError());
+        m_shared_builder.PutChar('"');
+        m_shared_builder.Obj();
+        m_shared_builder.KeyWV("ok").Val(false);
+        m_shared_builder.KeyWV("error").ValSWV(StringFormat("object_create failed, last mt5 error = %d", ::GetLastError()));
+        m_shared_builder.EndObj();
+        m_shared_builder.PutChar('"');
         return;
        }
       break;
@@ -77,7 +88,12 @@ void CMcpFuncObjectCreate::Run(CJsonNode &param, string &res)
                        CEnumRegBasis::GetValNoRef<ENUM_OBJECT>(param["object_type"].ToString(), WRONG_VALUE), int(param["sub_window"].ToInt(0)),
                        StringToTime(param["time1"].ToString("0")), param["price1"].ToDouble(0.00)))
        {
-        res = StringFormat("{\"ok\":false,\"error\":\"object_create failed, last mt5 error = %d\"}", ::GetLastError());
+        m_shared_builder.PutChar('"');
+        m_shared_builder.Obj();
+        m_shared_builder.KeyWV("ok").Val(false);
+        m_shared_builder.KeyWV("error").ValSWV(StringFormat("object_create failed, last mt5 error = %d", ::GetLastError()));
+        m_shared_builder.EndObj();
+        m_shared_builder.PutChar('"');
         return;
        }
       break;
@@ -90,7 +106,12 @@ void CMcpFuncObjectCreate::Run(CJsonNode &param, string &res)
                        CEnumRegBasis::GetValNoRef<ENUM_OBJECT>(param["object_type"].ToString(), WRONG_VALUE), int(param["sub_window"].ToInt(0)),
                        0, 0.00))
        {
-        res = StringFormat("{\"ok\":false,\"error\":\"object_create failed, last mt5 error = %d\"}", ::GetLastError());
+        m_shared_builder.PutChar('"');
+        m_shared_builder.Obj();
+        m_shared_builder.KeyWV("ok").Val(false);
+        m_shared_builder.KeyWV("error").ValSWV(StringFormat("object_create failed, last mt5 error = %d", ::GetLastError()));
+        m_shared_builder.EndObj();
+        m_shared_builder.PutChar('"');
         return;
        }
       break;
@@ -98,12 +119,22 @@ void CMcpFuncObjectCreate::Run(CJsonNode &param, string &res)
 
     //---
     default:
-      res = "{\"ok\":false,\"result\":\"Type of mode to create the invalid object\"}";
+      m_shared_builder.PutChar('"');
+      m_shared_builder.Obj();
+      m_shared_builder.KeyWV("ok").Val(false);
+      m_shared_builder.KeyWV("result").ValSWV("Type of mode to create the invalid object");
+      m_shared_builder.EndObj();
+      m_shared_builder.PutChar('"');
       return;
    }
 
 //---
-  res = "{\"ok\":true,\"result\":true}";
+  m_shared_builder.PutChar('"');
+  m_shared_builder.Obj();
+  m_shared_builder.KeyWV("ok").Val(true);
+  m_shared_builder.KeyWV("result").Val(true);
+  m_shared_builder.EndObj();
+  m_shared_builder.PutChar('"');
  }
 
 //+------------------------------------------------------------------+
@@ -115,24 +146,36 @@ public:
                      CMcpFuncObjectDelete() : CMcpFunction(0, false, "object_delete") {}
                     ~CMcpFuncObjectDelete(void) {}
 
-  void               Run(CJsonNode& param, string& res) override final;
+  void               Run(CJsonNode& param, CJsonBuilderStr* &out) override final;
  };
 
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
-void CMcpFuncObjectDelete::Run(CJsonNode & param, string & res)
+void CMcpFuncObjectDelete::Run(CJsonNode & param, CJsonBuilderStr* &out)
  {
+//---
+  out = m_shared_builder;
   ::ResetLastError();
 
 //---
   if(!ObjectDelete(param["chart_id"].ToInt(0), param["object_name"].ToString("")))
    {
-    res = StringFormat("{\"ok\":false,\"error\":\"object_delete failed, last mt5 error = %d\"}", ::GetLastError());
+    m_shared_builder.PutChar('"');
+    m_shared_builder.Obj();
+    m_shared_builder.KeyWV("ok").Val(false);
+    m_shared_builder.KeyWV("error").ValSWV(StringFormat("object_delete failed, last mt5 error = %d", ::GetLastError()));
+    m_shared_builder.EndObj();
+    m_shared_builder.PutChar('"');
     return;
    }
 
-  res = "{\"ok\":true,\"result\":true}";
+  m_shared_builder.PutChar('"');
+  m_shared_builder.Obj();
+  m_shared_builder.KeyWV("ok").Val(true);
+  m_shared_builder.KeyWV("result").Val(true);
+  m_shared_builder.EndObj();
+  m_shared_builder.PutChar('"');
  }
 
 
@@ -145,13 +188,15 @@ public:
                      CMcpFuncObjectSetGet(void) : CMcpFunction(0, false, "object_set_get") {}
                     ~CMcpFuncObjectSetGet(void) {}
 
-  void               Run(CJsonNode& param, string& res) override final;
+  void               Run(CJsonNode& param, CJsonBuilderStr* &out) override final;
  };
 
 
 //+------------------------------------------------------------------+
-void CMcpFuncObjectSetGet::Run(CJsonNode & param, string & res)
+void CMcpFuncObjectSetGet::Run(CJsonNode & param, CJsonBuilderStr* &out)
  {
+//---
+  out = m_shared_builder;
   const int mode = (int)param["mode"].ToInt(-1);
   switch(mode)
    {
@@ -168,15 +213,30 @@ void CMcpFuncObjectSetGet::Run(CJsonNode & param, string & res)
         const bool result = ObjectSetDouble(param["chart_id"].ToInt(0), param["object_name"].ToString(""), property, (int)param["prop_modifier"].ToInt(0), param["value"].ToDouble(0.0));
         if(!result)
          {
-          res = StringFormat("{\"ok\":false,\"error\":\"object_set_double failed, last mt5 error = %d\"}", ::GetLastError());
+          m_shared_builder.PutChar('"');
+          m_shared_builder.Obj();
+          m_shared_builder.KeyWV("ok").Val(false);
+          m_shared_builder.KeyWV("error").ValSWV(StringFormat("object_set_double failed, last mt5 error = %d", ::GetLastError()));
+          m_shared_builder.EndObj();
+          m_shared_builder.PutChar('"');
           return;
          }
-        res = "{\"ok\":true,\"result\":true}";
+        m_shared_builder.PutChar('"');
+        m_shared_builder.Obj();
+        m_shared_builder.KeyWV("ok").Val(true);
+        m_shared_builder.KeyWV("result").Val(true);
+        m_shared_builder.EndObj();
+        m_shared_builder.PutChar('"');
        }
       else
        {
         // GET mode
-        res = StringFormat("{\"ok\":true,\"result\":%.8f}", ObjectGetDouble(param["chart_id"].ToInt(0), param["object_name"].ToString(""), property, (int)param["prop_modifier"].ToInt(0)));
+        m_shared_builder.PutChar('"');
+        m_shared_builder.Obj();
+        m_shared_builder.KeyWV("ok").Val(true);
+        m_shared_builder.KeyWV("result").Val(ObjectGetDouble(param["chart_id"].ToInt(0), param["object_name"].ToString(""), property, (int)param["prop_modifier"].ToInt(0)));
+        m_shared_builder.EndObj();
+        m_shared_builder.PutChar('"');
        }
       break;
      }
@@ -193,15 +253,30 @@ void CMcpFuncObjectSetGet::Run(CJsonNode & param, string & res)
         const bool result = ObjectSetInteger(param["chart_id"].ToInt(0), param["object_name"].ToString(""), property, (int)param["prop_modifier"].ToInt(0), param["value"].ToInt(0));
         if(!result)
          {
-          res = StringFormat("{\"ok\":false,\"error\":\"object_set_integer failed, last mt5 error = %d\"}", ::GetLastError());
+          m_shared_builder.PutChar('"');
+          m_shared_builder.Obj();
+          m_shared_builder.KeyWV("ok").Val(false);
+          m_shared_builder.KeyWV("error").ValSWV(StringFormat("object_set_integer failed, last mt5 error = %d", ::GetLastError()));
+          m_shared_builder.EndObj();
+          m_shared_builder.PutChar('"');
           return;
          }
-        res = "{\"ok\":true,\"result\":true}";
+        m_shared_builder.PutChar('"');
+        m_shared_builder.Obj();
+        m_shared_builder.KeyWV("ok").Val(true);
+        m_shared_builder.KeyWV("result").Val(true);
+        m_shared_builder.EndObj();
+        m_shared_builder.PutChar('"');
        }
       else
        {
         // GET mode
-        res = StringFormat("{\"ok\":true,\"result\":%I64d}", ObjectGetInteger(param["chart_id"].ToInt(0), param["object_name"].ToString(""), property, (int)param["prop_modifier"].ToInt(0)));
+        m_shared_builder.PutChar('"');
+        m_shared_builder.Obj();
+        m_shared_builder.KeyWV("ok").Val(true);
+        m_shared_builder.KeyWV("result").Val(ObjectGetInteger(param["chart_id"].ToInt(0), param["object_name"].ToString(""), property, (int)param["prop_modifier"].ToInt(0)));
+        m_shared_builder.EndObj();
+        m_shared_builder.PutChar('"');
        }
       break;
      }
@@ -218,20 +293,40 @@ void CMcpFuncObjectSetGet::Run(CJsonNode & param, string & res)
         const bool result = ObjectSetString(param["chart_id"].ToInt(0), param["object_name"].ToString(""), property, (int)param["prop_modifier"].ToInt(0), param["value"].ToString(""));
         if(!result)
          {
-          res = StringFormat("{\"ok\":false,\"error\":\"object_set_string failed, last mt5 error = %d\"}", ::GetLastError());
+          m_shared_builder.PutChar('"');
+          m_shared_builder.Obj();
+          m_shared_builder.KeyWV("ok").Val(false);
+          m_shared_builder.KeyWV("error").ValSWV(StringFormat("object_set_string failed, last mt5 error = %d", ::GetLastError()));
+          m_shared_builder.EndObj();
+          m_shared_builder.PutChar('"');
           return;
          }
-        res = "{\"ok\":true,\"result\":true}";
+        m_shared_builder.PutChar('"');
+        m_shared_builder.Obj();
+        m_shared_builder.KeyWV("ok").Val(true);
+        m_shared_builder.KeyWV("result").Val(true);
+        m_shared_builder.EndObj();
+        m_shared_builder.PutChar('"');
        }
       else
        {
         // GET mode
-        res = StringFormat("{\"ok\":true,\"result\":\"%s\"}", ObjectGetString(param["chart_id"].ToInt(0), param["object_name"].ToString(""), property, (int)param["prop_modifier"].ToInt(0)));
+        m_shared_builder.PutChar('"');
+        m_shared_builder.Obj();
+        m_shared_builder.KeyWV("ok").Val(true);
+        m_shared_builder.KeyWV("result").ValS(ObjectGetString(param["chart_id"].ToInt(0), param["object_name"].ToString(""), property, (int)param["prop_modifier"].ToInt(0)));
+        m_shared_builder.EndObj();
+        m_shared_builder.PutChar('"');
        }
       break;
      }
     default:
-      res = "{\"ok\":false,\"result\":\"Invalid mode\"}";
+      m_shared_builder.PutChar('"');
+      m_shared_builder.Obj();
+      m_shared_builder.KeyWV("ok").Val(false);
+      m_shared_builder.KeyWV("result").ValSWV("Invalid mode");
+      m_shared_builder.EndObj();
+      m_shared_builder.PutChar('"');
       break;
    }
  }
@@ -245,14 +340,16 @@ public:
                      CMcpFuncObjectList() : CMcpFunction(0, false, "object_list") {}
                     ~CMcpFuncObjectList(void) {}
 
-  void               Run(CJsonNode& param, string& res) override final;
+  void               Run(CJsonNode& param, CJsonBuilderStr* &out) override final;
  };
 
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
-void CMcpFuncObjectList::Run(CJsonNode & param, string & res)
+void CMcpFuncObjectList::Run(CJsonNode & param, CJsonBuilderStr* &out)
  {
+//---
+  out = m_shared_builder;
   ::ResetLastError();
 
 //---
@@ -265,20 +362,27 @@ void CMcpFuncObjectList::Run(CJsonNode & param, string & res)
 
   if(total < 0)
    {
-    res = StringFormat("{\"ok\":false,\"error\":\"object_list failed, last mt5 error = %d\"}", ::GetLastError());
+    m_shared_builder.PutChar('"');
+    m_shared_builder.Obj();
+    m_shared_builder.KeyWV("ok").Val(false);
+    m_shared_builder.KeyWV("error").ValSWV(StringFormat("object_list failed, last mt5 error = %d", ::GetLastError()));
+    m_shared_builder.EndObj();
+    m_shared_builder.PutChar('"');
     return;
    }
 
 //---
-  res = "{\"ok\":true,\"result\":[";
+  m_shared_builder.PutChar('"');
+  m_shared_builder.Obj();
+  m_shared_builder.KeyWV("ok").Val(true);
+  m_shared_builder.KeyWV("result").Arr();
   for(int i = 0; i < total; i++)
    {
-    if(i == total - 1)
-      res += "\"" + ObjectName(chart_id, i, sub_window) + "\"";
-    else
-      res +=  "\"" + ObjectName(chart_id, i, sub_window) + "\",";
+    m_shared_builder.ValS(ObjectName(chart_id, i, sub_window));
    }
-  res += "]}";
+  m_shared_builder.EndArr();
+  m_shared_builder.EndObj();
+  m_shared_builder.PutChar('"');
  }
 
 //+------------------------------------------------------------------+

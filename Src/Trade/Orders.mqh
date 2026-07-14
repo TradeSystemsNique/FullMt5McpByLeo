@@ -29,24 +29,28 @@ public:
                      CMcpFuncOrderList() : CMcpFunction(0, false, "order_list") {}
                     ~CMcpFuncOrderList(void) {}
 
-  void               Run(CJsonNode& param, string& res) override final;
+  void               Run(CJsonNode& param, CJsonBuilderStr* &out) override final;
  };
 
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
-void CMcpFuncOrderList::Run(CJsonNode& param, string& res)
+void CMcpFuncOrderList::Run(CJsonNode& param, CJsonBuilderStr* &out)
  {
-  res = "{\"ok\":true,\"result\":[";
+//---
+  out = m_shared_builder;
+  m_shared_builder.PutChar('"');
+  m_shared_builder.Obj();
+  m_shared_builder.KeyWV("ok").Val(true);
+  m_shared_builder.KeyWV("result").Arr();
   const int t = OrdersTotal();
   for(int i = 0; i < t; i++)
    {
-    if(i == t - 1)
-      res += string(OrderGetTicket(i));
-    else
-      res += string(OrderGetTicket(i)) + ",";
+    m_shared_builder.Val((long)OrderGetTicket(i));
    }
-  res += "]}";
+  m_shared_builder.EndArr();
+  m_shared_builder.EndObj();
+  m_shared_builder.PutChar('"');
  }
 
 //+------------------------------------------------------------------+
@@ -59,23 +63,31 @@ private:
 public:
                      CMcpFuncOrderClose(CTrade* tr) : CMcpFunction(0, false, "order_close"), m_trade(tr) {}
                     ~CMcpFuncOrderClose(void) {}
-  void               Run(CJsonNode& param, string& res) override final;
+  void               Run(CJsonNode& param, CJsonBuilderStr* &out) override final;
  };
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
-void CMcpFuncOrderClose::Run(CJsonNode& param, string& res)
+void CMcpFuncOrderClose::Run(CJsonNode& param, CJsonBuilderStr* &out)
  {
+//---
+  out = m_shared_builder;
   ::ResetLastError();
   const ulong ticket = (ulong)param["ticket"].ToInt(0);
+  m_shared_builder.PutChar('"');
+  m_shared_builder.Obj();
   if(!m_trade.OrderDelete(ticket))
    {
-    res = StringFormat("{\"ok\":false,\"result\":\"Failed close order with ticket = %I64u, last mt5 err = %d\"}", ticket, ::GetLastError());
+    m_shared_builder.KeyWV("ok").Val(false);
+    m_shared_builder.KeyWV("result").ValSWV(StringFormat("Failed close order with ticket = %I64u, last mt5 err = %d", ticket, ::GetLastError()));
    }
   else
    {
-    res = "{\"ok\":true,\"result\":\"success\"}";
+    m_shared_builder.KeyWV("ok").Val(true);
+    m_shared_builder.KeyWV("result").ValSWV("success");
    }
+  m_shared_builder.EndObj();
+  m_shared_builder.PutChar('"');
  }
 
 
@@ -89,24 +101,33 @@ private:
 public:
                      CMcpFuncOrderModify(CTrade* tr) : CMcpFunction(0, false, "order_modify"), m_trade(tr) {}
                     ~CMcpFuncOrderModify(void) {}
-  void               Run(CJsonNode& param, string& res) override final;
+  void               Run(CJsonNode& param, CJsonBuilderStr* &out) override final;
  };
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
-void CMcpFuncOrderModify::Run(CJsonNode& param, string& res)
+void CMcpFuncOrderModify::Run(CJsonNode& param, CJsonBuilderStr* &out)
  {
+//---
+  out = m_shared_builder;
   ::ResetLastError();
   const ulong ticket = (ulong)param["ticket"].ToInt(0);
 
 //---
   if(!::OrderSelect(ticket))
    {
-    res = StringFormat("{\"ok\":false,\"error\":\"order not found, last mt5 error = %d\"}", ::GetLastError());
+    m_shared_builder.PutChar('"');
+    m_shared_builder.Obj();
+    m_shared_builder.KeyWV("ok").Val(false);
+    m_shared_builder.KeyWV("error").ValSWV(StringFormat("order not found, last mt5 error = %d", ::GetLastError()));
+    m_shared_builder.EndObj();
+    m_shared_builder.PutChar('"');
     return;
    }
 
 //---
+  m_shared_builder.PutChar('"');
+  m_shared_builder.Obj();
   if(!m_trade.OrderModify(ticket,
                           param["new_price"].ToDouble(OrderGetDouble(ORDER_PRICE_OPEN)),
                           param["new_sl"].ToDouble(OrderGetDouble(ORDER_SL)),
@@ -115,12 +136,16 @@ void CMcpFuncOrderModify::Run(CJsonNode& param, string& res)
                           StringToTime(param["new_expiration_time"].ToString(TimeToString(OrderGetInteger(ORDER_TIME_EXPIRATION))))
                          ))
    {
-    res = StringFormat("{\"ok\":false,\"result\":\"Failed modify order with ticket = %I64u, last mt5 err = %d\"}", ticket, ::GetLastError());
+    m_shared_builder.KeyWV("ok").Val(false);
+    m_shared_builder.KeyWV("result").ValSWV(StringFormat("Failed modify order with ticket = %I64u, last mt5 err = %d", ticket, ::GetLastError()));
    }
   else
    {
-    res = "{\"ok\":true,\"result\":\"success\"}";
+    m_shared_builder.KeyWV("ok").Val(true);
+    m_shared_builder.KeyWV("result").ValSWV("success");
    }
+  m_shared_builder.EndObj();
+  m_shared_builder.PutChar('"');
  }
 
 //+------------------------------------------------------------------+
@@ -132,21 +157,28 @@ public:
                      CMcpFuncOrderGet() : CMcpFunction(0, false, "order_get") {}
                     ~CMcpFuncOrderGet(void) {}
 
-  void               Run(CJsonNode& param, string& res) override final;
+  void               Run(CJsonNode& param, CJsonBuilderStr* &out) override final;
  };
 
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
-void CMcpFuncOrderGet::Run(CJsonNode& param, string& res)
+void CMcpFuncOrderGet::Run(CJsonNode& param, CJsonBuilderStr* &out)
  {
+//---
+  out = m_shared_builder;
   ::ResetLastError();
   const ulong ticket = (ulong)param["ticket"].ToInt(0);
 
 //---
   if(!::OrderSelect(ticket))
    {
-    res = StringFormat("{\"ok\":false,\"error\":\"order_not_found, last mt5 error = %d\"}", ::GetLastError());
+    m_shared_builder.PutChar('"');
+    m_shared_builder.Obj();
+    m_shared_builder.KeyWV("ok").Val(false);
+    m_shared_builder.KeyWV("error").ValSWV(StringFormat("order_not_found, last mt5 error = %d", ::GetLastError()));
+    m_shared_builder.EndObj();
+    m_shared_builder.PutChar('"');
     return;
    }
 
@@ -163,7 +195,12 @@ void CMcpFuncOrderGet::Run(CJsonNode& param, string& res)
            CEnumRegBasis::GetValNoRef<ENUM_ORDER_PROPERTY_DOUBLE>(param["property"].ToString(""), WRONG_VALUE),
            v))
        {
-        res = StringFormat("{\"ok\":true,\"result\":%.8f}", v);
+        m_shared_builder.PutChar('"');
+        m_shared_builder.Obj();
+        m_shared_builder.KeyWV("ok").Val(true);
+        m_shared_builder.KeyWV("result").Val(v);
+        m_shared_builder.EndObj();
+        m_shared_builder.PutChar('"');
         return;
        }
       break;
@@ -177,7 +214,12 @@ void CMcpFuncOrderGet::Run(CJsonNode& param, string& res)
            CEnumRegBasis::GetValNoRef<ENUM_ORDER_PROPERTY_INTEGER>(param["property"].ToString(""), WRONG_VALUE),
            v))
        {
-        res = StringFormat("{\"ok\":true,\"result\":%I64d}", v);
+        m_shared_builder.PutChar('"');
+        m_shared_builder.Obj();
+        m_shared_builder.KeyWV("ok").Val(true);
+        m_shared_builder.KeyWV("result").Val(v);
+        m_shared_builder.EndObj();
+        m_shared_builder.PutChar('"');
         return;
        }
       break;
@@ -191,19 +233,34 @@ void CMcpFuncOrderGet::Run(CJsonNode& param, string& res)
            CEnumRegBasis::GetValNoRef<ENUM_ORDER_PROPERTY_STRING>(param["property"].ToString(""), WRONG_VALUE),
            v))
        {
-        res = "{\"ok\":true,\"result\":\"" + v + "\"}";
+        m_shared_builder.PutChar('"');
+        m_shared_builder.Obj();
+        m_shared_builder.KeyWV("ok").Val(true);
+        m_shared_builder.KeyWV("result").ValS(v);
+        m_shared_builder.EndObj();
+        m_shared_builder.PutChar('"');
         return;
        }
       break;
      }
 
     default:
-      res = StringFormat("{\"ok\":false,\"error\":\"Invalid mode = %d\"}", mode);
+      m_shared_builder.PutChar('"');
+      m_shared_builder.Obj();
+      m_shared_builder.KeyWV("ok").Val(false);
+      m_shared_builder.KeyWV("error").ValSWV(StringFormat("Invalid mode = %d", mode));
+      m_shared_builder.EndObj();
+      m_shared_builder.PutChar('"');
       return;
    }
 
 //---
-  res = StringFormat("{\"ok\":false,\"error\":\"Failed call OrderGet*, last err mt5 = %d\"}", ::GetLastError());
+  m_shared_builder.PutChar('"');
+  m_shared_builder.Obj();
+  m_shared_builder.KeyWV("ok").Val(false);
+  m_shared_builder.KeyWV("error").ValSWV(StringFormat("Failed call OrderGet*, last err mt5 = %d", ::GetLastError()));
+  m_shared_builder.EndObj();
+  m_shared_builder.PutChar('"');
  }
 
 //+------------------------------------------------------------------+
@@ -218,15 +275,16 @@ public:
                      CMcpFuncCalcOrder() : CMcpFunction(0, false, "calc_order"), m_get_lote("") {}
                     ~CMcpFuncCalcOrder(void) {}
 
-  void               Run(CJsonNode& param, string& res) override final;
+  void               Run(CJsonNode& param, CJsonBuilderStr* &out) override final;
  };
 
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
-void CMcpFuncCalcOrder::Run(CJsonNode &param, string &res)
+void CMcpFuncCalcOrder::Run(CJsonNode &param, CJsonBuilderStr* &out)
  {
 //---
+  out = m_shared_builder;
   const int8_t mode = CEnumRegFullMt5Mcp::GetValNoRef<int8_t>(param["mode"].ToString(""), WRONG_VALUE);
   const ENUM_ORDER_TYPE type = CEnumRegBasis::GetValNoRef<ENUM_ORDER_TYPE>(param["order_type"].ToString(""), ORDER_TYPE_CLOSE_BY);
 
@@ -249,11 +307,21 @@ void CMcpFuncCalcOrder::Run(CJsonNode &param, string &res)
 
       if(v <= 0)
        {
-        res = "{\"ok\":false,\"error\":\"Failed CalculateSLWithLot, check logs\"}";
+        m_shared_builder.PutChar('"');
+        m_shared_builder.Obj();
+        m_shared_builder.KeyWV("ok").Val(false);
+        m_shared_builder.KeyWV("error").ValSWV("Failed CalculateSLWithLot, check logs");
+        m_shared_builder.EndObj();
+        m_shared_builder.PutChar('"');
         return;
        }
 
-      res = StringFormat("{\"ok\":true,\"result\":%I64d}", v);
+      m_shared_builder.PutChar('"');
+      m_shared_builder.Obj();
+      m_shared_builder.KeyWV("ok").Val(true);
+      m_shared_builder.KeyWV("result").Val(v);
+      m_shared_builder.EndObj();
+      m_shared_builder.PutChar('"');
       break;
      }
 
@@ -273,11 +341,22 @@ void CMcpFuncCalcOrder::Run(CJsonNode &param, string &res)
 
       if(v <= 0)
        {
-        res = "{\"ok\":false,\"error\":\"Failed MoneyToPoints, check logs\"}";
+        m_shared_builder.PutChar('"');
+        m_shared_builder.Obj();
+        m_shared_builder.KeyWV("ok").Val(false);
+        m_shared_builder.KeyWV("error").ValSWV("Failed MoneyToPoints, check logs");
+        m_shared_builder.EndObj();
+        m_shared_builder.PutChar('"');
         return;
        }
 
-      res = StringFormat("{\"ok\":true,\"result\":%I64d,\"lot\":%.2f}", v, chosen_lot);
+      m_shared_builder.PutChar('"');
+      m_shared_builder.Obj();
+      m_shared_builder.KeyWV("ok").Val(true);
+      m_shared_builder.KeyWV("result").Val(v);
+      m_shared_builder.KeyWV("lot").Val(chosen_lot);
+      m_shared_builder.EndObj();
+      m_shared_builder.PutChar('"');
       break;
      }
 
@@ -295,11 +374,22 @@ void CMcpFuncCalcOrder::Run(CJsonNode &param, string &res)
 
       if(v <= 0.0)
        {
-        res = "{\"ok\":false,\"error\":\"Failed GetLoteByRiskPerOperationAndSL, check logs\"}";
+        m_shared_builder.PutChar('"');
+        m_shared_builder.Obj();
+        m_shared_builder.KeyWV("ok").Val(false);
+        m_shared_builder.KeyWV("error").ValSWV("Failed GetLoteByRiskPerOperationAndSL, check logs");
+        m_shared_builder.EndObj();
+        m_shared_builder.PutChar('"');
         return;
        }
 
-      res = StringFormat("{\"ok\":true,\"result\":%.2f,\"risk\":%.2f}", v, new_risk);
+      m_shared_builder.PutChar('"');
+      m_shared_builder.Obj();
+      m_shared_builder.KeyWV("ok").Val(true);
+      m_shared_builder.KeyWV("result").Val(v);
+      m_shared_builder.KeyWV("risk").Val(new_risk);
+      m_shared_builder.EndObj();
+      m_shared_builder.PutChar('"');
       break;
      }
 
@@ -315,11 +405,21 @@ void CMcpFuncCalcOrder::Run(CJsonNode &param, string &res)
 
       if(v <= 0.0)
        {
-        res = "{\"ok\":false,\"error\":\"Failed GetMaxLote, check logs\"}";
+        m_shared_builder.PutChar('"');
+        m_shared_builder.Obj();
+        m_shared_builder.KeyWV("ok").Val(false);
+        m_shared_builder.KeyWV("error").ValSWV("Failed GetMaxLote, check logs");
+        m_shared_builder.EndObj();
+        m_shared_builder.PutChar('"');
         return;
        }
 
-      res = StringFormat("{\"ok\":true,\"result\":%.2f}", v);
+      m_shared_builder.PutChar('"');
+      m_shared_builder.Obj();
+      m_shared_builder.KeyWV("ok").Val(true);
+      m_shared_builder.KeyWV("result").Val(v);
+      m_shared_builder.EndObj();
+      m_shared_builder.PutChar('"');
       break;
      }
 
@@ -336,16 +436,31 @@ void CMcpFuncCalcOrder::Run(CJsonNode &param, string &res)
 
       if(v <= 0.0)
        {
-        res = "{\"ok\":false,\"error\":\"Failed GetLoteByRiskPerOperation, check logs\"}";
+        m_shared_builder.PutChar('"');
+        m_shared_builder.Obj();
+        m_shared_builder.KeyWV("ok").Val(false);
+        m_shared_builder.KeyWV("error").ValSWV("Failed GetLoteByRiskPerOperation, check logs");
+        m_shared_builder.EndObj();
+        m_shared_builder.PutChar('"');
         return;
        }
 
-      res = StringFormat("{\"ok\":true,\"result\":%.2f}", v);
+      m_shared_builder.PutChar('"');
+      m_shared_builder.Obj();
+      m_shared_builder.KeyWV("ok").Val(true);
+      m_shared_builder.KeyWV("result").Val(v);
+      m_shared_builder.EndObj();
+      m_shared_builder.PutChar('"');
       break;
      }
 
     default:
-      res = StringFormat("{\"ok\":false,\"error\":\"Invalid mode = %d\"}", mode);
+      m_shared_builder.PutChar('"');
+      m_shared_builder.Obj();
+      m_shared_builder.KeyWV("ok").Val(false);
+      m_shared_builder.KeyWV("error").ValSWV(StringFormat("Invalid mode = %d", mode));
+      m_shared_builder.EndObj();
+      m_shared_builder.PutChar('"');
       break;
    }
  }
