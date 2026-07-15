@@ -1531,8 +1531,8 @@
           },
           "params": {
             "type": "array",
-            "description": "Parámetros del EA en orden posicional",
-            "$comment": "Opcional. Array de objetos {data_type, value}",
+            "description": "Parámetros del EA en orden posicional (pregunte al usuario los parametros.. exactos antes de lanzar este comando)",
+            "$comment": "Opcional. Array de objetos {data_type, value}, Nota importante en caso se especifiquen los parametros debe tener cuidado con los parametros 'sinput' dado que si existen estos se tratan como TYPE_STRING con cualquier valor string... asi que si el usuario le especifica parametro en todo caso pregunte si hay sinputs en el bot",
             "items": {
               "type": "object",
               "properties": {
