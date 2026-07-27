@@ -1,4 +1,4 @@
-﻿//+------------------------------------------------------------------+
+//+------------------------------------------------------------------+
 //|                                                          Def.mqh |
 //|                                  Copyright 2026, Niquel Mendoza. |
 //|                          https://www.mql5.com/es/users/nique_372 |
@@ -29,7 +29,11 @@
 
 //--- TBP ID
 #include <TSN\\ConfigIdTbp.mqh>
-#include <TSN\\MQLArticles\\Utils\\DictT.mqh>
+
+//---
+#include <TSN\\GCol\\HashMap.mqh>
+#include <TSN\\GCol\\GenericHashes.mqh>
+
 
 #include "..\\EnumReg\\Main.mqh"
 
